@@ -4,7 +4,7 @@
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no" />
 <meta name="theme-color" content="#050708" />
-<title>Velocidad Sonora V3</title>
+<title>Velocidad Sonora V4</title>
 <style>
 :root{color-scheme:dark;font-family:system-ui,-apple-system,Segoe UI,Roboto,sans-serif}
 *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
@@ -20,6 +20,7 @@ body.running #overlay{opacity:0}
 #dot{width:10px;height:10px;border-radius:50%;background:#ffb020;box-shadow:0 0 12px currentColor}
 #status.ok #dot{background:#39e66b}.bad #dot{background:#ff4b55}
 #miniReadout{align-self:flex-start;display:flex;gap:8px;flex-wrap:wrap;margin-top:8px}
+#cameraInfo{align-self:flex-start;margin-top:7px;background:rgba(0,0,0,.52);padding:5px 8px;border-radius:10px;font-size:10px;font-weight:800;letter-spacing:.05em;opacity:.88}
 .miniChip{background:rgba(0,0,0,.62);backdrop-filter:blur(8px);padding:6px 9px;border-radius:12px;line-height:1.05;min-width:92px}
 .miniLabel{font-size:10px;opacity:.76;font-weight:800;letter-spacing:.08em}
 .miniValue{font-size:18px;font-weight:900;margin-top:3px;color:#d9ffff}
@@ -48,6 +49,7 @@ body.running #active{display:flex}
       <div class="miniChip"><div class="miniLabel">REAL</div><div id="realValue" class="miniValue">--.-</div></div>
       <div class="miniChip"><div class="miniLabel">OBJ</div><div id="targetValue" class="miniValue">--.-</div></div>
     </div>
+    <div id="cameraInfo">CÁMARA: --</div>
     <div id="controls">
       <button id="cameraBtn" class="primary">ABRIR CÁMARA</button>
       <button id="testBtn">PROBAR SONIDOS</button>
@@ -77,11 +79,17 @@ const startBtn=document.getElementById('startBtn');
 const stopBtn=document.getElementById('stopBtn');
 const realValueEl=document.getElementById('realValue');
 const targetValueEl=document.getElementById('targetValue');
+const cameraInfoEl=document.getElementById('cameraInfo');
 
 const SCAN_W=424;
 const READ_W=848;
-const PROCESS_MS=90;
+const PROCESS_MS=70;
 const DEBUG=false;
+const ALLOWED_TARGETS=[0,0.8,20,43,54,60,99];
+const DEAD_BAND=.30;
+const ATP_OVERSPEED=2.70;
+const LOW_TONE=620;
+const HIGH_TONE=1280;
 
 let stream=null,loopTimer=null,running=false,wakeLock=null,audioCtx=null;
 let smoothRealBox=null,smoothTargetBox=null,lockStreak=0,lastPanelSeen=0;
@@ -89,9 +97,14 @@ let lastReal=null,acceptedTarget=null;
 let realCandidate=null,realCandidateCount=0,targetCandidate=null,targetCandidateCount=0;
 let realHistory=[];
 let nextFeedbackAt=0,suppressFeedbackUntil=0,lastTargetChangeAt=0,lastTargetDelta=0;
+let targetReadingValid=false,invalidTargetRaw=null;
+let intentionalStopMode=false,lastMotionState='';
+let cameraMode='trasera';
+let masterGain=null,masterCompressor=null;
 
 // Orden de segmentos: A,B,C,D,E,F,G.
 const digitPatterns={
+  blank:[0,0,0,0,0,0,0],
   0:[1,1,1,1,1,1,0],1:[0,1,1,0,0,0,0],2:[1,1,0,1,1,0,1],
   3:[1,1,1,1,0,0,1],4:[0,1,1,0,0,1,1],5:[1,0,1,1,0,1,1],
   6:[1,0,1,1,1,1,1],7:[1,1,1,0,0,0,0],8:[1,1,1,1,1,1,1],
@@ -108,7 +121,13 @@ function rectLerp(a,b,t){
 function formatReadout(v){return v===null||v===undefined?'--.-':v.toFixed(1);}
 function updateMiniReadout(){
   realValueEl.textContent=formatReadout(lastReal);
-  targetValueEl.textContent=formatReadout(acceptedTarget);
+  if(targetReadingValid&&acceptedTarget!==null){
+    targetValueEl.textContent=acceptedTarget===20?'20.0 · CL':formatReadout(acceptedTarget);
+  }else if(invalidTargetRaw!==null){
+    targetValueEl.textContent=formatReadout(invalidTargetRaw)+' ?';
+  }else{
+    targetValueEl.textContent='--.-';
+  }
 }
 
 function updateOverlayGeometry(){
@@ -120,12 +139,59 @@ function updateOverlayGeometry(){
 }
 addEventListener('resize',updateOverlayGeometry);
 
+async function stopStream(){
+  if(stream){for(const t of stream.getTracks())t.stop();stream=null;}
+}
+function cameraLabelScore(label=''){
+  const l=label.toLowerCase();let score=0;
+  if(/ultra[ -]?wide|ultrawide|0[.,]5|gran angular|wide angle/.test(l))score+=20;
+  if(/back|rear|environment|trasera/.test(l))score+=5;
+  if(/tele|front|user|frontal/.test(l))score-=20;
+  return score;
+}
+async function requestCamera(deviceId=null,small=false){
+  const videoConstraints={
+    width:{ideal:small?1280:1920},height:{ideal:small?720:1080},frameRate:{ideal:30,max:30},
+    zoom:{ideal:.5}
+  };
+  if(deviceId)videoConstraints.deviceId={exact:deviceId};
+  else videoConstraints.facingMode={ideal:'environment'};
+  return navigator.mediaDevices.getUserMedia({audio:false,video:videoConstraints});
+}
+async function tryApplyHalfZoom(track){
+  try{
+    if(!track?.getCapabilities)return false;
+    const caps=track.getCapabilities();
+    if(caps.zoom&&Number.isFinite(caps.zoom.min)){
+      const wanted=clamp(.5,caps.zoom.min,caps.zoom.max);
+      if(wanted<=.55){await track.applyConstraints({advanced:[{zoom:wanted}]});return true;}
+      if(caps.zoom.min<1){await track.applyConstraints({advanced:[{zoom:caps.zoom.min}]});return caps.zoom.min<=.55;}
+    }
+  }catch(e){console.warn('No se pudo aplicar zoom 0.5',e);}
+  return false;
+}
 async function openCamera(){
   try{
-    stream=await navigator.mediaDevices.getUserMedia({
-      audio:false,
-      video:{facingMode:{ideal:'environment'},width:{ideal:1920},height:{ideal:1080},frameRate:{ideal:30,max:30}}
-    });
+    // 1) Abrir una cámara trasera para obtener permiso y poder leer etiquetas de dispositivos.
+    stream=await requestCamera(null,true);
+    let chosenId=null,chosenLabel='';
+    try{
+      const devices=(await navigator.mediaDevices.enumerateDevices()).filter(d=>d.kind==='videoinput');
+      const ranked=devices.map(d=>({d,score:cameraLabelScore(d.label)})).sort((a,b)=>b.score-a.score);
+      if(ranked.length&&ranked[0].score>=15){chosenId=ranked[0].d.deviceId;chosenLabel=ranked[0].d.label;}
+    }catch(e){console.warn('No se pudieron enumerar cámaras',e);}
+
+    // 2) Si el navegador expone una cámara ultra gran angular/0.5x separada, usarla.
+    if(chosenId){await stopStream();stream=await requestCamera(chosenId,false);cameraMode='0.5× ultra gran angular';}
+    else cameraMode='trasera';
+
+    // 3) Algunos teléfonos exponen 0.5x como capacidad zoom del mismo dispositivo.
+    const track=stream.getVideoTracks()[0];
+    const halfApplied=await tryApplyHalfZoom(track);
+    if(halfApplied)cameraMode='0.5×';
+    else if(chosenLabel&&cameraLabelScore(chosenLabel)>=15)cameraMode='0.5× ultra gran angular';
+    else cameraMode='trasera · 0.5× no expuesto por navegador';
+
     video.srcObject=stream;
     await video.play();
     const ar=video.videoHeight/video.videoWidth;
@@ -135,6 +201,7 @@ async function openCamera(){
     updateOverlayGeometry();
     document.body.classList.add('camera-open');
     cameraBtn.style.display='none';
+    cameraInfoEl.textContent='CÁMARA: '+cameraMode;
     setStatus('Buscando panel…','');
     updateMiniReadout();
     startLoop();
@@ -207,7 +274,7 @@ function rectSum(I,W,x,y,w,h){
 
 function components(mask,rawMask,W,H){
   const visited=new Uint8Array(mask.length),queue=new Int32Array(mask.length),I=integralMask(rawMask,W,H),cands=[];
-  const minW=W*.08,minH=H*.07,maxW=W*.45,maxH=H*.35;
+  const minW=W*.04,minH=H*.035,maxW=W*.45,maxH=H*.35;
   for(let p=0;p<mask.length;p++){
     if(!mask[p]||visited[p])continue;
     let qh=0,qt=0;queue[qt++]=p;visited[p]=1;
@@ -225,7 +292,7 @@ function components(mask,rawMask,W,H){
     const w=maxX-minX+1,h=maxY-minY+1,ratio=w/h;
     if(w<minW||h<minH||w>maxW||h>maxH||ratio<1.2||ratio>3.5)continue;
     const density=rectSum(I,W,minX,minY,w,h)/(w*h);
-    if(density<.12)continue;
+    if(density<.075)continue;
     cands.push({x:minX,y:minY,w,h,density,area:w*h,count});
   }
   return cands;
@@ -239,9 +306,9 @@ function chooseDisplayPair(cands,W,H){
       if(t===r)continue;
       const tcx=t.x+t.w/2,tcy=t.y+t.h/2;
       const dx=(tcx-rcx)/W,dy=(tcy-rcy)/H;
-      if(dx<.25||tcy>rcy+.12*H||Math.abs(dy)>.40)continue;
+      if(dx<.10||dx>.78||tcy>rcy+.16*H||Math.abs(dy)>.45)continue;
       const size=Math.min(r.area,t.area)/Math.max(r.area,t.area);
-      const score=3*size-1.5*Math.abs(dx-.50)-Math.abs(dy+.15)+.2*(r.density+t.density);
+      const score=3*size-1.1*Math.abs(dx-.34)-.9*Math.abs(dy+.12)+.25*(r.density+t.density);
       if(!best||score>best.score)best={score,real:r,target:t};
     }
   }
@@ -313,6 +380,7 @@ function classifyDigit(features){
   if(!features)return null;
   const scored=[];
   for(const [dstr,pat] of Object.entries(digitPatterns)){
+    if(dstr==='blank')continue;
     let num=0,den=0;
     for(let i=0;i<7;i++){
       const target=pat[i]?.88:.12,weight=pat[i]?1:1.3,err=features[i]-target;
@@ -331,6 +399,48 @@ function recognizeValue(img,kind,rect){
   const value=rs[0].digit*10+rs[1].digit+rs[2].digit/10;
   const confidence=1-Math.max(...rs.map(r=>r.mse));
   return {value:Math.round(value*10)/10,confidence,raw:rs};
+}
+
+function patternMse(features,pat){
+  if(!features)return 1;
+  let num=0,den=0;
+  for(let i=0;i<7;i++){
+    const on=pat[i]===1,target=on?.88:.08,weight=on?1:1.25,err=features[i]-target;
+    num+=weight*err*err;den+=weight;
+  }
+  return num/den;
+}
+function targetDigitVariants(v){
+  if(v===0)return [[0,0,0],['blank',0,0],['blank','blank',0]];
+  if(v===.8)return [[0,0,8],['blank',0,8]];
+  const tenths=Math.round(v*10)%10,whole=Math.floor(v),tens=Math.floor(whole/10),ones=whole%10;
+  return [[tens,ones,tenths]];
+}
+function recognizeAllowedTarget(img,rect){
+  const boxes=digitBoxes('target',rect),features=boxes.map(b=>segmentRunFeatures(img,b));
+  if(features.some(f=>!f))return null;
+  // Lectura libre únicamente para diagnóstico visual cuando aparece un código no admitido.
+  const unrestricted=recognizeValue(img,'target',rect);
+  const scores=[];
+  for(const v of ALLOWED_TARGETS){
+    let best=Infinity;
+    for(const digits of targetDigitVariants(v)){
+      let total=0;
+      for(let i=0;i<3;i++)total+=patternMse(features[i],digitPatterns[String(digits[i])]);
+      best=Math.min(best,total/3);
+    }
+    scores.push({value:v,mse:best});
+  }
+  scores.sort((a,b)=>a.mse-b.mse);
+  const best=scores[0],second=scores[1],margin=second.mse-best.mse;
+  // El conjunto permitido NO se usa para forzar una lectura dudosa a un código válido.
+  // Si no encaja bien, se declara inválida y el control sonoro queda en silencio.
+  if(best.mse>.205||margin<.012)return {valid:false,value:null,rawValue:unrestricted?.value??null,mse:best.mse,margin};
+  // Si la lectura libre es muy convincente y contradice de forma clara al conjunto admitido, rechazarla.
+  if(unrestricted&&unrestricted.confidence>.84&&Math.min(...ALLOWED_TARGETS.map(v=>Math.abs(v-unrestricted.value)))>1.1){
+    return {valid:false,value:null,rawValue:unrestricted.value,mse:best.mse,margin};
+  }
+  return {valid:true,value:best.value,rawValue:unrestricted?.value??best.value,mse:best.mse,margin};
 }
 
 function sameTenth(a,b){return a!==null&&b!==null&&Math.abs(a-b)<.051;}
@@ -356,34 +466,35 @@ function updateReadings(rr,tr){
   const now=performance.now();
   if(rr){
     const v=rr.value;
-    if(lastReal===null){
-      acceptReal(v,now);
-    }else if(Math.abs(v-lastReal)<=3.0){
-      // La velocidad física no puede saltar varios km/h entre cuadros: aceptar cambios normales de inmediato.
-      acceptReal(v,now);realCandidate=null;realCandidateCount=0;
-    }else{
-      // Saltos grandes podrían ser una lectura OCR errónea: pedir dos lecturas consecutivas iguales.
-      if(sameTenth(v,realCandidate))realCandidateCount++;
-      else{realCandidate=v;realCandidateCount=1;}
+    if(lastReal===null){acceptReal(v,now);}
+    else if(Math.abs(v-lastReal)<=3.0){acceptReal(v,now);realCandidate=null;realCandidateCount=0;}
+    else{
+      if(sameTenth(v,realCandidate))realCandidateCount++;else{realCandidate=v;realCandidateCount=1;}
       if(realCandidateCount>=2){acceptReal(v,now);realCandidate=null;realCandidateCount=0;}
     }
   }
+
   if(tr){
-    const v=tr.value;
-    if(acceptedTarget!==null&&sameTenth(v,acceptedTarget)){
+    if(!tr.valid){
+      targetReadingValid=false;invalidTargetRaw=tr.rawValue;
       targetCandidate=null;targetCandidateCount=0;
     }else{
-      if(sameTenth(v,targetCandidate))targetCandidateCount++;
-      else{targetCandidate=v;targetCandidateCount=1;}
-      // Dos lecturas consecutivas: ~180 ms a 90 ms por cuadro.
-      if(targetCandidateCount>=2){
-        const old=acceptedTarget;acceptedTarget=v;targetCandidate=null;targetCandidateCount=0;
-        onTargetChanged(old,v);
+      invalidTargetRaw=null;targetReadingValid=true;
+      const v=tr.value;
+      if(acceptedTarget!==null&&sameTenth(v,acceptedTarget)){targetCandidate=null;targetCandidateCount=0;}
+      else{
+        if(sameTenth(v,targetCandidate))targetCandidateCount++;else{targetCandidate=v;targetCandidateCount=1;}
+        // Dos cuadros coherentes (~140 ms nominales) para evitar avisos falsos de cambio de código.
+        if(targetCandidateCount>=2){
+          const old=acceptedTarget;acceptedTarget=v;targetCandidate=null;targetCandidateCount=0;onTargetChanged(old,v);
+        }
       }
     }
+  }else{
+    targetReadingValid=false;invalidTargetRaw=null;
   }
   updateMiniReadout();
-  if(DEBUG)console.log({real:lastReal,target:acceptedTarget,trend:realTrend(),rr,tr});
+  if(DEBUG)console.log({real:lastReal,target:acceptedTarget,targetValid:targetReadingValid,trend:realTrend(),rr,tr});
 }
 
 function drawDetectionBoxes(){
@@ -417,109 +528,102 @@ function processFrame(){
   drawDetectionBoxes();
   if(lockStreak>=3){startBtn.disabled=false;if(!running)setStatus('Panel detectado','ok');}
   const readImg=readCtx.getImageData(0,0,readCanvas.width,readCanvas.height);
-  const rr=recognizeValue(readImg,'real',smoothRealBox),tr=recognizeValue(readImg,'target',smoothTargetBox);
-  updateReadings(rr,tr);feedback();
+  const rr=recognizeValue(readImg,'real',smoothRealBox),tr=recognizeAllowedTarget(readImg,smoothTargetBox);
+  updateReadings(rr,tr);
+  if(!running&&lockStreak>=3&&!targetReadingValid)setStatus('Objetivo dudoso · sonido bloqueado','bad');
+  feedback();
 }
 
 function ensureAudio(){
-  if(!audioCtx)audioCtx=new (window.AudioContext||window.webkitAudioContext)();
+  if(!audioCtx){
+    audioCtx=new (window.AudioContext||window.webkitAudioContext)();
+    masterGain=audioCtx.createGain();masterGain.gain.value=.98;
+    masterCompressor=audioCtx.createDynamicsCompressor();
+    masterCompressor.threshold.value=-18;masterCompressor.knee.value=5;masterCompressor.ratio.value=12;
+    masterCompressor.attack.value=.002;masterCompressor.release.value=.12;
+    masterGain.connect(masterCompressor).connect(audioCtx.destination);
+  }
   if(audioCtx.state==='suspended')audioCtx.resume();
   return audioCtx;
 }
-function tone(freq,dur=.07,vol=.08,type='sine',when=0,endFreq=null){
-  const ac=ensureAudio(),t=ac.currentTime+when,o=ac.createOscillator(),g=ac.createGain();
-  o.type=type;o.frequency.setValueAtTime(freq,t);if(endFreq)o.frequency.exponentialRampToValueAtTime(endFreq,t+dur);
-  g.gain.setValueAtTime(.0001,t);g.gain.exponentialRampToValueAtTime(vol,t+.008);g.gain.exponentialRampToValueAtTime(.0001,t+dur);
-  o.connect(g).connect(ac.destination);o.start(t);o.stop(t+dur+.025);
+function baseTone(freq,dur=.09,when=0){
+  const ac=ensureAudio(),t=ac.currentTime+when;
+  const g=ac.createGain(),o1=ac.createOscillator(),o2=ac.createOscillator();
+  o1.type='square';o2.type='triangle';o1.frequency.setValueAtTime(freq,t);o2.frequency.setValueAtTime(freq*2,t);
+  g.gain.setValueAtTime(.0001,t);g.gain.exponentialRampToValueAtTime(.78,t+.006);g.gain.setValueAtTime(.78,t+Math.max(.012,dur-.018));g.gain.exponentialRampToValueAtTime(.0001,t+dur);
+  o1.connect(g);o2.connect(g);g.connect(masterGain);o1.start(t);o2.start(t);o1.stop(t+dur+.02);o2.stop(t+dur+.02);
 }
+function low(when=0,dur=.085){baseTone(LOW_TONE,dur,when);}
+function high(when=0,dur=.085){baseTone(HIGH_TONE,dur,when);}
 
-// CAMBIO DEL OBJETIVO: barrido largo. Su duración informa aproximadamente cuánto cambió.
-function targetSweep(up=true,delta=5){
-  const dur=clamp(.20+Math.abs(delta)*.005,.20,.58);
-  tone(up?360:1450,dur,.105,'sine',0,up?1500:330);
+// Dos sonidos base únicamente:
+//  • grave solo repetido = la velocidad real está por debajo y hay que subir.
+//  • grave→agudo = el código objetivo SUBIÓ.
+//  • agudo→grave = el código objetivo BAJÓ.
+//  • agudo→grave→agudo→grave = objetivo 0.
+function targetUpCue(delta=0){
+  low(0,.10);high(.13,.10);
+  if(Math.abs(delta)>=20){low(.34,.085);high(.46,.085);}
 }
-
-// OBJETIVO 0: patrón exclusivo, no se usa para ninguna otra situación.
-function zeroCue(){
-  tone(300,.09,.105,'triangle',0);
-  tone(210,.11,.105,'triangle',.13);
-  tone(120,.20,.115,'triangle',.29);
+function targetDownCue(delta=0){
+  high(0,.10);low(.13,.10);
+  if(Math.abs(delta)>=20){high(.34,.085);low(.46,.085);}
 }
-
-// Corrección normal (0,3 a 3 km/h): señales muy cortas.
-// needUp=true = velocidad real baja -> subir. needUp=false = velocidad real alta -> bajar.
-function correctionCue(needUp=true,severity=.3){
-  if(needUp){
-    const base=420-severity*80;
-    tone(base,.055,.072,'sine',0,base*1.18);
-  }else{
-    const base=980+severity*180;
-    tone(base,.055,.070,'sine',0,base*.84);
-  }
-}
-
-// Fuera del rango normal (>3 km/h): doble señal informativa, NO alarma.
-function farCue(needUp=true,gap=4){
-  const sev=clamp((gap-3)/20,0,1);
-  if(needUp){
-    const f=300-sev*55;
-    tone(f,.065,.058,'triangle',0,f*1.12);
-    tone(f*1.14,.075,.058,'triangle',.105,f*1.28);
-  }else{
-    const f=1180+sev*160;
-    tone(f,.065,.058,'triangle',0,f*.88);
-    tone(f*.86,.075,.058,'triangle',.105,f*.72);
-  }
-}
+function zeroCue(){high(0,.09);low(.12,.09);high(.24,.09);low(.36,.13);}
+function speedUpPulse(){low(0,.075);}
 
 function onTargetChanged(oldV,newV){
-  const now=performance.now();
-  lastTargetChangeAt=now;lastTargetDelta=oldV===null?0:newV-oldV;
-  // Dar tiempo al barrido para que no se mezcle con las correcciones continuas.
-  suppressFeedbackUntil=now+720;
+  const now=performance.now();lastTargetChangeAt=now;lastTargetDelta=oldV===null?0:newV-oldV;
+  intentionalStopMode=false;
+  suppressFeedbackUntil=now+(Math.abs(lastTargetDelta)>=20?760:430);
   nextFeedbackAt=suppressFeedbackUntil;
   if(oldV===null)return;
   if(newV<=.05&&oldV>.05)zeroCue();
-  else if(newV>oldV)targetSweep(true,newV-oldV);
-  else if(newV<oldV)targetSweep(false,oldV-newV);
+  else if(newV>oldV)targetUpCue(newV-oldV);
+  else if(newV<oldV)targetDownCue(oldV-newV);
+}
+
+function updateMotionState(now){
+  if(lastReal===null||acceptedTarget===null)return;
+  const trend=realTrend(),gap=acceptedTarget-lastReal;
+  // Parado en estación/maniobra con un código >0: no pedir acelerar hasta que el tren realmente empiece a moverse.
+  if(acceptedTarget>=20&&lastReal<=1.2&&now-lastTargetChangeAt>700){intentionalStopMode=true;lastMotionState='PARADO';return;}
+  // Una caída sostenida y claramente alejada del objetivo se interpreta como frenado/detención deliberada.
+  if(acceptedTarget>=20&&gap>4.5&&trend<-1.0&&now-lastTargetChangeAt>900){intentionalStopMode=true;lastMotionState='FRENANDO';return;}
+  // Salir del modo detención cuando vuelve a acelerar de manera clara o cambia el código (esto último se maneja arriba).
+  if(intentionalStopMode&&((lastReal>1.5&&trend>.55)||(gap<2.0&&trend>=-.2))){intentionalStopMode=false;lastMotionState='REANUDA';}
 }
 
 function feedback(){
   if(!running||lastReal===null||acceptedTarget===null)return;
   const now=performance.now();
-  if(now-lastPanelSeen>450||now<suppressFeedbackUntil||now<nextFeedbackAt)return;
-  if(acceptedTarget<=.05){nextFeedbackAt=now+250;return;}
+  if(now-lastPanelSeen>350||!targetReadingValid||now<suppressFeedbackUntil||now<nextFeedbackAt)return;
+  if(acceptedTarget<=.05){nextFeedbackAt=now+180;return;}
 
-  // diff > 0: real por encima del objetivo -> bajar. diff < 0: real por debajo -> subir.
-  const diff=lastReal-acceptedTarget,mag=Math.abs(diff),trend=realTrend();
+  updateMotionState(now);
+  const diff=lastReal-acceptedTarget;
 
-  // Banda muerta: dentro de ±0,3 km/h no se emite ningún sonido.
-  if(mag<=.3001){nextFeedbackAt=now+120;return;}
+  // Regla pedida: la app NO emite correcciones cuando la velocidad real está sobre el objetivo.
+  // El propio ATP ya entrega el aviso de sobrevelocidad. Incluso sobre +2,7 km/h permanecemos en silencio.
+  if(diff>=-DEAD_BAND){nextFeedbackAt=now+100;return;}
 
-  const needUp=diff<0;
-  // Se aleja si el movimiento de la velocidad real tiene el mismo signo que el error.
-  // Ej.: real baja estando ya por debajo del objetivo, o sube estando por encima.
-  const movingAway=(diff*trend)>.18;
-  const movingToward=(diff*trend)<-.18;
+  // Frenado/detención deliberada con código aún >0: silencio para no "pelear" contra la maniobra.
+  if(intentionalStopMode){nextFeedbackAt=now+120;return;}
 
-  if(mag<=3.0){
-    const severity=clamp((mag-.3)/2.7,0,1);
-    correctionCue(needUp,severity);
-    let interval=900-severity*590; // 900 ms cerca del rango; ~310 ms cerca de ±3.
-    if(movingAway)interval*=.62;    // avisar antes si la tendencia empeora.
-    else if(movingToward)interval*=1.28; // molestar menos si ya está corrigiendo bien.
-    nextFeedbackAt=now+clamp(interval,220,1150);
-    return;
-  }
+  const deficit=-diff,trend=realTrend();
+  // Un único sonido grave pide subir velocidad. La frecuencia de repetición codifica cuánto falta.
+  speedUpPulse();
+  let interval;
+  if(deficit<=.8)interval=760;
+  else if(deficit<=1.5)interval=520;
+  else if(deficit<=ATP_OVERSPEED)interval=340;
+  else if(deficit<=6)interval=255;
+  else interval=225;
 
-  // >3 km/h: estado distinto. Puede ocurrir al cambiar mucho el objetivo o durante una detención.
-  // Se informa con doble tono suave, sin convertirlo en una alarma insistente.
-  farCue(needUp,mag);
-  const farSeverity=clamp((mag-3)/30,0,1);
-  let interval=1150-farSeverity*620;
-  if(movingAway)interval*=.78;
-  else if(movingToward)interval*=1.18;
-  nextFeedbackAt=now+clamp(interval,430,1450);
+  // Si ya está acelerando hacia el objetivo, molestar algo menos; si sigue cayendo, avisar antes salvo que se active modo frenado.
+  if(trend>.7)interval*=1.22;
+  else if(trend<-.45)interval*=.82;
+  nextFeedbackAt=now+clamp(interval,190,900);
 }
 
 async function startControl(){
@@ -538,16 +642,13 @@ function testSounds(){
   ensureAudio();
   const original=statusText.textContent;
   const seq=[
-    [0,'Prueba: objetivo SUBE',()=>targetSweep(true,20)],
-    [900,'Prueba: objetivo BAJA',()=>targetSweep(false,20)],
-    [1800,'Prueba: objetivo 0',()=>zeroCue()],
-    [2700,'Prueba: real baja → SUBIR',()=>correctionCue(true,.45)],
-    [3350,'Prueba: real alta → BAJAR',()=>correctionCue(false,.45)],
-    [4000,'Prueba: muy por debajo',()=>farCue(true,10)],
-    [4800,'Prueba: muy por encima',()=>farCue(false,10)]
+    [0,'Prueba: objetivo SUBE · grave→agudo',()=>targetUpCue(10)],
+    [900,'Prueba: objetivo BAJA · agudo→grave',()=>targetDownCue(10)],
+    [1800,'Prueba: objetivo 0 · patrón doble',()=>zeroCue()],
+    [2800,'Prueba: SUBIR velocidad · grave repetido',()=>{low();low(.36);low(.72);}]
   ];
   for(const [ms,label,fn] of seq)setTimeout(()=>{setStatus(label,'ok');fn();},ms);
-  setTimeout(()=>setStatus(original,lockStreak>=3?'ok':''),5650);
+  setTimeout(()=>setStatus(original,lockStreak>=3?'ok':''),4100);
 }
 
 cameraBtn.addEventListener('click',openCamera);
