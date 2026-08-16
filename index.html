@@ -4,7 +4,7 @@
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no" />
 <meta name="theme-color" content="#050708" />
-<title>Velocidad Sonora V5</title>
+<title>Velocidad Sonora V5.1</title>
 <style>
 :root{color-scheme:dark;font-family:system-ui,-apple-system,Segoe UI,Roboto,sans-serif}
 *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
@@ -33,8 +33,8 @@ body.camera-open #hint{display:none}
 body.running #active{display:none}
 #rotate{display:none;position:absolute;inset:0;z-index:50;background:#050708;align-items:center;justify-content:center;text-align:center;padding:30px;font-weight:800}
 @media (orientation:portrait){#rotate{display:flex}}
-#tripSetup{display:none;position:absolute;left:50%;bottom:72px;transform:translateX(-50%);z-index:15;pointer-events:auto;background:rgba(0,0,0,.72);backdrop-filter:blur(10px);border-radius:16px;padding:9px;gap:7px;align-items:end;max-width:94vw}
-body.camera-open:not(.running) #tripSetup{display:flex}
+#tripSetup{display:flex;position:absolute;left:50%;bottom:72px;transform:translateX(-50%);z-index:15;pointer-events:auto;background:rgba(0,0,0,.72);backdrop-filter:blur(10px);border-radius:16px;padding:9px;gap:7px;align-items:end;max-width:94vw}
+body.running #tripSetup{display:none}
 .setupField{display:flex;flex-direction:column;gap:4px;min-width:132px}
 .setupField label{font-size:9px;font-weight:850;letter-spacing:.08em;opacity:.7}
 select{appearance:none;border:0;border-radius:11px;padding:10px 28px 10px 10px;background:#151b1e;color:#fff;font-weight:800;font-size:12px;outline:none}
@@ -73,6 +73,7 @@ body.running #tripBar{display:block}
   <div id="active">CONTROL SONORO ACTIVO</div>
   <div id="hint">Apunta aproximadamente al tablero. La app localizará sola ambos displays y seguirá su posición. Durante el uso, el control se realiza por sonido.</div>
   <div id="tripSetup">
+    <div class="setupField" style="min-width:140px"><label>VIAJE</label><div style="font-size:11px;font-weight:800;opacity:.72;padding:3px 2px 7px">Define el recorrido antes de abrir la cámara.</div></div>
     <div class="setupField"><label>SENTIDO</label><select id="directionSelect"><option value="limache">Puerto → Limache</option><option value="puerto">Limache → Puerto</option></select></div>
     <div class="setupField"><label>INICIO</label><select id="startStationSelect"></select></div>
     <div class="setupField"><label>FINAL</label><select id="endStationSelect"></select></div>
