@@ -4,7 +4,7 @@
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no" />
 <meta name="theme-color" content="#050708" />
-<title>Velocidad Sonora V4.1</title>
+<title>Velocidad Sonora V4.2</title>
 <style>
 :root{color-scheme:dark;font-family:system-ui,-apple-system,Segoe UI,Roboto,sans-serif}
 *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
@@ -52,6 +52,7 @@ body.running #active{display:flex}
     <div id="cameraInfo">CÁMARA: --</div>
     <div id="controls">
       <button id="cameraBtn" class="primary">ABRIR CÁMARA</button>
+      <button id="lensBtn" style="display:none">CAMBIAR LENTE</button>
       <button id="testBtn">PROBAR SONIDOS</button>
       <button id="startBtn" class="primary" disabled>INICIAR</button>
       <button id="stopBtn" class="danger" style="display:none">DETENER</button>
@@ -74,6 +75,7 @@ const overlayCtx=overlay.getContext('2d');
 const statusEl=document.getElementById('status');
 const statusText=document.getElementById('statusText');
 const cameraBtn=document.getElementById('cameraBtn');
+const lensBtn=document.getElementById('lensBtn');
 const testBtn=document.getElementById('testBtn');
 const startBtn=document.getElementById('startBtn');
 const stopBtn=document.getElementById('stopBtn');
@@ -90,6 +92,7 @@ const DEAD_BAND=.30;
 const ATP_OVERSPEED=2.70;
 const LOW_TONE=620;
 const HIGH_TONE=1280;
+const SAVED_CAMERA_KEY='velocidadATP.preferredCameraId.v1';
 
 let stream=null,loopTimer=null,running=false,wakeLock=null,audioCtx=null;
 let smoothRealBox=null,smoothTargetBox=null,lockStreak=0,lastPanelSeen=0;
@@ -100,6 +103,7 @@ let nextFeedbackAt=0,suppressFeedbackUntil=0,lastTargetChangeAt=0,lastTargetDelt
 let targetReadingValid=false,invalidTargetRaw=null;
 let intentionalStopMode=false,lastMotionState='';
 let cameraMode='trasera';
+let videoDevices=[],currentVideoDeviceIndex=-1;
 let masterGain=null,masterCompressor=null;
 
 // Orden de segmentos: A,B,C,D,E,F,G.
@@ -146,8 +150,21 @@ function cameraLabelScore(label=''){
   const l=label.toLowerCase();let score=0;
   if(/ultra[ -]?wide|ultrawide|0[.,]5|gran angular|wide angle/.test(l))score+=20;
   if(/back|rear|environment|trasera/.test(l))score+=5;
-  if(/tele|front|user|frontal/.test(l))score-=20;
+  if(/tele|front|user|frontal|selfie/.test(l))score-=20;
   return score;
+}
+function isExplicitFront(label=''){
+  return /front|user|frontal|selfie|facing front/.test(label.toLowerCase());
+}
+async function enumerateCandidateCameras(){
+  try{
+    const all=(await navigator.mediaDevices.enumerateDevices()).filter(d=>d.kind==='videoinput');
+    const nonFront=all.filter(d=>!isExplicitFront(d.label));
+    return nonFront.length?nonFront:all;
+  }catch(e){
+    console.warn('No se pudieron enumerar cámaras',e);
+    return [];
+  }
 }
 async function requestCamera(deviceId=null,small=false){
   const videoConstraints={
@@ -170,40 +187,93 @@ async function tryApplyHalfZoom(track){
   }catch(e){console.warn('No se pudo aplicar zoom 0.5',e);}
   return false;
 }
+function resetVisionAfterCameraChange(){
+  smoothRealBox=null;smoothTargetBox=null;lockStreak=0;lastPanelSeen=0;
+  lastReal=null;acceptedTarget=null;realCandidate=null;realCandidateCount=0;
+  targetCandidate=null;targetCandidateCount=0;realHistory=[];
+  targetReadingValid=false;invalidTargetRaw=null;intentionalStopMode=false;
+  overlayCtx.clearRect(0,0,overlay.width,overlay.height);
+  startBtn.disabled=true;updateMiniReadout();
+}
+async function prepareCurrentStream(){
+  video.srcObject=stream;
+  await video.play();
+  const ar=video.videoHeight/video.videoWidth;
+  scanCanvas.width=SCAN_W;scanCanvas.height=Math.max(1,Math.round(SCAN_W*ar));
+  readCanvas.width=READ_W;readCanvas.height=Math.max(1,Math.round(READ_W*ar));
+  overlay.width=READ_W;overlay.height=readCanvas.height;
+  updateOverlayGeometry();
+}
+function updateLensButton(){
+  lensBtn.style.display=(!running&&videoDevices.length>1)?'inline-block':'none';
+}
+async function switchLens(){
+  if(running||videoDevices.length<2)return;
+  try{
+    lensBtn.disabled=true;setStatus('Cambiando lente…','');
+    let next=(currentVideoDeviceIndex+1)%videoDevices.length;
+    const d=videoDevices[next];
+    await stopStream();
+    stream=await requestCamera(d.deviceId,false);
+    currentVideoDeviceIndex=next;
+    const halfApplied=await tryApplyHalfZoom(stream.getVideoTracks()[0]);
+    localStorage.setItem(SAVED_CAMERA_KEY,d.deviceId);
+    await prepareCurrentStream();
+    resetVisionAfterCameraChange();
+    cameraMode=`lente ${next+1}/${videoDevices.length}`+(halfApplied?' · zoom 0.5×':' · guardada');
+    cameraInfoEl.textContent='CÁMARA: '+cameraMode;
+    setStatus('Buscando panel…','');
+  }catch(e){
+    console.error(e);setStatus('No se pudo cambiar la lente','bad');
+  }finally{lensBtn.disabled=false;updateLensButton();}
+}
 async function openCamera(){
   try{
-    // 1) Abrir una cámara trasera para obtener permiso y poder leer etiquetas de dispositivos.
+    // 1) Abrir primero la cámara trasera predeterminada para obtener permiso y etiquetas.
     stream=await requestCamera(null,true);
-    let chosenId=null,chosenLabel='';
-    try{
-      const devices=(await navigator.mediaDevices.enumerateDevices()).filter(d=>d.kind==='videoinput');
-      const ranked=devices.map(d=>({d,score:cameraLabelScore(d.label)})).sort((a,b)=>b.score-a.score);
-      if(ranked.length&&ranked[0].score>=15){chosenId=ranked[0].d.deviceId;chosenLabel=ranked[0].d.label;}
-    }catch(e){console.warn('No se pudieron enumerar cámaras',e);}
+    videoDevices=await enumerateCandidateCameras();
 
-    // 2) Si el navegador expone una cámara ultra gran angular/0.5x separada, usarla.
-    if(chosenId){await stopStream();stream=await requestCamera(chosenId,false);cameraMode='0.5× ultra gran angular';}
-    else cameraMode='trasera';
+    const initialTrack=stream.getVideoTracks()[0];
+    const initialId=initialTrack?.getSettings?.().deviceId||'';
+    currentVideoDeviceIndex=videoDevices.findIndex(d=>d.deviceId===initialId);
 
-    // 3) Algunos teléfonos exponen 0.5x como capacidad zoom del mismo dispositivo.
+    // 2) Prioridad: lente que el usuario ya eligió antes; si no, una ultra gran angular explícita.
+    const savedId=localStorage.getItem(SAVED_CAMERA_KEY)||'';
+    let chosen=null,chosenReason='';
+    if(savedId){
+      const found=videoDevices.find(d=>d.deviceId===savedId);
+      if(found){chosen=found;chosenReason='guardada';}
+    }
+    if(!chosen){
+      const ranked=videoDevices.map(d=>({d,score:cameraLabelScore(d.label)})).sort((a,b)=>b.score-a.score);
+      if(ranked.length&&ranked[0].score>=15){chosen=ranked[0].d;chosenReason='ultra';}
+    }
+
+    if(chosen&&chosen.deviceId!==initialId){
+      await stopStream();
+      stream=await requestCamera(chosen.deviceId,false);
+      currentVideoDeviceIndex=videoDevices.findIndex(d=>d.deviceId===chosen.deviceId);
+    }
+
+    // 3) Si la misma cámara expone zoom <1, aplicar 0.5× directamente.
     const track=stream.getVideoTracks()[0];
     const halfApplied=await tryApplyHalfZoom(track);
-    if(halfApplied)cameraMode='0.5×';
-    else if(chosenLabel&&cameraLabelScore(chosenLabel)>=15)cameraMode='0.5× ultra gran angular';
-    else cameraMode='trasera · 0.5× no expuesto por navegador';
+    const activeId=track?.getSettings?.().deviceId||'';
+    if(currentVideoDeviceIndex<0)currentVideoDeviceIndex=videoDevices.findIndex(d=>d.deviceId===activeId);
 
-    video.srcObject=stream;
-    await video.play();
-    const ar=video.videoHeight/video.videoWidth;
-    scanCanvas.width=SCAN_W;scanCanvas.height=Math.max(1,Math.round(SCAN_W*ar));
-    readCanvas.width=READ_W;readCanvas.height=Math.max(1,Math.round(READ_W*ar));
-    overlay.width=READ_W;overlay.height=readCanvas.height;
-    updateOverlayGeometry();
+    if(halfApplied)cameraMode='0.5×';
+    else if(chosenReason==='ultra')cameraMode='0.5× ultra gran angular';
+    else if(chosenReason==='guardada')cameraMode=`lente guardada ${currentVideoDeviceIndex+1}/${Math.max(1,videoDevices.length)}`;
+    else if(videoDevices.length>1)cameraMode=`trasera · ${videoDevices.length} lentes disponibles`;
+    else cameraMode='trasera · navegador expone una sola lente';
+
+    await prepareCurrentStream();
+    resetVisionAfterCameraChange();
     document.body.classList.add('camera-open');
     cameraBtn.style.display='none';
     cameraInfoEl.textContent='CÁMARA: '+cameraMode;
+    updateLensButton();
     setStatus('Buscando panel…','');
-    updateMiniReadout();
     startLoop();
   }catch(e){
     console.error(e);setStatus('No se pudo abrir la cámara','bad');
@@ -628,13 +698,13 @@ function feedback(){
 
 async function startControl(){
   ensureAudio();running=true;document.body.classList.add('running');
-  startBtn.style.display='none';stopBtn.style.display='inline-block';testBtn.style.display='none';
+  startBtn.style.display='none';stopBtn.style.display='inline-block';testBtn.style.display='none';lensBtn.style.display='none';
   setStatus('Control sonoro activo','ok');nextFeedbackAt=0;
   try{if('wakeLock'in navigator)wakeLock=await navigator.wakeLock.request('screen');}catch(e){}
 }
 async function stopControl(){
   running=false;document.body.classList.remove('running');
-  stopBtn.style.display='none';startBtn.style.display='inline-block';testBtn.style.display='inline-block';
+  stopBtn.style.display='none';startBtn.style.display='inline-block';testBtn.style.display='inline-block';updateLensButton();
   setStatus(lockStreak>=3?'Panel detectado':'Buscando panel…',lockStreak>=3?'ok':'');
   try{if(wakeLock){await wakeLock.release();wakeLock=null;}}catch(e){}
 }
@@ -652,6 +722,7 @@ function testSounds(){
 }
 
 cameraBtn.addEventListener('click',openCamera);
+lensBtn.addEventListener('click',switchLens);
 testBtn.addEventListener('click',testSounds);
 startBtn.addEventListener('click',startControl);
 stopBtn.addEventListener('click',stopControl);
