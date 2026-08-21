@@ -4,7 +4,7 @@
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no" />
 <meta name="theme-color" content="#050708" />
-<title>Velocidad Sonora V5.1</title>
+<title>Velocidad Sonora V6</title>
 <style>
 :root{color-scheme:dark;font-family:system-ui,-apple-system,Segoe UI,Roboto,sans-serif}
 *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
@@ -32,7 +32,7 @@ body.camera-open #hint{display:none}
 #active{display:none;position:absolute;inset:0;align-items:center;justify-content:center;font-size:17px;font-weight:900;letter-spacing:.13em;color:#d9ffff;pointer-events:none;text-align:center;padding:30px}
 body.running #active{display:none}
 #rotate{display:none;position:absolute;inset:0;z-index:50;background:#050708;align-items:center;justify-content:center;text-align:center;padding:30px;font-weight:800}
-@media (orientation:portrait){#rotate{display:flex}}
+@media (orientation:portrait){body.mode-vision #rotate{display:flex}}
 #tripSetup{display:flex;position:absolute;left:50%;bottom:72px;transform:translateX(-50%);z-index:15;pointer-events:auto;background:rgba(0,0,0,.72);backdrop-filter:blur(10px);border-radius:16px;padding:9px;gap:7px;align-items:end;max-width:94vw}
 body.running #tripSetup{display:none}
 .setupField{display:flex;flex-direction:column;gap:4px;min-width:132px}
@@ -62,16 +62,68 @@ body.running #tripBar{display:block}
 .summaryRow strong{font-size:12px}
 #summaryActions{display:flex;gap:8px;justify-content:flex-end;margin-top:14px}
 @media (max-width:760px){#tripSetup{gap:5px;bottom:66px}.setupField{min-width:110px}select{font-size:11px;padding:9px 22px 9px 8px}.summaryGrid{grid-template-columns:repeat(2,1fr)}}
+#modePicker{position:absolute;z-index:120;inset:0;display:flex;align-items:center;justify-content:center;padding:22px;background:#050708;pointer-events:auto}
+.modeCard{width:min(430px,94vw);background:#0e1315;border:1px solid rgba(255,255,255,.08);border-radius:22px;padding:18px}
+.modeTitle{font-size:24px;font-weight:950;letter-spacing:-.02em}.modeSub{font-size:13px;line-height:1.4;opacity:.68;margin:5px 0 16px}
+.modeButtons{display:grid;grid-template-columns:1fr 1fr;gap:9px}.modeButtons button{min-height:72px;text-align:left}.modeButtons small{display:block;font-size:10px;opacity:.62;margin-top:4px;line-height:1.25}
+body.mode-vision #modePicker,body.mode-imu #modePicker{display:none}
+body.mode-imu{overflow:auto;background:#080b0c}body.mode-imu #video,body.mode-imu #overlay,body.mode-imu #shade,body.mode-imu #hud,body.mode-imu #tripSetup,body.mode-imu #tripBar,body.mode-imu #ambiguous,body.mode-imu #rotate,body.mode-imu #hint,body.mode-imu #active{display:none!important}
+#imuMode{display:none;position:absolute;z-index:100;inset:0;overflow:auto;background:#080b0c;padding:max(18px,env(safe-area-inset-top)) max(16px,env(safe-area-inset-right)) max(22px,env(safe-area-inset-bottom)) max(16px,env(safe-area-inset-left));pointer-events:auto}
+body.mode-imu #imuMode{display:block}
+.imuShell{width:min(520px,100%);margin:0 auto}.imuTop{display:flex;justify-content:space-between;align-items:center;gap:10px;margin-bottom:18px}.imuBrand{font-size:13px;font-weight:950;letter-spacing:.09em}.ghostBtn{background:#111719;padding:9px 11px;font-size:11px}
+.imuSetup{background:#0e1315;border-radius:18px;padding:14px;margin-bottom:12px}.imuSetupGrid{display:grid;grid-template-columns:1fr 1fr;gap:9px}.imuField{display:flex;flex-direction:column;gap:5px}.imuField.wide{grid-column:1/-1}.imuField label{font-size:9px;font-weight:900;letter-spacing:.09em;opacity:.6}.imuField select,.imuField input{width:100%;border:0;border-radius:12px;padding:12px;background:#171d20;color:#fff;font-size:13px;font-weight:800;outline:none}.imuField input{color-scheme:dark}
+#imuArmBtn{width:100%;margin-top:11px;padding:15px}.imuLive{display:none}.imuLive.show{display:block}.imuState{font-size:12px;font-weight:950;letter-spacing:.12em;color:#9ff}.imuRoute{font-size:18px;font-weight:950;margin-top:3px}.imuTimer{font-variant-numeric:tabular-nums;font-size:58px;font-weight:950;letter-spacing:-.055em;line-height:1;margin:20px 0 4px}.imuTimerLabel{font-size:11px;font-weight:850;opacity:.55;letter-spacing:.08em}.imuSecondary{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:16px}.imuStat{background:#0e1315;border-radius:14px;padding:11px}.imuStatLabel{font-size:9px;font-weight:900;opacity:.55;letter-spacing:.08em}.imuStatValue{font-size:18px;font-weight:950;margin-top:3px;font-variant-numeric:tabular-nums}.imuProgress{margin-top:12px;background:#0e1315;border-radius:16px;padding:11px}.imuProgressTitle{font-size:9px;font-weight:900;opacity:.55;letter-spacing:.08em;margin-bottom:8px}.imuStops{display:flex;flex-direction:column;gap:6px;max-height:210px;overflow:auto}.imuEventRow{display:flex;justify-content:space-between;gap:12px;font-size:11px;padding:7px 2px;border-top:1px solid rgba(255,255,255,.06)}.imuEventRow:first-child{border-top:0}.imuEventRow strong{font-size:11px}.imuActions{display:flex;gap:8px;margin-top:12px}.imuActions button{flex:1}.imuHint{font-size:10px;line-height:1.35;opacity:.52;margin-top:10px;text-align:center}.imuCal{font-size:11px;font-weight:850;color:#ffcf75;margin-top:8px;min-height:15px}.imuSignal{font-size:10px;opacity:.55;margin-top:5px;font-variant-numeric:tabular-nums}
+@media (max-width:520px){.modeButtons{grid-template-columns:1fr}.imuTimer{font-size:54px}.imuSetupGrid{grid-template-columns:1fr}.imuField.wide{grid-column:auto}}
 #scan,#read{display:none}
 </style>
 </head>
 <body>
 <div id="app">
+  <div id="modePicker">
+    <div class="modeCard">
+      <div class="modeTitle">ATP · Registro</div>
+      <div class="modeSub">Elige cómo usar el teléfono. El modo IMU funciona sin cámara y está pensado para vista vertical.</div>
+      <div class="modeButtons">
+        <button id="visionModeBtn" class="primary">VISIÓN ATP<small>Cámara + lectura del panel + guía sonora.</small></button>
+        <button id="imuModeBtn">SOLO IMU<small>Movimiento, tramos y detenciones sin usar cámara.</small></button>
+      </div>
+    </div>
+  </div>
+  <section id="imuMode">
+    <div class="imuShell">
+      <div class="imuTop"><div class="imuBrand">REGISTRO IMU</div><button id="imuBackBtn" class="ghostBtn">CAMBIAR MODO</button></div>
+      <div id="imuSetup" class="imuSetup">
+        <div class="imuSetupGrid">
+          <div class="imuField wide"><label>DIRECCIÓN</label><div style="font-size:13px;font-weight:900;padding:8px 2px 2px">Puerto ↔ Limache</div></div>
+          <div class="imuField"><label>SENTIDO</label><select id="imuDirection"><option value="limache">Hacia Limache</option><option value="puerto">Hacia Puerto</option></select></div>
+          <div class="imuField"><label>SALIDA PROGRAMADA</label><input id="imuSchedule" type="time" step="60"></div>
+          <div class="imuField"><label>INICIO</label><select id="imuStart"></select></div>
+          <div class="imuField"><label>DESTINO</label><select id="imuEnd"></select></div>
+        </div>
+        <div id="imuCalText" class="imuCal">El teléfono debe quedar fijo durante el registro.</div>
+        <button id="imuArmBtn" class="primary">ARMAR RECORRIDO</button>
+      </div>
+      <div id="imuLive" class="imuLive">
+        <div id="imuState" class="imuState">ESPERANDO SALIDA</div>
+        <div id="imuRoute" class="imuRoute">--</div>
+        <div id="imuTimer" class="imuTimer">00:00.0</div>
+        <div id="imuTimerLabel" class="imuTimerLabel">DURACIÓN DEL EVENTO ACTUAL</div>
+        <div class="imuSecondary">
+          <div class="imuStat"><div class="imuStatLabel">VIAJE</div><div id="imuTotal" class="imuStatValue">00:00</div></div>
+          <div class="imuStat"><div id="imuExtraLabel" class="imuStatLabel">SEÑAL IMU</div><div id="imuExtra" class="imuStatValue">--</div></div>
+        </div>
+        <div id="imuSignal" class="imuSignal">IMU: esperando calibración</div>
+        <div class="imuProgress"><div class="imuProgressTitle">EVENTOS</div><div id="imuEvents" class="imuStops"><div style="font-size:11px;opacity:.45">Sin eventos todavía.</div></div></div>
+        <div class="imuActions"><button id="imuRecalBtn">RECALIBRAR</button><button id="imuFinishBtn" class="danger">FINALIZAR</button></div>
+        <div class="imuHint">Una detención inferior a 12 s se registra como detención breve y no avanza de estación. Desde 12 s se considera estación y el consentimiento se estima como detenido real − 12 s.</div>
+      </div>
+    </div>
+  </section>
   <video id="video" playsinline muted></video>
   <canvas id="overlay"></canvas>
   <div id="shade"></div>
   <div id="active">CONTROL SONORO ACTIVO</div>
-  <div id="hint">Apunta aproximadamente al tablero. La app localizará sola ambos displays y seguirá su posición. Durante el uso, el control se realiza por sonido.</div>
+  <div id="hint">Apunta aproximadamente al tablero. La app reduce el brillo cuando el navegador lo permite y lee el objetivo usando solo sus dos dígitos principales; el .0 final se ignora.</div>
   <div id="tripSetup">
     <div class="setupField" style="min-width:140px"><label>VIAJE</label><div style="font-size:11px;font-weight:800;opacity:.72;padding:3px 2px 7px">Define el recorrido antes de abrir la cámara.</div></div>
     <div class="setupField"><label>SENTIDO</label><select id="directionSelect"><option value="limache">Puerto → Limache</option><option value="puerto">Limache → Puerto</option></select></div>
@@ -136,6 +188,27 @@ const summaryMeta=document.getElementById('summaryMeta');
 const summaryContent=document.getElementById('summaryContent');
 const exportBtn=document.getElementById('exportBtn');
 const closeSummaryBtn=document.getElementById('closeSummaryBtn');
+const visionModeBtn=document.getElementById('visionModeBtn');
+const imuModeBtn=document.getElementById('imuModeBtn');
+const imuBackBtn=document.getElementById('imuBackBtn');
+const imuSetupEl=document.getElementById('imuSetup');
+const imuLiveEl=document.getElementById('imuLive');
+const imuDirection=document.getElementById('imuDirection');
+const imuSchedule=document.getElementById('imuSchedule');
+const imuStart=document.getElementById('imuStart');
+const imuEnd=document.getElementById('imuEnd');
+const imuArmBtn=document.getElementById('imuArmBtn');
+const imuCalText=document.getElementById('imuCalText');
+const imuStateOnly=document.getElementById('imuState');
+const imuRouteOnly=document.getElementById('imuRoute');
+const imuTimerOnly=document.getElementById('imuTimer');
+const imuTotalOnly=document.getElementById('imuTotal');
+const imuExtraLabel=document.getElementById('imuExtraLabel');
+const imuExtra=document.getElementById('imuExtra');
+const imuSignalOnly=document.getElementById('imuSignal');
+const imuEventsEl=document.getElementById('imuEvents');
+const imuRecalBtn=document.getElementById('imuRecalBtn');
+const imuFinishBtn=document.getElementById('imuFinishBtn');
 
 const SCAN_W=424;
 const READ_W=848;
@@ -156,6 +229,10 @@ const ARRIVAL_CONFIRM_MS=1700;
 const DEPART_CONFIRM_MS=550;
 const ATP_ZERO_TIMEOUT_MS=30000;
 const ATP_AMBIGUOUS_MS=20000;
+const IMU_CAL_MS=3500;
+const IMU_DEPART_CONFIRM_MS=700;
+const IMU_STOP_CONFIRM_MS=2200;
+const IMU_STATION_MS=12000;
 
 let stream=null,loopTimer=null,running=false,wakeLock=null,audioCtx=null;
 let smoothRealBox=null,smoothTargetBox=null,lockStreak=0,lastPanelSeen=0;
@@ -171,6 +248,8 @@ let masterGain=null,masterCompressor=null;
 let imuEnabled=false,imuPermission='--',imuSamples=[],gravityLP={x:0,y:0,z:0},imuHandlerInstalled=false;
 let trip=null,tripUiTimer=null,moveCandidateAt=null,stopCandidateAt=null,overspeedCandidate=null,activeAtp=null,atpResumeCandidateAt=null;
 let currentSegmentAtpStoppedMs=0,lastCompletedTrip=null;
+let appMode=null,antiGlareApplied=false;
+let imuOnlyTrip=null,imuOnlyLoop=null,imuBaseline=null,imuCalStart=null,imuCalValues=[],imuMoveCandidate=null,imuStopCandidate=null,imuLastEventAt=null,imuLastMotionScore=0,imuClassifiedStation=false,imuOnlyLastCompleted=null;
 
 // Orden de segmentos: A,B,C,D,E,F,G.
 const digitPatterns={
@@ -189,15 +268,29 @@ function rectLerp(a,b,t){
   return {x:lerp(a.x,b.x,t),y:lerp(a.y,b.y,t),w:lerp(a.w,b.w,t),h:lerp(a.h,b.h,t)};
 }
 function formatReadout(v){return v===null||v===undefined?'--.-':v.toFixed(1);}
+function formatTargetReadout(v){
+  if(v===null||v===undefined)return '--';
+  if(v===.8)return '0.8';
+  if(v===20)return '20 · CL';
+  return String(Math.round(v));
+}
 function updateMiniReadout(){
   realValueEl.textContent=formatReadout(lastReal);
   if(targetReadingValid&&acceptedTarget!==null){
-    targetValueEl.textContent=acceptedTarget===20?'20.0 · CL':formatReadout(acceptedTarget);
+    targetValueEl.textContent=formatTargetReadout(acceptedTarget);
   }else if(invalidTargetRaw!==null){
-    targetValueEl.textContent=formatReadout(invalidTargetRaw)+' ?';
+    targetValueEl.textContent=String(invalidTargetRaw)+' ?';
   }else{
-    targetValueEl.textContent='--.-';
+    targetValueEl.textContent='--';
   }
+}
+function chooseMode(mode){
+  appMode=mode;document.body.classList.remove('mode-vision','mode-imu');document.body.classList.add(mode==='imu'?'mode-imu':'mode-vision');
+  if(mode==='imu'){fillImuSelectors();setDefaultSchedule();}
+}
+function resetMode(){
+  if(running||imuOnlyTrip){return;}
+  appMode=null;document.body.classList.remove('mode-vision','mode-imu');
 }
 
 function routeForDirection(){return directionSelect.value==='limache'?[...STATIONS_PUERTO_LIMACHE]:[...STATIONS_PUERTO_LIMACHE].reverse();}
@@ -319,6 +412,26 @@ async function tryApplyHalfZoom(track){
   }catch(e){console.warn('No se pudo aplicar zoom 0.5',e);}
   return false;
 }
+async function applyPanelAntiGlare(track){
+  antiGlareApplied=false;
+  try{
+    if(!track?.getCapabilities)return false;
+    const caps=track.getCapabilities();
+    // Reducir exposición cuando el navegador/cámara lo permite. Evita que el halo rojo una segmentos vecinos.
+    if(caps.focusMode?.includes?.('continuous')){
+      try{await track.applyConstraints({advanced:[{focusMode:'continuous'}]});}catch(e){}
+    }
+    if(caps.exposureMode?.includes?.('continuous')){
+      try{await track.applyConstraints({advanced:[{exposureMode:'continuous'}]});}catch(e){}
+    }
+    if(caps.exposureCompensation&&Number.isFinite(caps.exposureCompensation.min)&&Number.isFinite(caps.exposureCompensation.max)){
+      const min=caps.exposureCompensation.min,max=caps.exposureCompensation.max;
+      const wanted=clamp(-1.5,min,max);
+      if(wanted<0){try{await track.applyConstraints({advanced:[{exposureCompensation:wanted}]});antiGlareApplied=true;}catch(e){}}
+    }
+  }catch(e){console.warn('Ajuste anti-brillo no disponible',e);}
+  return antiGlareApplied;
+}
 function resetVisionAfterCameraChange(){
   smoothRealBox=null;smoothTargetBox=null;lockStreak=0;lastPanelSeen=0;
   lastReal=null;acceptedTarget=null;realCandidate=null;realCandidateCount=0;
@@ -348,11 +461,14 @@ async function switchLens(){
     await stopStream();
     stream=await requestCamera(d.deviceId,false);
     currentVideoDeviceIndex=next;
-    const halfApplied=await tryApplyHalfZoom(stream.getVideoTracks()[0]);
+    const track=stream.getVideoTracks()[0];
+    const halfApplied=await tryApplyHalfZoom(track);
+    await applyPanelAntiGlare(track);
+    await applyPanelAntiGlare(track);
     localStorage.setItem(SAVED_CAMERA_KEY,d.deviceId);
     await prepareCurrentStream();
     resetVisionAfterCameraChange();
-    cameraMode=`lente ${next+1}/${videoDevices.length}`+(halfApplied?' · zoom 0.5×':' · guardada');
+    cameraMode=`lente ${next+1}/${videoDevices.length}`+(halfApplied?' · zoom 0.5×':' · guardada')+(antiGlareApplied?' · anti-brillo':'');
     cameraInfoEl.textContent='CÁMARA: '+cameraMode;
     setStatus('Buscando panel…','');
   }catch(e){
@@ -398,6 +514,7 @@ async function openCamera(){
     else if(chosenReason==='guardada')cameraMode=`lente guardada ${currentVideoDeviceIndex+1}/${Math.max(1,videoDevices.length)}`;
     else if(videoDevices.length>1)cameraMode=`trasera · ${videoDevices.length} lentes disponibles`;
     else cameraMode='trasera · navegador expone una sola lente';
+    if(antiGlareApplied)cameraMode+=' · anti-brillo';
 
     await prepareCurrentStream();
     resetVisionAfterCameraChange();
@@ -425,10 +542,10 @@ function buildRedMask(img){
   const {data,width:W,height:H}=img;
   const mask=new Uint8Array(W*H);
   for(let i=0,p=0;i<data.length;i+=4,p++){
-    const r=data[i],g=data[i+1],b=data[i+2];
-    const mn=Math.min(g,b);
-    // Aproximación rápida a "rojo saturado": suficiente para los LED del tablero.
-    if(r>80 && r>=g && r>=b && (r-mn)>.22*r)mask[p]=1;
+    const r=data[i],g=data[i+1],b=data[i+2],mx=Math.max(g,b);
+    const dominance=r-mx,ratio=r/(g+b+12);
+    // Núcleo rojo de los LED: umbral más duro para ignorar el halo desenfocado/sobreexpuesto.
+    if(r>105 && dominance>30 && ratio>.92)mask[p]=1;
   }
   return mask;
 }
@@ -537,15 +654,15 @@ function cropLedScores(img,box){
   const w=x1-x0,h=y1-y0,n=w*h,vals=new Float32Array(n);
   let k=0,min=1e9,max=-1e9;
   for(let y=y0;y<y1;y++)for(let x=x0;x<x1;x++){
-    const i=(y*W+x)*4,r=d[i],g=d[i+1],b=d[i+2];
-    const s=r-.45*Math.max(g,b);vals[k++]=s;if(s<min)min=s;if(s>max)max=s;
+    const i=(y*W+x)*4,r=d[i],g=d[i+1],b=d[i+2],mx=Math.max(g,b);
+    const s=Math.max(0,(r-mx)+.18*r);vals[k++]=s;if(s<min)min=s;if(s>max)max=s;
   }
   if(n<20)return null;
   // Percentiles aproximados con histograma para no ordenar arrays en cada lectura.
   const bins=new Uint32Array(64),span=Math.max(1,max-min);
   for(let i=0;i<n;i++){const bi=clamp(((vals[i]-min)/span*63)|0,0,63);bins[bi]++;}
   function histQ(q){let want=n*q,c=0;for(let i=0;i<64;i++){c+=bins[i];if(c>=want)return min+(i/63)*span;}return max;}
-  const p25=histQ(.25),p95=histQ(.95),thr=p25+.58*(p95-p25);
+  const p30=histQ(.30),p93=histQ(.93),thr=p30+.70*(p93-p30);
   const bw=new Uint8Array(n);for(let i=0;i<n;i++)bw[i]=vals[i]>thr?1:0;
   return {bw,w,h};
 }
@@ -613,36 +730,36 @@ function patternMse(features,pat){
   return num/den;
 }
 function targetDigitVariants(v){
-  if(v===0)return [[0,0,0],['blank',0,0],['blank','blank',0]];
-  if(v===.8)return [[0,0,8],['blank',0,8]];
-  const tenths=Math.round(v*10)%10,whole=Math.floor(v),tens=Math.floor(whole/10),ones=whole%10;
-  return [[tens,ones,tenths]];
+  // El display objetivo muestra XX.0. Para códigos enteros se leen SOLO los dos dígitos XX;
+  // el .0 final se ignora por completo. 0.8 es la única excepción decimal.
+  if(v===0)return [[0,0],['blank',0]];
+  if(v===.8)return [['blank',0,8],[0,0,8]];
+  const whole=Math.round(v),tens=Math.floor(whole/10),ones=whole%10;
+  return [[tens,ones]];
 }
 function recognizeAllowedTarget(img,rect){
   const boxes=digitBoxes('target',rect),features=boxes.map(b=>segmentRunFeatures(img,b));
-  if(features.some(f=>!f))return null;
-  // Lectura libre únicamente para diagnóstico visual cuando aparece un código no admitido.
-  const unrestricted=recognizeValue(img,'target',rect);
+  if(features.slice(0,2).some(f=>!f))return null;
   const scores=[];
   for(const v of ALLOWED_TARGETS){
     let best=Infinity;
     for(const digits of targetDigitVariants(v)){
-      let total=0;
-      for(let i=0;i<3;i++)total+=patternMse(features[i],digitPatterns[String(digits[i])]);
-      best=Math.min(best,total/3);
+      let total=0,count=0;
+      if(v===.8){
+        if(!features[2])continue;
+        for(let i=0;i<3;i++){total+=patternMse(features[i],digitPatterns[String(digits[i])]);count++;}
+      }else{
+        // No usar el tercer dígito: el .0 es irrelevante y su brillo era una fuente de errores.
+        for(let i=0;i<2;i++){total+=patternMse(features[i],digitPatterns[String(digits[i])]);count++;}
+      }
+      best=Math.min(best,total/Math.max(1,count));
     }
     scores.push({value:v,mse:best});
   }
   scores.sort((a,b)=>a.mse-b.mse);
   const best=scores[0],second=scores[1],margin=second.mse-best.mse;
-  // El conjunto permitido NO se usa para forzar una lectura dudosa a un código válido.
-  // Si no encaja bien, se declara inválida y el control sonoro queda en silencio.
-  if(best.mse>.205||margin<.012)return {valid:false,value:null,rawValue:unrestricted?.value??null,mse:best.mse,margin};
-  // Si la lectura libre es muy convincente y contradice de forma clara al conjunto admitido, rechazarla.
-  if(unrestricted&&unrestricted.confidence>.84&&Math.min(...ALLOWED_TARGETS.map(v=>Math.abs(v-unrestricted.value)))>1.1){
-    return {valid:false,value:null,rawValue:unrestricted.value,mse:best.mse,margin};
-  }
-  return {valid:true,value:best.value,rawValue:unrestricted?.value??best.value,mse:best.mse,margin};
+  if(best.mse>.195||margin<.010)return {valid:false,value:null,rawValue:null,mse:best.mse,margin};
+  return {valid:true,value:best.value,rawValue:best.value,mse:best.mse,margin};
 }
 
 function sameTenth(a,b){return a!==null&&b!==null&&Math.abs(a-b)<.051;}
@@ -715,7 +832,7 @@ function drawDetectionBoxes(){
 function processFrame(){
   if(!drawFrames())return;
   const scanImg=scanCtx.getImageData(0,0,scanCanvas.width,scanCanvas.height);
-  const raw=buildRedMask(scanImg),dil=dilateSeparable(raw,scanCanvas.width,scanCanvas.height,3,2);
+  const raw=buildRedMask(scanImg),dil=dilateSeparable(raw,scanCanvas.width,scanCanvas.height,2,1);
   const cands=components(dil,raw,scanCanvas.width,scanCanvas.height),pair=chooseDisplayPair(cands,scanCanvas.width,scanCanvas.height);
   if(!pair){
     lockStreak=Math.max(0,lockStreak-1);armTripBtn.disabled=true;
@@ -859,6 +976,125 @@ function exportTripCsv(){
   const blob=new Blob([rows.map(r=>r.map(csvEscape).join(';')).join('\n')],{type:'text/csv;charset=utf-8'}),url=URL.createObjectURL(blob),a=document.createElement('a');a.href=url;a.download=`viaje_ATP_${new Date(t.createdAt).toISOString().slice(0,19).replaceAll(':','-')}.csv`;a.click();setTimeout(()=>URL.revokeObjectURL(url),1000);
 }
 
+function routeForImu(){return imuDirection.value==='limache'?[...STATIONS_PUERTO_LIMACHE]:[...STATIONS_PUERTO_LIMACHE].reverse();}
+function fillImuSelectors(){
+  const route=routeForImu(),oldStart=imuStart.value,oldEnd=imuEnd.value;
+  imuStart.innerHTML=route.slice(0,-1).map(s=>`<option>${s}</option>`).join('');
+  if(oldStart&&route.includes(oldStart)&&route.indexOf(oldStart)<route.length-1)imuStart.value=oldStart;
+  const si=Math.max(0,route.indexOf(imuStart.value)),ends=route.slice(si+1);
+  imuEnd.innerHTML=ends.map(s=>`<option>${s}</option>`).join('');
+  if(oldEnd&&ends.includes(oldEnd))imuEnd.value=oldEnd;else imuEnd.value=ends[ends.length-1]||'';
+}
+function updateImuEnd(){
+  const route=routeForImu(),si=Math.max(0,route.indexOf(imuStart.value)),old=imuEnd.value,ends=route.slice(si+1);
+  imuEnd.innerHTML=ends.map(s=>`<option>${s}</option>`).join('');
+  if(old&&ends.includes(old))imuEnd.value=old;else imuEnd.value=ends[ends.length-1]||'';
+}
+function setDefaultSchedule(){
+  if(imuSchedule.value)return;const d=new Date();imuSchedule.value=`${String(d.getHours()).padStart(2,'0')}:${String(d.getMinutes()).padStart(2,'0')}`;
+}
+function fmtTenths(ms){
+  const s=Math.max(0,ms)/1000,m=Math.floor(s/60),sec=s-m*60;return `${String(m).padStart(2,'0')}:${sec.toFixed(1).padStart(4,'0')}`;
+}
+function imuScheduledTimestamp(){
+  const [h,m]=(imuSchedule.value||'00:00').split(':').map(Number),d=new Date();d.setHours(h||0,m||0,0,0);return d.getTime();
+}
+function addImuEvent(type,label,startAt,endAt,extra={}){
+  if(!imuOnlyTrip)return;imuOnlyTrip.events.push({type,label,startAt,endAt,durationMs:Math.max(0,endAt-startAt),...extra});renderImuEvents();
+}
+function renderImuEvents(){
+  if(!imuOnlyTrip||!imuOnlyTrip.events.length){imuEventsEl.innerHTML='<div style="font-size:11px;opacity:.45">Sin eventos todavía.</div>';return;}
+  imuEventsEl.innerHTML=imuOnlyTrip.events.slice(-10).reverse().map(e=>`<div class="imuEventRow"><strong>${e.label}</strong><span>${fmtDuration(e.durationMs)}</span></div>`).join('');
+}
+function imuMotionThresholds(){
+  const b=imuBaseline??.025;return {move:Math.max(.075,b*2.7+.015),stop:Math.max(.045,b*1.65+.010)};
+}
+function imuCurrentRouteText(){
+  if(!imuOnlyTrip)return '--';const r=imuOnlyTrip.route,p=imuOnlyTrip.pos;
+  if(imuOnlyTrip.state==='STATION'||imuOnlyTrip.state==='FINISHED')return r[p]||r[r.length-1];
+  return `${r[p]} → ${r[Math.min(p+1,r.length-1)]}`;
+}
+function imuSetEvent(state,label,at=Date.now()){
+  imuOnlyTrip.state=state;imuOnlyTrip.eventLabel=label;imuOnlyTrip.eventStartAt=at;imuLastEventAt=at;imuStateOnly.textContent=label;imuRouteOnly.textContent=imuCurrentRouteText();
+}
+function imuBeginCalibration(){
+  imuBaseline=null;imuCalStart=performance.now();imuCalValues=[];imuCalText.textContent='Calibrando IMU… mantén el teléfono fijo 3,5 s';
+}
+function imuProcessCalibration(){
+  if(!imuOnlyTrip||imuBaseline!==null||imuCalStart===null)return;
+  const elapsed=performance.now()-imuCalStart,score=imuLevel();if(Number.isFinite(score))imuCalValues.push(score);
+  if(elapsed>=IMU_CAL_MS){
+    const vals=imuCalValues.filter(Number.isFinite).sort((a,b)=>a-b);imuBaseline=vals.length?vals[Math.floor(vals.length*.45)]:.025;
+    imuCalStart=null;const th=imuMotionThresholds();imuCalText.textContent=`Calibrado · umbral movimiento ${th.move.toFixed(2)}`;
+  }
+}
+function imuOnlyTick(){
+  if(!imuOnlyTrip)return;const now=Date.now();imuProcessCalibration();const score=imuLevel();imuLastMotionScore=score;const th=imuMotionThresholds();
+  const eventElapsed=now-(imuOnlyTrip.eventStartAt||now);imuTimerOnly.textContent=fmtTenths(eventElapsed);
+  const totalStart=imuOnlyTrip.actualStartAt||imuOnlyTrip.armedAt;imuTotalOnly.textContent=fmtDuration(now-totalStart);
+  imuSignalOnly.textContent=`IMU ${score.toFixed(3)} · mover > ${th.move.toFixed(3)} · parar < ${th.stop.toFixed(3)}`;
+  if(imuOnlyTrip.state==='STATION'){
+    imuExtraLabel.textContent='CONSENTIMIENTO';imuExtra.textContent=fmtTenths(Math.max(0,eventElapsed-12000));
+  }else if(imuOnlyTrip.state==='WAITING'){
+    imuExtraLabel.textContent='SALIDA PROG.';const delta=now-imuOnlyTrip.scheduledAt;imuExtra.textContent=(delta>=0?'+':'−')+fmtDuration(Math.abs(delta));
+  }else{
+    imuExtraLabel.textContent='SEÑAL IMU';imuExtra.textContent=score.toFixed(2);
+  }
+  if(imuBaseline===null)return;
+  const moving=score>th.move,quiet=score<th.stop;
+  if(imuOnlyTrip.state==='WAITING'){
+    if(moving){if(!imuMoveCandidate)imuMoveCandidate=now;if(now-imuMoveCandidate>=IMU_DEPART_CONFIRM_MS){
+      const at=imuMoveCandidate;addImuEvent('SALIDA','Salida',imuOnlyTrip.scheduledAt,at,{delayMs:at-imuOnlyTrip.scheduledAt});imuOnlyTrip.actualStartAt=at;imuOnlyTrip.segmentStartAt=at;imuMoveCandidate=null;imuSetEvent('MOVING','TRAYECTO',at);
+    }}else imuMoveCandidate=null;return;
+  }
+  if(imuOnlyTrip.state==='MOVING'){
+    if(quiet){if(!imuStopCandidate)imuStopCandidate=now;if(now-imuStopCandidate>=IMU_STOP_CONFIRM_MS){
+      const at=imuStopCandidate;imuStopCandidate=null;imuClassifiedStation=false;imuSetEvent('STOPPED','DETENCIÓN',at);
+    }}else imuStopCandidate=null;return;
+  }
+  if(imuOnlyTrip.state==='STOPPED'){
+    const stopMs=now-imuOnlyTrip.eventStartAt;
+    if(!imuClassifiedStation&&stopMs>=IMU_STATION_MS){
+      const arrival=imuOnlyTrip.eventStartAt,origin=imuOnlyTrip.route[imuOnlyTrip.pos],dest=imuOnlyTrip.route[imuOnlyTrip.pos+1];
+      if(imuOnlyTrip.segmentStartAt)addImuEvent('TRAMO',`${origin} → ${dest}`,imuOnlyTrip.segmentStartAt,arrival);
+      imuOnlyTrip.pos=Math.min(imuOnlyTrip.pos+1,imuOnlyTrip.route.length-1);imuClassifiedStation=true;imuSetEvent('STATION','DETENCIÓN EN ESTACIÓN',arrival);
+      if(imuOnlyTrip.route[imuOnlyTrip.pos]===imuOnlyTrip.finalStation){imuRouteOnly.textContent=imuOnlyTrip.finalStation;}
+      return;
+    }
+    if(moving){if(!imuMoveCandidate)imuMoveCandidate=now;if(now-imuMoveCandidate>=IMU_DEPART_CONFIRM_MS){
+      const at=imuMoveCandidate,st=imuOnlyTrip.eventStartAt;addImuEvent('BREVE','Detención breve',st,at);imuMoveCandidate=null;imuOnlyTrip.segmentStartAt=at;imuSetEvent('MOVING','TRAYECTO',at);
+    }}else imuMoveCandidate=null;return;
+  }
+  if(imuOnlyTrip.state==='STATION'){
+    if(moving){if(!imuMoveCandidate)imuMoveCandidate=now;if(now-imuMoveCandidate>=IMU_DEPART_CONFIRM_MS){
+      const at=imuMoveCandidate,arrival=imuOnlyTrip.eventStartAt,dwell=at-arrival,station=imuOnlyTrip.route[imuOnlyTrip.pos];
+      addImuEvent('ESTACION',station,arrival,at,{consentMs:Math.max(0,dwell-12000)});imuMoveCandidate=null;
+      if(station===imuOnlyTrip.finalStation){finishImuTrip(true);return;}
+      imuOnlyTrip.segmentStartAt=at;imuSetEvent('MOVING','TRAYECTO',at);
+    }}else imuMoveCandidate=null;return;
+  }
+}
+async function armImuTrip(){
+  const ok=await enableIMU();if(!ok){imuCalText.textContent='No se pudo acceder al IMU del teléfono.';return;}
+  const full=routeForImu(),si=full.indexOf(imuStart.value),ei=full.indexOf(imuEnd.value);if(si<0||ei<=si){imuCalText.textContent='Revisa inicio y destino.';return;}
+  const route=full.slice(si,ei+1),now=Date.now();imuOnlyTrip={id:'IMU'+now,armedAt:now,scheduledAt:imuScheduledTimestamp(),actualStartAt:null,endAt:null,route,pos:0,startStation:route[0],finalStation:route[route.length-1],state:'WAITING',eventLabel:'ESPERANDO SALIDA',eventStartAt:imuScheduledTimestamp(),segmentStartAt:null,events:[]};
+  imuOnlyLastCompleted=null;imuMoveCandidate=null;imuStopCandidate=null;imuClassifiedStation=false;imuSetupEl.style.display='none';imuLiveEl.classList.add('show');imuStateOnly.textContent='ESPERANDO SALIDA';imuRouteOnly.textContent=`${route[0]} → ${route[1]}`;renderImuEvents();imuBeginCalibration();
+  clearInterval(imuOnlyLoop);imuOnlyLoop=setInterval(imuOnlyTick,100);try{if('wakeLock'in navigator)wakeLock=await navigator.wakeLock.request('screen');}catch(e){}
+}
+function recalibrateImu(){if(!imuOnlyTrip)return;imuBeginCalibration();}
+function finishImuTrip(auto=false){
+  if(!imuOnlyTrip)return;const now=Date.now();
+  if(imuOnlyTrip.state==='STATION'){
+    const dwell=now-imuOnlyTrip.eventStartAt;addImuEvent('ESTACION',imuOnlyTrip.route[imuOnlyTrip.pos],imuOnlyTrip.eventStartAt,now,{consentMs:Math.max(0,dwell-12000)});
+  }else if(imuOnlyTrip.state==='MOVING'&&imuOnlyTrip.segmentStartAt){
+    addImuEvent('TRAMO',imuCurrentRouteText(),imuOnlyTrip.segmentStartAt,now);
+  }
+  imuOnlyTrip.endAt=now;imuOnlyTrip.state='FINISHED';imuOnlyLastCompleted=JSON.parse(JSON.stringify(imuOnlyTrip));clearInterval(imuOnlyLoop);imuOnlyLoop=null;imuStateOnly.textContent='RECORRIDO FINALIZADO';imuTimerOnly.textContent=fmtTenths(0);imuFinishBtn.textContent='NUEVO RECORRIDO';imuCalText.textContent=auto?'Destino final detectado.':'Registro finalizado.';
+}
+function resetImuTrip(){
+  clearInterval(imuOnlyLoop);imuOnlyLoop=null;imuOnlyTrip=null;imuBaseline=null;imuLiveEl.classList.remove('show');imuSetupEl.style.display='block';imuFinishBtn.textContent='FINALIZAR';fillImuSelectors();
+}
+
 function ensureAudio(){
   if(!audioCtx){
     audioCtx=new (window.AudioContext||window.webkitAudioContext)();
@@ -977,6 +1213,14 @@ function testSounds(){
   setTimeout(()=>setStatus(original,lockStreak>=3?'ok':''),4100);
 }
 
+visionModeBtn.addEventListener('click',()=>chooseMode('vision'));
+imuModeBtn.addEventListener('click',()=>chooseMode('imu'));
+imuBackBtn.addEventListener('click',()=>{if(!imuOnlyTrip)resetMode();});
+imuDirection.addEventListener('change',fillImuSelectors);
+imuStart.addEventListener('change',updateImuEnd);
+imuArmBtn.addEventListener('click',armImuTrip);
+imuRecalBtn.addEventListener('click',recalibrateImu);
+imuFinishBtn.addEventListener('click',()=>{if(imuOnlyTrip?.state==='FINISHED')resetImuTrip();else finishImuTrip(false);});
 cameraBtn.addEventListener('click',openCamera);
 lensBtn.addEventListener('click',switchLens);
 testBtn.addEventListener('click',testSounds);
@@ -988,7 +1232,7 @@ startStationSelect.addEventListener('change',()=>updateEndSelector());
 exportBtn.addEventListener('click',exportTripCsv);
 closeSummaryBtn.addEventListener('click',()=>summaryModal.classList.remove('show'));
 document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='visible'&&running){try{ensureAudio();}catch(e){}}});
-fillTripSelectors();updateMiniReadout();
+fillTripSelectors();fillImuSelectors();setDefaultSchedule();updateMiniReadout();
 </script>
 </body>
 </html>
