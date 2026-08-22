@@ -4,7 +4,7 @@
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no" />
 <meta name="theme-color" content="#050708" />
-<title>Velocidad Sonora V6.1</title>
+<title>Velocidad Sonora V6.2</title>
 <style>
 :root{color-scheme:dark;font-family:system-ui,-apple-system,Segoe UI,Roboto,sans-serif}
 *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
@@ -73,6 +73,7 @@ body.mode-imu #imuMode{display:block}
 .imuShell{width:min(520px,100%);margin:0 auto}.imuTop{display:flex;justify-content:space-between;align-items:center;gap:10px;margin-bottom:18px}.imuBrand{font-size:13px;font-weight:950;letter-spacing:.09em}.ghostBtn{background:#111719;padding:9px 11px;font-size:11px}
 .imuSetup{background:#0e1315;border-radius:18px;padding:14px;margin-bottom:12px}.imuSetupGrid{display:grid;grid-template-columns:1fr 1fr;gap:9px}.imuField{display:flex;flex-direction:column;gap:5px}.imuField.wide{grid-column:1/-1}.imuField label{font-size:10px;font-weight:900;letter-spacing:.09em;opacity:.62}.imuField select,.imuField input{width:100%;border:0;border-radius:12px;padding:13px;background:#171d20;color:#fff;font-size:15px;font-weight:850;outline:none}.imuField input{color-scheme:dark}
 #imuArmBtn{width:100%;margin-top:11px;padding:15px}.imuLive{display:none}.imuLive.show{display:block}.imuState{font-size:25px;font-weight:950;letter-spacing:.045em;color:#9ff;line-height:1.08}.imuRoute{font-size:21px;font-weight:950;margin-top:7px;line-height:1.15}.imuTimer{font-variant-numeric:tabular-nums;font-size:68px;font-weight:950;letter-spacing:-.055em;line-height:1;margin:22px 0 5px}.imuTimerLabel{font-size:12px;font-weight:900;opacity:.62;letter-spacing:.075em}.imuSecondary{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:16px}.imuStat{background:#0e1315;border-radius:14px;padding:12px}.imuStatLabel{font-size:10px;font-weight:900;opacity:.58;letter-spacing:.075em}.imuStatValue{font-size:21px;font-weight:950;margin-top:4px;font-variant-numeric:tabular-nums}.imuProgress{margin-top:12px;background:#0e1315;border-radius:16px;padding:12px}.imuProgressTitle{font-size:11px;font-weight:900;opacity:.6;letter-spacing:.08em;margin-bottom:8px}.imuStops{display:flex;flex-direction:column;gap:3px;max-height:240px;overflow:auto}.imuEventRow{display:flex;justify-content:space-between;gap:12px;font-size:14px;padding:10px 2px;border-top:1px solid rgba(255,255,255,.07)}.imuEventRow:first-child{border-top:0}.imuEventRow strong{font-size:15px;line-height:1.2}.imuEventMeta{font-size:12px;opacity:.62;margin-top:3px;line-height:1.25}.imuEventTime{font-size:15px;font-weight:900;white-space:nowrap}.imuActions{display:flex;gap:8px;margin-top:12px;flex-wrap:wrap}.imuActions button{flex:1;min-width:130px}.imuHint{font-size:11px;line-height:1.4;opacity:.55;margin-top:10px;text-align:center}.imuCal{font-size:12px;font-weight:850;color:#ffcf75;margin-top:8px;min-height:16px}.imuSignal{font-size:10px;opacity:.48;margin-top:5px;font-variant-numeric:tabular-nums}
+.imuSessionCard{background:#0e1315;border-radius:18px;padding:14px;margin-bottom:12px}.imuSessionGrid{display:grid;grid-template-columns:1fr 120px;gap:9px}.imuSessionGrid .wide{grid-column:1/-1}.imuSessionStatus{display:none;background:#0e1315;border-radius:14px;padding:10px 12px;margin-bottom:12px;font-size:13px;font-weight:900}.imuSessionStatus.show{display:flex;justify-content:space-between;gap:10px;align-items:center}.imuSessionReport{display:none;background:#0e1315;border-radius:18px;padding:14px;margin-top:12px}.imuSessionReport.show{display:block}.reportTitle{font-size:22px;font-weight:950;margin-bottom:4px}.reportSub{font-size:12px;opacity:.62;margin-bottom:12px}.reportGrid{display:grid;grid-template-columns:1fr 1fr;gap:8px}.reportBox{background:#171d20;border-radius:13px;padding:11px}.reportBoxLabel{font-size:9px;font-weight:900;letter-spacing:.08em;opacity:.58}.reportBoxValue{font-size:21px;font-weight:950;margin-top:4px}.reportTable{width:100%;border-collapse:collapse;margin-top:12px;font-size:12px}.reportTable th,.reportTable td{text-align:left;padding:8px 5px;border-top:1px solid rgba(255,255,255,.08)}.reportTable th{font-size:9px;letter-spacing:.07em;opacity:.6}.sendState{font-size:12px;font-weight:850;min-height:18px;margin-top:10px}.sendState.ok{color:#70e89a}.sendState.bad{color:#ff878d}
 @media (max-width:520px){.modeButtons{grid-template-columns:1fr}.imuTimer{font-size:64px}.imuSetupGrid{grid-template-columns:1fr}.imuField.wide{grid-column:auto}.imuState{font-size:23px}.imuRoute{font-size:20px}.imuEventRow strong{font-size:15px}}
 #scan,#read{display:none}
 </style>
@@ -92,15 +93,27 @@ body.mode-imu #imuMode{display:block}
   <section id="imuMode">
     <div class="imuShell">
       <div class="imuTop"><div class="imuBrand">REGISTRO IMU</div><button id="imuBackBtn" class="ghostBtn">CAMBIAR MODO</button></div>
-      <div id="imuSetup" class="imuSetup">
+      <div id="imuSessionSetup" class="imuSessionCard">
+        <div style="font-size:20px;font-weight:950;margin-bottom:10px">SESIÓN DE SERVICIOS</div>
+        <div class="imuSessionGrid">
+          <div class="imuField wide"><label>MAIL PARA EL INFORME</label><input id="imuEmail" type="email" inputmode="email" autocomplete="email" placeholder="correo@ejemplo.cl"></div>
+          <div class="imuField"><label>N.º DE SERVICIOS</label><input id="imuServiceCount" type="number" inputmode="numeric" min="1" max="20" value="1"></div>
+          <div class="imuField"><label>ENVÍO</label><div style="padding:13px 2px;font-size:12px;font-weight:850;opacity:.65">Todos juntos al final</div></div>
+        </div>
+        <button id="imuSessionStartBtn" class="primary" style="width:100%;margin-top:11px;padding:15px">INICIAR SESIÓN</button>
+        <div id="imuSessionMsg" class="imuCal">Los servicios se guardan localmente hasta completar la sesión.</div>
+      </div>
+      <div id="imuSessionStatus" class="imuSessionStatus"><span id="imuSessionProgress">SERVICIO 1 DE 1</span><span id="imuSessionEmailLabel"></span></div>
+      <div id="imuSetup" class="imuSetup" style="display:none">
         <div class="imuSetupGrid">
+          <div class="imuField wide"><label>NÚMERO DE SERVICIO</label><input id="imuServiceNumber" type="text" inputmode="numeric" maxlength="3" pattern="[0-9]{3}" placeholder="Ej. 605"></div>
           <div class="imuField wide"><label>SENTIDO</label><select id="imuDirection"><option value="limache">Puerto → Limache</option><option value="puerto">Limache → Puerto</option></select></div>
           <div class="imuField"><label>SALIDA PROGRAMADA</label><input id="imuSchedule" type="time" step="60"></div>
           <div class="imuField"><label>INICIO</label><select id="imuStart"></select></div>
           <div class="imuField"><label>DESTINO</label><select id="imuEnd"></select></div>
         </div>
         <div id="imuCalText" class="imuCal">El teléfono debe quedar fijo durante el registro.</div>
-        <button id="imuArmBtn" class="primary">ARMAR RECORRIDO</button>
+        <button id="imuArmBtn" class="primary">ARMAR SERVICIO</button>
       </div>
       <div id="imuLive" class="imuLive">
         <div id="imuState" class="imuState">ESPERANDO SALIDA</div>
@@ -113,9 +126,16 @@ body.mode-imu #imuMode{display:block}
         </div>
         <div id="imuSignal" class="imuSignal">IMU: esperando calibración</div>
         <div class="imuProgress"><div class="imuProgressTitle">EVENTOS</div><div id="imuEvents" class="imuStops"><div style="font-size:11px;opacity:.45">Sin eventos todavía.</div></div></div>
-        <div class="imuActions"><button id="imuRecalBtn">RECALIBRAR</button><button id="imuDownloadBtn" class="primary" style="display:none">DESCARGAR REGISTRO</button><button id="imuFinishBtn" class="danger">FINALIZAR</button></div>
+        <div class="imuActions"><button id="imuRecalBtn">RECALIBRAR</button><button id="imuNextServiceBtn" class="primary" style="display:none">SIGUIENTE SERVICIO</button><button id="imuFinishBtn" class="danger">FINALIZAR</button></div>
         <div class="imuHint">Una detención inferior a 12 s se registra como breve. Desde 12 s se considera estación; el consentimiento se muestra dentro de esa misma detención como detenido real − 12 s.</div>
       </div>
+      <div id="imuSessionReport" class="imuSessionReport">
+        <div class="reportTitle">INFORME DE SESIÓN</div><div id="imuReportSub" class="reportSub"></div>
+        <div id="imuReportContent"></div>
+        <div id="imuSendState" class="sendState"></div>
+        <div class="imuActions"><button id="imuSendReportBtn" class="primary">ENVIAR INFORME</button><button id="imuNewSessionBtn">NUEVA SESIÓN</button></div>
+      </div>
+      <iframe id="reportFrame" name="reportFrame" style="display:none"></iframe>
     </div>
   </section>
   <video id="video" playsinline muted></video>
@@ -209,7 +229,22 @@ const imuSignalOnly=document.getElementById('imuSignal');
 const imuEventsEl=document.getElementById('imuEvents');
 const imuRecalBtn=document.getElementById('imuRecalBtn');
 const imuFinishBtn=document.getElementById('imuFinishBtn');
-const imuDownloadBtn=document.getElementById('imuDownloadBtn');
+const imuSessionSetup=document.getElementById('imuSessionSetup');
+const imuSessionStatus=document.getElementById('imuSessionStatus');
+const imuSessionProgress=document.getElementById('imuSessionProgress');
+const imuSessionEmailLabel=document.getElementById('imuSessionEmailLabel');
+const imuEmail=document.getElementById('imuEmail');
+const imuServiceCount=document.getElementById('imuServiceCount');
+const imuSessionStartBtn=document.getElementById('imuSessionStartBtn');
+const imuSessionMsg=document.getElementById('imuSessionMsg');
+const imuServiceNumber=document.getElementById('imuServiceNumber');
+const imuNextServiceBtn=document.getElementById('imuNextServiceBtn');
+const imuSessionReport=document.getElementById('imuSessionReport');
+const imuReportSub=document.getElementById('imuReportSub');
+const imuReportContent=document.getElementById('imuReportContent');
+const imuSendState=document.getElementById('imuSendState');
+const imuSendReportBtn=document.getElementById('imuSendReportBtn');
+const imuNewSessionBtn=document.getElementById('imuNewSessionBtn');
 
 const SCAN_W=424;
 const READ_W=848;
@@ -234,6 +269,8 @@ const IMU_CAL_MS=3500;
 const IMU_DEPART_CONFIRM_MS=700;
 const IMU_STOP_CONFIRM_MS=2200;
 const IMU_STATION_MS=12000;
+const IMU_SESSION_KEY='velocidadATP.imuServiceSession.v1';
+const REPORT_ENDPOINT='https://script.google.com/macros/s/AKfycbyYrqQp50tsSYS8oxfZfm7Wx7bQoeclIk2X3a3I6UaL9z5KgyGnzGQApIZ9I9XOFdntzQ/exec';
 
 let stream=null,loopTimer=null,running=false,wakeLock=null,audioCtx=null;
 let smoothRealBox=null,smoothTargetBox=null,lockStreak=0,lastPanelSeen=0;
@@ -251,6 +288,7 @@ let trip=null,tripUiTimer=null,moveCandidateAt=null,stopCandidateAt=null,overspe
 let currentSegmentAtpStoppedMs=0,lastCompletedTrip=null;
 let appMode=null,antiGlareApplied=false;
 let imuOnlyTrip=null,imuOnlyLoop=null,imuBaseline=null,imuCalStart=null,imuCalValues=[],imuMoveCandidate=null,imuStopCandidate=null,imuLastEventAt=null,imuLastMotionScore=0,imuClassifiedStation=false,imuOnlyLastCompleted=null;
+let imuSession=null;
 
 // Orden de segmentos: A,B,C,D,E,F,G.
 const digitPatterns={
@@ -1075,7 +1113,7 @@ function imuOnlyTick(){
       return;
     }
     if(moving){if(!imuMoveCandidate)imuMoveCandidate=now;if(now-imuMoveCandidate>=IMU_DEPART_CONFIRM_MS){
-      const at=imuMoveCandidate,st=imuOnlyTrip.eventStartAt;addImuEvent('BREVE','Detención breve',st,at);imuMoveCandidate=null;imuOnlyTrip.segmentStartAt=at;imuSetEvent('MOVING','TRAYECTO',at);
+      const at=imuMoveCandidate,st=imuOnlyTrip.eventStartAt;addImuEvent('BREVE','Detención breve',st,at);imuMoveCandidate=null;imuSetEvent('MOVING','TRAYECTO',at);
     }}else imuMoveCandidate=null;return;
   }
   if(imuOnlyTrip.state==='STATION'){
@@ -1088,44 +1126,106 @@ function imuOnlyTick(){
   }
 }
 async function armImuTrip(){
+  if(!imuSession){imuCalText.textContent='Primero inicia la sesión de servicios.';return;}
+  const service=(imuServiceNumber.value||'').trim();
+  if(!/^\d{3}$/.test(service)){imuCalText.textContent='Ingresa un número de servicio de 3 dígitos, por ejemplo 605.';return;}
+  if(imuSession.services.some(t=>t.serviceNumber===service)){imuCalText.textContent='Ese número de servicio ya fue registrado en esta sesión.';return;}
   const ok=await enableIMU();if(!ok){imuCalText.textContent='No se pudo acceder al IMU del teléfono.';return;}
   const full=routeForImu(),si=full.indexOf(imuStart.value),ei=full.indexOf(imuEnd.value);if(si<0||ei<=si){imuCalText.textContent='Revisa inicio y destino.';return;}
-  const route=full.slice(si,ei+1),now=Date.now();imuOnlyTrip={id:'IMU'+now,armedAt:now,scheduledAt:imuScheduledTimestamp(),actualStartAt:null,endAt:null,route,pos:0,startStation:route[0],finalStation:route[route.length-1],state:'WAITING',eventLabel:'ESPERANDO SALIDA',eventStartAt:imuScheduledTimestamp(),segmentStartAt:null,events:[]};
-  imuOnlyLastCompleted=null;imuMoveCandidate=null;imuStopCandidate=null;imuClassifiedStation=false;imuSetupEl.style.display='none';imuLiveEl.classList.add('show');imuDownloadBtn.style.display='none';imuStateOnly.textContent='ESPERANDO SALIDA';imuRouteOnly.textContent=`${route[0]} → ${route[1]}`;imuTimerLabelOnly.textContent='ESPERANDO SALIDA';renderImuEvents();imuBeginCalibration();
+  const route=full.slice(si,ei+1),now=Date.now();imuOnlyTrip={id:'IMU'+now,serviceNumber:service,direction:imuDirection.value,armedAt:now,scheduledAt:imuScheduledTimestamp(),actualStartAt:null,endAt:null,route,pos:0,startStation:route[0],finalStation:route[route.length-1],state:'WAITING',eventLabel:'ESPERANDO SALIDA',eventStartAt:imuScheduledTimestamp(),segmentStartAt:null,events:[]};
+  imuOnlyLastCompleted=null;imuMoveCandidate=null;imuStopCandidate=null;imuClassifiedStation=false;imuSetupEl.style.display='none';imuLiveEl.classList.add('show');imuNextServiceBtn.style.display='none';imuStateOnly.textContent=`SERVICIO ${service} · ESPERANDO SALIDA`;imuRouteOnly.textContent=`${route[0]} → ${route[1]}`;imuTimerLabelOnly.textContent='ESPERANDO SALIDA';renderImuEvents();imuBeginCalibration();
   clearInterval(imuOnlyLoop);imuOnlyLoop=setInterval(imuOnlyTick,100);try{if('wakeLock'in navigator)wakeLock=await navigator.wakeLock.request('screen');}catch(e){}
 }
 function recalibrateImu(){if(!imuOnlyTrip)return;imuBeginCalibration();}
+function saveImuSession(){
+  try{if(imuSession)localStorage.setItem(IMU_SESSION_KEY,JSON.stringify(imuSession));else localStorage.removeItem(IMU_SESSION_KEY);}catch(e){}
+}
+function startImuSession(){
+  const email=(imuEmail.value||'').trim(),count=parseInt(imuServiceCount.value,10);
+  if(!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)){imuSessionMsg.textContent='Ingresa un correo válido para recibir el informe.';return;}
+  if(!Number.isInteger(count)||count<1||count>20){imuSessionMsg.textContent='La sesión debe tener entre 1 y 20 servicios.';return;}
+  imuSession={id:'SES'+Date.now(),createdAt:Date.now(),email,plannedCount:count,services:[],sentAt:null};saveImuSession();
+  imuSessionSetup.style.display='none';imuSessionStatus.classList.add('show');imuSetupEl.style.display='block';imuSessionReport.classList.remove('show');imuSessionMsg.textContent='Sesión iniciada.';renderImuSessionStatus();setDefaultSchedule();fillImuSelectors();
+}
+function renderImuSessionStatus(){
+  if(!imuSession){imuSessionStatus.classList.remove('show');return;}
+  const next=Math.min(imuSession.services.length+1,imuSession.plannedCount);
+  imuSessionProgress.textContent=`SERVICIO ${next} DE ${imuSession.plannedCount}`;
+  imuSessionEmailLabel.textContent=imuSession.email;
+}
+function mean(a){return a.length?a.reduce((x,y)=>x+y,0)/a.length:0;}
+function median(a){if(!a.length)return 0;const b=[...a].sort((x,y)=>x-y),m=Math.floor(b.length/2);return b.length%2?b[m]:(b[m-1]+b[m])/2;}
+function sd(a){if(a.length<2)return 0;const m=mean(a);return Math.sqrt(a.reduce((q,x)=>q+(x-m)*(x-m),0)/(a.length-1));}
+function serviceMetrics(t){
+  const totalMs=t.actualStartAt&&t.endAt?Math.max(0,t.endAt-t.actualStartAt):0;
+  const tramos=(t.events||[]).filter(e=>e.type==='TRAMO'),stations=(t.events||[]).filter(e=>e.type==='ESTACION'),brief=(t.events||[]).filter(e=>e.type==='BREVE');
+  return {totalMs,movingMs:tramos.reduce((a,e)=>a+e.durationMs,0),dwellMs:stations.reduce((a,e)=>a+e.durationMs,0),consentMs:stations.reduce((a,e)=>a+(e.consentMs||0),0),briefMs:brief.reduce((a,e)=>a+e.durationMs,0),briefCount:brief.length,delayMs:t.actualStartAt&&t.scheduledAt?t.actualStartAt-t.scheduledAt:0};
+}
+function escHtml(v){return String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));}
+function signedDuration(ms){return (ms>=0?'+':'−')+fmtDuration(Math.abs(ms));}
+function aggregateEvents(type){
+  const map=new Map();
+  for(const t of imuSession?.services||[])for(const e of t.events||[])if(e.type===type){const k=e.label;if(!map.has(k))map.set(k,[]);map.get(k).push(e.durationMs);}
+  return [...map.entries()].map(([label,vals])=>({label,n:vals.length,avg:mean(vals),min:Math.min(...vals),max:Math.max(...vals)}));
+}
+function buildSessionReport(){
+  if(!imuSession||!imuSession.services.length)return null;
+  const rows=imuSession.services.map(t=>({t,m:serviceMetrics(t)})),totals=rows.map(x=>x.m.totalMs),delays=rows.map(x=>x.m.delayMs),dwell=rows.map(x=>x.m.dwellMs),consent=rows.map(x=>x.m.consentMs);
+  const fastest=rows.reduce((a,b)=>a.m.totalMs<=b.m.totalMs?a:b),slowest=rows.reduce((a,b)=>a.m.totalMs>=b.m.totalMs?a:b);
+  const stats={count:rows.length,avgTotal:mean(totals),medianTotal:median(totals),sdTotal:sd(totals),minTotal:Math.min(...totals),maxTotal:Math.max(...totals),avgDelay:mean(delays),totalDwell:dwell.reduce((a,b)=>a+b,0),totalConsent:consent.reduce((a,b)=>a+b,0),fastest:fastest.t.serviceNumber,slowest:slowest.t.serviceNumber};
+  let body=`<div class="reportGrid"><div class="reportBox"><div class="reportBoxLabel">SERVICIOS</div><div class="reportBoxValue">${stats.count}</div></div><div class="reportBox"><div class="reportBoxLabel">PROMEDIO VIAJE</div><div class="reportBoxValue">${fmtDuration(stats.avgTotal)}</div></div><div class="reportBox"><div class="reportBoxLabel">MEDIANA</div><div class="reportBoxValue">${fmtDuration(stats.medianTotal)}</div></div><div class="reportBox"><div class="reportBoxLabel">DESV. ESTÁNDAR</div><div class="reportBoxValue">${fmtDuration(stats.sdTotal)}</div></div></div>`;
+  body+=`<table class="reportTable"><thead><tr><th>SERVICIO</th><th>RECORRIDO</th><th>TOTAL</th><th>SALIDA</th><th>DET. EST.</th></tr></thead><tbody>`+rows.map(({t,m})=>`<tr><td><strong>${escHtml(t.serviceNumber)}</strong></td><td>${escHtml(t.startStation)} → ${escHtml(t.finalStation)}</td><td>${fmtDuration(m.totalMs)}</td><td>${signedDuration(m.delayMs)}</td><td>${fmtDuration(m.dwellMs)}</td></tr>`).join('')+`</tbody></table>`;
+  return {rows,stats,body};
+}
+function renderSessionReport(){
+  const r=buildSessionReport();if(!r)return;
+  imuLiveEl.classList.remove('show');imuSetupEl.style.display='none';imuSessionReport.classList.add('show');
+  imuReportSub.textContent=`${r.stats.count} servicios · informe para ${imuSession.email}`;imuReportContent.innerHTML=r.body;imuSendState.textContent='';imuSendState.className='sendState';
+}
+function buildEmailPayload(){
+  const r=buildSessionReport();if(!r)return null;
+  const sessionDate=new Date(imuSession.createdAt).toLocaleString('es-CL');
+  const serviceRows=r.rows.map(({t,m})=>`<tr><td style="padding:7px;border-bottom:1px solid #ddd"><b>${escHtml(t.serviceNumber)}</b></td><td style="padding:7px;border-bottom:1px solid #ddd">${escHtml(t.startStation)} → ${escHtml(t.finalStation)}</td><td style="padding:7px;border-bottom:1px solid #ddd">${fmtDuration(m.totalMs)}</td><td style="padding:7px;border-bottom:1px solid #ddd">${signedDuration(m.delayMs)}</td><td style="padding:7px;border-bottom:1px solid #ddd">${fmtDuration(m.dwellMs)}</td><td style="padding:7px;border-bottom:1px solid #ddd">${fmtDuration(m.consentMs)}</td></tr>`).join('');
+  const detail=(imuSession.services||[]).map(t=>{const m=serviceMetrics(t);const ev=(t.events||[]).map(e=>{let extra='';if(e.type==='ESTACION')extra=` · consentimiento ${fmtDuration(e.consentMs||0)}`;if(e.type==='SALIDA'&&Number.isFinite(e.delayMs))extra=` · ${e.delayMs>=0?'atraso':'adelanto'} ${fmtDuration(Math.abs(e.delayMs))}`;return `<tr><td style="padding:5px;border-bottom:1px solid #eee">${escHtml(e.type)}</td><td style="padding:5px;border-bottom:1px solid #eee">${escHtml(e.label)}</td><td style="padding:5px;border-bottom:1px solid #eee">${fmtDuration(e.durationMs)}${extra}</td></tr>`;}).join('');return `<h3>Servicio ${escHtml(t.serviceNumber)} · ${escHtml(t.startStation)} → ${escHtml(t.finalStation)}</h3><p>Total ${fmtDuration(m.totalMs)} · salida ${signedDuration(m.delayMs)} · detenido en estaciones ${fmtDuration(m.dwellMs)} · consentimiento ${fmtDuration(m.consentMs)}</p><table style="border-collapse:collapse;width:100%"><tr><th align="left">Tipo</th><th align="left">Evento</th><th align="left">Duración</th></tr>${ev}</table>`;}).join('');
+  const segAgg=aggregateEvents('TRAMO'),stAgg=aggregateEvents('ESTACION');
+  const aggTable=(title,arr)=>arr.length?`<h3>${title}</h3><table style="border-collapse:collapse;width:100%"><tr><th align="left">Evento</th><th>n</th><th>Prom.</th><th>Mín.</th><th>Máx.</th></tr>${arr.map(x=>`<tr><td style="padding:5px;border-bottom:1px solid #eee">${escHtml(x.label)}</td><td align="center">${x.n}</td><td align="center">${fmtDuration(x.avg)}</td><td align="center">${fmtDuration(x.min)}</td><td align="center">${fmtDuration(x.max)}</td></tr>`).join('')}</table>`:'';
+  const html=`<div style="font-family:Arial,sans-serif;color:#111;max-width:900px;margin:auto"><h1>Informe de sesión · Registro IMU</h1><p>${escHtml(sessionDate)} · ${r.stats.count} servicios</p><h2>Resumen estadístico</h2><ul><li>Tiempo promedio de viaje: <b>${fmtDuration(r.stats.avgTotal)}</b></li><li>Mediana: <b>${fmtDuration(r.stats.medianTotal)}</b></li><li>Desviación estándar: <b>${fmtDuration(r.stats.sdTotal)}</b></li><li>Mínimo: <b>${fmtDuration(r.stats.minTotal)}</b> (servicio ${escHtml(r.stats.fastest)})</li><li>Máximo: <b>${fmtDuration(r.stats.maxTotal)}</b> (servicio ${escHtml(r.stats.slowest)})</li><li>Desfase promedio de salida: <b>${signedDuration(r.stats.avgDelay)}</b></li><li>Tiempo total detenido en estaciones: <b>${fmtDuration(r.stats.totalDwell)}</b></li><li>Consentimiento estimado acumulado: <b>${fmtDuration(r.stats.totalConsent)}</b></li></ul><h2>Servicios</h2><table style="border-collapse:collapse;width:100%"><tr><th align="left">Servicio</th><th align="left">Recorrido</th><th>Total</th><th>Salida</th><th>Det. estación</th><th>Consent.</th></tr>${serviceRows}</table>${aggTable('Tiempos por tramo',segAgg)}${aggTable('Detenciones por estación',stAgg)}<h2>Detalle completo</h2>${detail}<p style="color:#666;font-size:12px">Consentimiento estimado = tiempo detenido real − 12 s.</p></div>`;
+  const text=`Informe de sesión IMU\nServicios: ${r.stats.count}\nPromedio viaje: ${fmtDuration(r.stats.avgTotal)}\nMediana: ${fmtDuration(r.stats.medianTotal)}\nDesviación estándar: ${fmtDuration(r.stats.sdTotal)}\nMínimo: ${fmtDuration(r.stats.minTotal)} (servicio ${r.stats.fastest})\nMáximo: ${fmtDuration(r.stats.maxTotal)} (servicio ${r.stats.slowest})\nDesfase promedio salida: ${signedDuration(r.stats.avgDelay)}\nDetenido total estaciones: ${fmtDuration(r.stats.totalDwell)}\nConsentimiento acumulado: ${fmtDuration(r.stats.totalConsent)}`;
+  return {email:imuSession.email,subject:`Informe sesión IMU · ${r.stats.count} servicios · ${new Date(imuSession.createdAt).toLocaleDateString('es-CL')}`,html,text,sessionId:imuSession.id};
+}
+function sendSessionReport(){
+  if(!imuSession||imuSession.services.length<imuSession.plannedCount)return;
+  if(!REPORT_ENDPOINT||REPORT_ENDPOINT.includes('PEGAR_AQUI')){imuSendState.textContent='Falta configurar la URL del Apps Script de envío.';imuSendState.className='sendState bad';return;}
+  const payload=buildEmailPayload();if(!payload)return;
+  imuSendState.textContent='Enviando informe…';imuSendState.className='sendState';
+  const form=document.createElement('form');form.method='POST';form.action=REPORT_ENDPOINT;form.target='reportFrame';form.style.display='none';
+  const input=document.createElement('input');input.type='hidden';input.name='payload';input.value=JSON.stringify(payload);form.appendChild(input);document.body.appendChild(form);form.submit();form.remove();
+  imuSession.sentAt=Date.now();saveImuSession();setTimeout(()=>{imuSendState.textContent=`Solicitud de envío realizada a ${imuSession.email}.`;imuSendState.className='sendState ok';},800);
+}
 function finishImuTrip(auto=false){
   if(!imuOnlyTrip)return;const now=Date.now();
   if(imuOnlyTrip.state==='STATION'){
     const dwell=now-imuOnlyTrip.eventStartAt;addImuEvent('ESTACION',imuOnlyTrip.route[imuOnlyTrip.pos],imuOnlyTrip.eventStartAt,now,{consentMs:Math.max(0,dwell-12000)});
-  }else if(imuOnlyTrip.state==='MOVING'&&imuOnlyTrip.segmentStartAt){
-    addImuEvent('TRAMO',imuCurrentRouteText(),imuOnlyTrip.segmentStartAt,now);
-  }
-  imuOnlyTrip.endAt=now;imuOnlyTrip.state='FINISHED';imuOnlyLastCompleted=JSON.parse(JSON.stringify(imuOnlyTrip));clearInterval(imuOnlyLoop);imuOnlyLoop=null;imuStateOnly.textContent='RECORRIDO FINALIZADO';imuTimerOnly.textContent=fmtTenths(0);imuTimerLabelOnly.textContent='REGISTRO COMPLETO';imuDownloadBtn.style.display='inline-block';imuFinishBtn.textContent='NUEVO RECORRIDO';imuCalText.textContent=auto?'Destino final detectado. Descarga el registro.':'Registro finalizado. Descarga el registro.';
+  }else if(imuOnlyTrip.state==='MOVING'&&imuOnlyTrip.segmentStartAt){addImuEvent('TRAMO',imuCurrentRouteText(),imuOnlyTrip.segmentStartAt,now);}
+  imuOnlyTrip.endAt=now;imuOnlyTrip.state='FINISHED';imuOnlyLastCompleted=JSON.parse(JSON.stringify(imuOnlyTrip));clearInterval(imuOnlyLoop);imuOnlyLoop=null;
+  imuSession.services.push(imuOnlyLastCompleted);saveImuSession();renderImuSessionStatus();
+  imuStateOnly.textContent=`SERVICIO ${imuOnlyTrip.serviceNumber} COMPLETADO`;imuTimerOnly.textContent=fmtTenths(0);imuTimerLabelOnly.textContent='REGISTRO GUARDADO EN LA SESIÓN';imuFinishBtn.style.display='none';imuRecalBtn.style.display='none';
+  if(imuSession.services.length>=imuSession.plannedCount){imuNextServiceBtn.style.display='none';imuCalText.textContent='Sesión completa. Preparando informe…';renderSessionReport();setTimeout(sendSessionReport,600);}else{imuNextServiceBtn.style.display='inline-block';imuCalText.textContent=`Servicio ${imuSession.services.length} de ${imuSession.plannedCount} guardado. Continúa con el siguiente.`;}
 }
-function csvCell(v){
-  const x=String(v??'');return /[",\n]/.test(x)?'"'+x.replace(/"/g,'""')+'"':x;
+function nextImuService(){
+  clearInterval(imuOnlyLoop);imuOnlyLoop=null;imuOnlyTrip=null;imuBaseline=null;imuLiveEl.classList.remove('show');imuSetupEl.style.display='block';imuNextServiceBtn.style.display='none';imuFinishBtn.style.display='inline-block';imuFinishBtn.textContent='FINALIZAR';imuRecalBtn.style.display='inline-block';imuServiceNumber.value='';imuSchedule.value='';setDefaultSchedule();renderImuSessionStatus();window.scrollTo({top:0,behavior:'smooth'});
 }
-function isoLocal(t){
-  if(!t)return '';const d=new Date(t),p=n=>String(n).padStart(2,'0');return `${d.getFullYear()}-${p(d.getMonth()+1)}-${p(d.getDate())} ${p(d.getHours())}:${p(d.getMinutes())}:${p(d.getSeconds())}`;
+function resetImuSession(){
+  clearInterval(imuOnlyLoop);imuOnlyLoop=null;imuOnlyTrip=null;imuOnlyLastCompleted=null;imuBaseline=null;imuSession=null;saveImuSession();imuLiveEl.classList.remove('show');imuSessionReport.classList.remove('show');imuSetupEl.style.display='none';imuSessionStatus.classList.remove('show');imuSessionSetup.style.display='block';imuFinishBtn.style.display='inline-block';imuFinishBtn.textContent='FINALIZAR';imuRecalBtn.style.display='inline-block';imuEmail.value='';imuServiceCount.value='1';imuServiceNumber.value='';imuSessionMsg.textContent='Los servicios se guardan localmente hasta completar la sesión.';
 }
-function downloadImuTrip(){
-  const trip=imuOnlyLastCompleted||imuOnlyTrip;if(!trip)return;
-  const direction=imuDirection.value==='limache'?'Puerto → Limache':'Limache → Puerto';
-  const rows=[['Fecha','Sentido','Inicio','Destino','Salida programada','Tipo','Evento','Hora inicio','Hora fin','Duración_s','Consentimiento_s','Desfase_s']];
-  for(const e of trip.events||[]){
-    rows.push([
-      new Date(trip.armedAt).toLocaleDateString('es-CL'),direction,trip.startStation,trip.finalStation,isoLocal(trip.scheduledAt),
-      e.type,e.label,isoLocal(e.startAt),isoLocal(e.endAt),(e.durationMs/1000).toFixed(1),e.consentMs!=null?(e.consentMs/1000).toFixed(1):'',e.delayMs!=null?(e.delayMs/1000).toFixed(1):''
-    ]);
-  }
-  const csv='\ufeff'+rows.map(r=>r.map(csvCell).join(';')).join('\r\n');
-  const blob=new Blob([csv],{type:'text/csv;charset=utf-8'}),url=URL.createObjectURL(blob),a=document.createElement('a');
-  const d=new Date(trip.armedAt),p=n=>String(n).padStart(2,'0');a.href=url;a.download=`registro_IMU_${d.getFullYear()}${p(d.getMonth()+1)}${p(d.getDate())}_${p(d.getHours())}${p(d.getMinutes())}.csv`;document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),1500);
-}
-function resetImuTrip(){
-  clearInterval(imuOnlyLoop);imuOnlyLoop=null;imuOnlyTrip=null;imuBaseline=null;imuLiveEl.classList.remove('show');imuSetupEl.style.display='block';imuDownloadBtn.style.display='none';imuFinishBtn.textContent='FINALIZAR';fillImuSelectors();
+function restoreImuSession(){
+  try{
+    const saved=JSON.parse(localStorage.getItem(IMU_SESSION_KEY)||'null');
+    if(!saved||!saved.email||!Array.isArray(saved.services)||!saved.plannedCount)return;
+    imuSession=saved;imuEmail.value=saved.email;imuServiceCount.value=saved.plannedCount;imuSessionSetup.style.display='none';imuSessionStatus.classList.add('show');renderImuSessionStatus();
+    if(saved.services.length>=saved.plannedCount){imuSetupEl.style.display='none';renderSessionReport();if(saved.sentAt){imuSendState.textContent=`Informe enviado anteriormente a ${saved.email}.`;imuSendState.className='sendState ok';}}
+    else imuSetupEl.style.display='block';
+  }catch(e){}
 }
 
 function ensureAudio(){
@@ -1251,9 +1351,13 @@ imuModeBtn.addEventListener('click',()=>chooseMode('imu'));
 imuBackBtn.addEventListener('click',()=>{if(!imuOnlyTrip)resetMode();});
 imuDirection.addEventListener('change',fillImuSelectors);
 imuStart.addEventListener('change',updateImuEnd);
+imuSessionStartBtn.addEventListener('click',startImuSession);
 imuArmBtn.addEventListener('click',armImuTrip);
 imuRecalBtn.addEventListener('click',recalibrateImu);
-imuFinishBtn.addEventListener('click',()=>{if(imuOnlyTrip?.state==='FINISHED')resetImuTrip();else finishImuTrip(false);});
+imuNextServiceBtn.addEventListener('click',nextImuService);
+imuFinishBtn.addEventListener('click',()=>finishImuTrip(false));
+imuSendReportBtn.addEventListener('click',sendSessionReport);
+imuNewSessionBtn.addEventListener('click',resetImuSession);
 cameraBtn.addEventListener('click',openCamera);
 lensBtn.addEventListener('click',switchLens);
 testBtn.addEventListener('click',testSounds);
@@ -1265,7 +1369,7 @@ startStationSelect.addEventListener('change',()=>updateEndSelector());
 exportBtn.addEventListener('click',exportTripCsv);
 closeSummaryBtn.addEventListener('click',()=>summaryModal.classList.remove('show'));
 document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='visible'&&running){try{ensureAudio();}catch(e){}}});
-fillTripSelectors();fillImuSelectors();setDefaultSchedule();updateMiniReadout();
+fillTripSelectors();fillImuSelectors();setDefaultSchedule();restoreImuSession();updateMiniReadout();
 </script>
 </body>
 </html>
