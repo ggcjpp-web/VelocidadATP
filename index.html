@@ -126,8 +126,8 @@ body.mode-imu #imuMode{display:block}
         </div>
         <div id="imuSignal" class="imuSignal">IMU: esperando calibración</div>
         <div class="imuProgress"><div class="imuProgressTitle">EVENTOS</div><div id="imuEvents" class="imuStops"><div style="font-size:11px;opacity:.45">Sin eventos todavía.</div></div></div>
-        <div class="imuActions"><button id="imuRecalBtn">RECALIBRAR</button><button id="imuNextServiceBtn" class="primary" style="display:none">SIGUIENTE SERVICIO</button><button id="imuFinishBtn" class="danger">FINALIZAR</button></div>
-        <div class="imuHint">Una detención inferior a 12 s se registra como breve. Desde 12 s se considera estación; el consentimiento se muestra dentro de esa misma detención como detenido real − 12 s.</div>
+        <div class="imuActions"><button id="imuRecalBtn">RECALIBRAR IMU</button><button id="imuNextServiceBtn" class="primary" style="display:none">SIGUIENTE SERVICIO</button><button id="imuFinishBtn" class="danger">FINALIZAR</button></div>
+        <div class="imuHint">La app aprende como reposo la vibración normal del tren detenido. Recalibración automática en estaciones confirmadas y manual protegida. Una detención inferior a 12 s se registra como breve; el consentimiento = detenido real − 12 s.</div>
       </div>
       <div id="imuSessionReport" class="imuSessionReport">
         <div class="reportTitle">INFORME DE SESIÓN</div><div id="imuReportSub" class="reportSub"></div>
@@ -265,10 +265,13 @@ const ARRIVAL_CONFIRM_MS=1700;
 const DEPART_CONFIRM_MS=550;
 const ATP_ZERO_TIMEOUT_MS=30000;
 const ATP_AMBIGUOUS_MS=20000;
-const IMU_CAL_MS=3500;
+const IMU_CAL_MS=6000;
+const IMU_AUTO_CAL_MS=4500;
 const IMU_DEPART_CONFIRM_MS=700;
-const IMU_STOP_CONFIRM_MS=2200;
+const IMU_STOP_CONFIRM_MS=2600;
 const IMU_STATION_MS=12000;
+const IMU_MIN_SEGMENT_MS=65000;
+const IMU_EARLY_STOP_MS=40000;
 const IMU_SESSION_KEY='velocidadATP.imuServiceSession.v1';
 const REPORT_ENDPOINT='https://script.google.com/macros/s/AKfycbyYrqQp50tsSYS8oxfZfm7Wx7bQoeclIk2X3a3I6UaL9z5KgyGnzGQApIZ9I9XOFdntzQ/exec';
 
@@ -283,11 +286,11 @@ let intentionalStopMode=false,lastMotionState='';
 let cameraMode='trasera';
 let videoDevices=[],currentVideoDeviceIndex=-1;
 let masterGain=null,masterCompressor=null;
-let imuEnabled=false,imuPermission='--',imuSamples=[],gravityLP={x:0,y:0,z:0},imuHandlerInstalled=false;
+let imuEnabled=false,imuPermission='--',imuSamples=[],gravityLP={x:0,y:0,z:0},gravityReady=false,imuHandlerInstalled=false;
 let trip=null,tripUiTimer=null,moveCandidateAt=null,stopCandidateAt=null,overspeedCandidate=null,activeAtp=null,atpResumeCandidateAt=null;
 let currentSegmentAtpStoppedMs=0,lastCompletedTrip=null;
 let appMode=null,antiGlareApplied=false;
-let imuOnlyTrip=null,imuOnlyLoop=null,imuBaseline=null,imuCalStart=null,imuCalValues=[],imuMoveCandidate=null,imuStopCandidate=null,imuLastEventAt=null,imuLastMotionScore=0,imuClassifiedStation=false,imuOnlyLastCompleted=null;
+let imuOnlyTrip=null,imuOnlyLoop=null,imuBaseline=null,imuCalStart=null,imuCalValues=[],imuCalMode=null,imuCalPrevious=null,imuMoveCandidate=null,imuStopCandidate=null,imuLastEventAt=null,imuLastMotionScore=0,imuClassifiedStation=false,imuOnlyLastCompleted=null,imuScoreHistory=[],imuAutoCalStationKey=null,imuSensorLastT=null;
 let imuSession=null;
 
 // Orden de segmentos: A,B,C,D,E,F,G.
@@ -350,21 +353,39 @@ function fmtDuration(ms){
   return h?`${h}:${String(m).padStart(2,'0')}:${String(s).padStart(2,'0')}`:`${String(m).padStart(2,'0')}:${String(s).padStart(2,'0')}`;
 }
 function fmtClock(ts){return ts?new Date(ts).toLocaleTimeString('es-CL',{hour:'2-digit',minute:'2-digit',second:'2-digit'}):'--';}
-function imuLevel(){
-  const now=performance.now(),cut=now-1000;while(imuSamples.length&&imuSamples[0].t<cut)imuSamples.shift();
-  if(!imuSamples.length)return 0;return Math.sqrt(imuSamples.reduce((a,p)=>a+p.m*p.m,0)/imuSamples.length);
+function imuLevel(windowMs=1000){
+  const now=performance.now(),cut=now-windowMs;
+  const vals=imuSamples.filter(p=>p.t>=cut);
+  if(!vals.length)return 0;
+  return Math.sqrt(vals.reduce((a,p)=>a+p.m*p.m,0)/vals.length);
+}
+function imuRecentScoreMax(ms,now=Date.now()){
+  const cut=now-ms,vals=imuScoreHistory.filter(p=>p.t>=cut).map(p=>p.v);
+  return vals.length?Math.max(...vals):0;
+}
+function imuRecentScoreMedian(ms,now=Date.now()){
+  const cut=now-ms,vals=imuScoreHistory.filter(p=>p.t>=cut).map(p=>p.v).sort((a,b)=>a-b);
+  if(!vals.length)return 0;const m=Math.floor(vals.length/2);return vals.length%2?vals[m]:(vals[m-1]+vals[m])/2;
 }
 function onDeviceMotion(e){
   const now=performance.now();let x=0,y=0,z=0;
   if(e.acceleration&&[e.acceleration.x,e.acceleration.y,e.acceleration.z].some(Number.isFinite)){
     x=e.acceleration.x||0;y=e.acceleration.y||0;z=e.acceleration.z||0;
   }else if(e.accelerationIncludingGravity){
-    const a=e.accelerationIncludingGravity,alpha=.92;
-    gravityLP.x=alpha*gravityLP.x+(1-alpha)*(a.x||0);gravityLP.y=alpha*gravityLP.y+(1-alpha)*(a.y||0);gravityLP.z=alpha*gravityLP.z+(1-alpha)*(a.z||0);
-    x=(a.x||0)-gravityLP.x;y=(a.y||0)-gravityLP.y;z=(a.z||0)-gravityLP.z;
+    const a=e.accelerationIncludingGravity;
+    if(!gravityReady){
+      gravityLP.x=a.x||0;gravityLP.y=a.y||0;gravityLP.z=a.z||0;gravityReady=true;x=0;y=0;z=0;
+    }else{
+      const dt=imuSensorLastT===null?.02:clamp((now-imuSensorLastT)/1000,.002,.20);
+      // Filtro lento: aprende gravedad/orientación, pero conserva aceleraciones y vibraciones del tren.
+      const keep=Math.exp(-dt/.8),take=1-keep;
+      gravityLP.x=keep*gravityLP.x+take*(a.x||0);gravityLP.y=keep*gravityLP.y+take*(a.y||0);gravityLP.z=keep*gravityLP.z+take*(a.z||0);
+      x=(a.x||0)-gravityLP.x;y=(a.y||0)-gravityLP.y;z=(a.z||0)-gravityLP.z;
+    }
   }
-  const m=Math.sqrt(x*x+y*y+z*z);imuSamples.push({t:now,m:Math.min(m,8)});
-  while(imuSamples.length&&imuSamples[0].t<now-1400)imuSamples.shift();
+  imuSensorLastT=now;
+  const m=Math.sqrt(x*x+y*y+z*z);imuSamples.push({t:now,m:Math.min(m,8),x,y,z});
+  const cut=now-15000;while(imuSamples.length&&imuSamples[0].t<cut)imuSamples.shift();
 }
 async function enableIMU(){
   if(imuHandlerInstalled)return imuEnabled;
@@ -1051,8 +1072,28 @@ function renderImuEvents(){
     return `<div class="imuEventRow"><div><strong>${e.label}</strong>${meta?`<div class="imuEventMeta">${meta}</div>`:''}</div><span class="imuEventTime">${fmtDuration(e.durationMs)}</span></div>`;
   }).join('');
 }
+function imuPercentile(sorted,q){
+  if(!sorted.length)return 0;const p=(sorted.length-1)*q,i=Math.floor(p),f=p-i;return sorted[i]+(sorted[Math.min(i+1,sorted.length-1)]-sorted[i])*f;
+}
+function imuCalibrationProfile(values,source='manual'){
+  const vals=values.filter(Number.isFinite).sort((a,b)=>a-b);if(vals.length<8)return null;
+  const med=imuPercentile(vals,.5),p90=imuPercentile(vals,.90),p95=imuPercentile(vals,.95);
+  const dev=vals.map(v=>Math.abs(v-med)).sort((a,b)=>a-b),mad=imuPercentile(dev,.5);
+  const noiseTop=Math.max(p90,med+3*mad);
+  // Ajustado con los dos registros reales entregados: reposo típico ~0,03–0,05 m/s² dinámicos.
+  const stop=clamp(noiseTop+Math.max(.012,1.2*mad),.045,.18);
+  const move=clamp(Math.max(stop+.035,noiseTop*1.65+.020),.090,.36);
+  return {median:med,p90,p95,mad,stop,move,source,updatedAt:Date.now()};
+}
+function imuBlendProfiles(oldP,newP){
+  if(!oldP)return newP;const w=.35;
+  const mix=(a,b)=>a*(1-w)+b*w;
+  const p={median:mix(oldP.median,newP.median),p90:mix(oldP.p90,newP.p90),p95:mix(oldP.p95,newP.p95),mad:mix(oldP.mad,newP.mad),source:'auto',updatedAt:Date.now()};
+  const noiseTop=Math.max(p.p90,p.median+3*p.mad);p.stop=clamp(noiseTop+Math.max(.012,1.2*p.mad),.045,.18);p.move=clamp(Math.max(p.stop+.035,noiseTop*1.65+.020),.090,.36);return p;
+}
 function imuMotionThresholds(){
-  const b=imuBaseline??.025;return {move:Math.max(.075,b*2.7+.015),stop:Math.max(.045,b*1.65+.010)};
+  if(imuBaseline&&Number.isFinite(imuBaseline.stop)&&Number.isFinite(imuBaseline.move))return {stop:imuBaseline.stop,move:imuBaseline.move};
+  return {stop:.065,move:.105};
 }
 function imuCurrentRouteText(){
   if(!imuOnlyTrip)return '--';const r=imuOnlyTrip.route,p=imuOnlyTrip.pos;
@@ -1062,44 +1103,72 @@ function imuCurrentRouteText(){
 function imuSetEvent(state,label,at=Date.now()){
   imuOnlyTrip.state=state;imuOnlyTrip.eventLabel=label;imuOnlyTrip.eventStartAt=at;imuLastEventAt=at;imuStateOnly.textContent=label;imuRouteOnly.textContent=imuCurrentRouteText();
 }
-function imuBeginCalibration(){
-  imuBaseline=null;imuCalStart=performance.now();imuCalValues=[];imuCalText.textContent='Calibrando IMU… mantén el teléfono fijo 3,5 s';
+function imuBeginCalibration(mode='manual'){
+  if(!imuOnlyTrip)return;
+  imuCalMode=mode;imuCalStart=performance.now();imuCalValues=[];imuCalPrevious=imuBaseline?{...imuBaseline}:null;
+  if(mode==='initial')imuBaseline=null;
+  if(mode==='auto')imuCalText.textContent='Ajustando reposo automáticamente con la vibración de esta estación…';
+  else if(mode==='manual')imuCalText.textContent='Recalibrando IMU… tren detenido, teléfono fijo. La vibración normal del tren sí se acepta.';
+  else imuCalText.textContent='Calibrando reposo… mantén el teléfono fijo con el tren detenido.';
+}
+function imuCancelCalibration(msg){
+  if(imuCalMode==='initial')imuBaseline=imuCalPrevious;
+  imuCalStart=null;imuCalValues=[];imuCalMode=null;imuCalPrevious=null;if(msg)imuCalText.textContent=msg;
 }
 function imuProcessCalibration(){
-  if(!imuOnlyTrip||imuBaseline!==null||imuCalStart===null)return;
-  const elapsed=performance.now()-imuCalStart,score=imuLevel();if(Number.isFinite(score))imuCalValues.push(score);
-  if(elapsed>=IMU_CAL_MS){
-    const vals=imuCalValues.filter(Number.isFinite).sort((a,b)=>a-b);imuBaseline=vals.length?vals[Math.floor(vals.length*.45)]:.025;
-    imuCalStart=null;const th=imuMotionThresholds();imuCalText.textContent=`Calibrado · umbral movimiento ${th.move.toFixed(2)}`;
+  if(!imuOnlyTrip||imuCalStart===null)return;
+  const mode=imuCalMode||'manual',elapsed=performance.now()-imuCalStart,score=imuLevel(1000);if(Number.isFinite(score))imuCalValues.push(score);
+  const need=mode==='auto'?IMU_AUTO_CAL_MS:IMU_CAL_MS;if(elapsed<need)return;
+  const vals=imuCalValues.filter(Number.isFinite),half=Math.floor(vals.length/2);
+  const a=vals.slice(0,half).sort((x,y)=>x-y),b=vals.slice(half).sort((x,y)=>x-y),profile=imuCalibrationProfile(vals,mode);
+  if(!profile){imuCancelCalibration('No hubo suficientes datos para recalibrar. Se mantiene la calibración anterior.');return;}
+  const m1=a.length?imuPercentile(a,.5):profile.median,m2=b.length?imuPercentile(b,.5):profile.median,shift=Math.abs(m2-m1);
+  // No exige aceleración cero: acepta microvibración estable del tren encendido. Solo rechaza cambios claramente inestables.
+  const unstable=shift>Math.max(.065,profile.median*1.15)||profile.mad>Math.max(.075,profile.median*.95)||profile.p95>Math.max(.40,profile.median*5+.10);
+  if(unstable){
+    if(mode==='initial'){
+      imuCalText.textContent='La señal cambió demasiado durante la calibración. Esperando reposo estable para intentarlo de nuevo…';
+      imuCalStart=performance.now();imuCalValues=[];return;
+    }
+    imuCancelCalibration('Recalibración cancelada: la señal no era estable. Se conserva el reposo anterior.');return;
   }
+  imuBaseline=mode==='auto'?imuBlendProfiles(imuCalPrevious,profile):profile;
+  if(imuOnlyTrip)imuOnlyTrip.imuCalibration={...imuBaseline};
+  const th=imuMotionThresholds();
+  imuCalStart=null;imuCalValues=[];imuCalMode=null;imuCalPrevious=null;
+  imuCalText.textContent=`Reposo aprendido ✓ · vibración ${imuBaseline.median.toFixed(3)} · parar < ${th.stop.toFixed(3)} · mover > ${th.move.toFixed(3)}`;
+}
+function imuStartAutoCalibration(station){
+  const key=`${imuOnlyTrip?.id||''}|${station}|${imuOnlyTrip?.pos??''}`;if(!imuOnlyTrip||imuAutoCalStationKey===key)return;
+  imuAutoCalStationKey=key;imuBeginCalibration('auto');
 }
 function imuOnlyTick(){
-  if(!imuOnlyTrip)return;const now=Date.now();imuProcessCalibration();const score=imuLevel();imuLastMotionScore=score;const th=imuMotionThresholds();
-  const eventElapsed=now-(imuOnlyTrip.eventStartAt||now);imuTimerOnly.textContent=fmtTenths(eventElapsed);
+  if(!imuOnlyTrip)return;const now=Date.now();imuProcessCalibration();const score=imuLevel(1000);imuLastMotionScore=score;
+  imuScoreHistory.push({t:now,v:score});while(imuScoreHistory.length&&imuScoreHistory[0].t<now-15000)imuScoreHistory.shift();
+  const th=imuMotionThresholds(),eventElapsed=now-(imuOnlyTrip.eventStartAt||now);imuTimerOnly.textContent=fmtTenths(eventElapsed);
   const totalStart=imuOnlyTrip.actualStartAt||imuOnlyTrip.armedAt;imuTotalOnly.textContent=fmtDuration(now-totalStart);
-  imuSignalOnly.textContent=`IMU ${score.toFixed(3)} · mover > ${th.move.toFixed(3)} · parar < ${th.stop.toFixed(3)}`;
+  const calTag=imuCalStart!==null?' · calibrando':'';imuSignalOnly.textContent=`IMU ${score.toFixed(3)} · reposo ${imuBaseline?imuBaseline.median.toFixed(3):'--'} · parar < ${th.stop.toFixed(3)} · mover > ${th.move.toFixed(3)}${calTag}`;
   if(imuOnlyTrip.state==='STATION'){
-    imuTimerLabelOnly.textContent='TIEMPO DETENIDO REAL';
-    imuExtraLabel.textContent='CONSENTIMIENTO (−12 s)';imuExtra.textContent=fmtTenths(Math.max(0,eventElapsed-12000));
+    imuTimerLabelOnly.textContent='TIEMPO DETENIDO REAL';imuExtraLabel.textContent='CONSENTIMIENTO (−12 s)';imuExtra.textContent=fmtTenths(Math.max(0,eventElapsed-12000));
   }else if(imuOnlyTrip.state==='STOPPED'){
-    imuTimerLabelOnly.textContent='TIEMPO DETENIDO';
-    imuExtraLabel.textContent='SEÑAL IMU';imuExtra.textContent=score.toFixed(2);
+    imuTimerLabelOnly.textContent='TIEMPO DETENIDO';imuExtraLabel.textContent='SEÑAL IMU';imuExtra.textContent=score.toFixed(2);
   }else if(imuOnlyTrip.state==='WAITING'){
-    imuTimerLabelOnly.textContent='ESPERANDO SALIDA';
-    imuExtraLabel.textContent='SALIDA PROG.';const delta=now-imuOnlyTrip.scheduledAt;imuExtra.textContent=(delta>=0?'+':'−')+fmtDuration(Math.abs(delta));
+    imuTimerLabelOnly.textContent='ESPERANDO SALIDA';imuExtraLabel.textContent='SALIDA PROG.';const delta=now-imuOnlyTrip.scheduledAt;imuExtra.textContent=(delta>=0?'+':'−')+fmtDuration(Math.abs(delta));
   }else{
-    imuTimerLabelOnly.textContent='TIEMPO DE TRAYECTO';
-    imuExtraLabel.textContent='SEÑAL IMU';imuExtra.textContent=score.toFixed(2);
+    imuTimerLabelOnly.textContent='TIEMPO DE TRAYECTO';imuExtraLabel.textContent='SEÑAL IMU';imuExtra.textContent=score.toFixed(2);
   }
   if(imuBaseline===null)return;
   const moving=score>th.move,quiet=score<th.stop;
   if(imuOnlyTrip.state==='WAITING'){
     if(moving){if(!imuMoveCandidate)imuMoveCandidate=now;if(now-imuMoveCandidate>=IMU_DEPART_CONFIRM_MS){
-      const at=imuMoveCandidate;addImuEvent('SALIDA','Salida',imuOnlyTrip.scheduledAt,at,{delayMs:at-imuOnlyTrip.scheduledAt});imuOnlyTrip.actualStartAt=at;imuOnlyTrip.segmentStartAt=at;imuMoveCandidate=null;imuSetEvent('MOVING','TRAYECTO',at);
+      const at=imuMoveCandidate;addImuEvent('SALIDA','Salida',imuOnlyTrip.scheduledAt,at,{delayMs:at-imuOnlyTrip.scheduledAt});imuOnlyTrip.actualStartAt=at;imuOnlyTrip.segmentStartAt=at;imuMoveCandidate=null;imuScoreHistory=[];imuSetEvent('MOVING','TRAYECTO',at);
     }}else imuMoveCandidate=null;return;
   }
   if(imuOnlyTrip.state==='MOVING'){
-    if(quiet){if(!imuStopCandidate)imuStopCandidate=now;if(now-imuStopCandidate>=IMU_STOP_CONFIRM_MS){
+    const segmentMs=imuOnlyTrip.segmentStartAt?now-imuOnlyTrip.segmentStartAt:0;
+    const strongRecent=imuRecentScoreMax(6000,now)>th.move*1.8;
+    const allowStop=segmentMs>=IMU_MIN_SEGMENT_MS||(segmentMs>=IMU_EARLY_STOP_MS&&strongRecent);
+    if(quiet&&allowStop){if(!imuStopCandidate)imuStopCandidate=now;if(now-imuStopCandidate>=IMU_STOP_CONFIRM_MS){
       const at=imuStopCandidate;imuStopCandidate=null;imuClassifiedStation=false;imuSetEvent('STOPPED','DETENCIÓN',at);
     }}else imuStopCandidate=null;return;
   }
@@ -1109,8 +1178,7 @@ function imuOnlyTick(){
       const arrival=imuOnlyTrip.eventStartAt,origin=imuOnlyTrip.route[imuOnlyTrip.pos],dest=imuOnlyTrip.route[imuOnlyTrip.pos+1];
       if(imuOnlyTrip.segmentStartAt)addImuEvent('TRAMO',`${origin} → ${dest}`,imuOnlyTrip.segmentStartAt,arrival);
       imuOnlyTrip.pos=Math.min(imuOnlyTrip.pos+1,imuOnlyTrip.route.length-1);imuClassifiedStation=true;imuSetEvent('STATION','DETENCIÓN EN ESTACIÓN',arrival);
-      if(imuOnlyTrip.route[imuOnlyTrip.pos]===imuOnlyTrip.finalStation){imuRouteOnly.textContent=imuOnlyTrip.finalStation;}
-      return;
+      const station=imuOnlyTrip.route[imuOnlyTrip.pos];imuStartAutoCalibration(station);if(station===imuOnlyTrip.finalStation)imuRouteOnly.textContent=imuOnlyTrip.finalStation;return;
     }
     if(moving){if(!imuMoveCandidate)imuMoveCandidate=now;if(now-imuMoveCandidate>=IMU_DEPART_CONFIRM_MS){
       const at=imuMoveCandidate,st=imuOnlyTrip.eventStartAt;addImuEvent('BREVE','Detención breve',st,at);imuMoveCandidate=null;imuSetEvent('MOVING','TRAYECTO',at);
@@ -1119,9 +1187,10 @@ function imuOnlyTick(){
   if(imuOnlyTrip.state==='STATION'){
     if(moving){if(!imuMoveCandidate)imuMoveCandidate=now;if(now-imuMoveCandidate>=IMU_DEPART_CONFIRM_MS){
       const at=imuMoveCandidate,arrival=imuOnlyTrip.eventStartAt,dwell=at-arrival,station=imuOnlyTrip.route[imuOnlyTrip.pos];
+      if(imuCalMode==='auto'&&imuCalStart!==null)imuCancelCalibration('Salida detectada antes de terminar el ajuste automático; se conserva la calibración anterior.');
       addImuEvent('ESTACION',station,arrival,at,{consentMs:Math.max(0,dwell-12000)});imuMoveCandidate=null;
       if(station===imuOnlyTrip.finalStation){finishImuTrip(true);return;}
-      imuOnlyTrip.segmentStartAt=at;imuSetEvent('MOVING','TRAYECTO',at);
+      imuOnlyTrip.segmentStartAt=at;imuScoreHistory=[];imuSetEvent('MOVING','TRAYECTO',at);
     }}else imuMoveCandidate=null;return;
   }
 }
@@ -1133,10 +1202,10 @@ async function armImuTrip(){
   const ok=await enableIMU();if(!ok){imuCalText.textContent='No se pudo acceder al IMU del teléfono.';return;}
   const full=routeForImu(),si=full.indexOf(imuStart.value),ei=full.indexOf(imuEnd.value);if(si<0||ei<=si){imuCalText.textContent='Revisa inicio y destino.';return;}
   const route=full.slice(si,ei+1),now=Date.now();imuOnlyTrip={id:'IMU'+now,serviceNumber:service,direction:imuDirection.value,armedAt:now,scheduledAt:imuScheduledTimestamp(),actualStartAt:null,endAt:null,route,pos:0,startStation:route[0],finalStation:route[route.length-1],state:'WAITING',eventLabel:'ESPERANDO SALIDA',eventStartAt:imuScheduledTimestamp(),segmentStartAt:null,events:[]};
-  imuOnlyLastCompleted=null;imuMoveCandidate=null;imuStopCandidate=null;imuClassifiedStation=false;imuSetupEl.style.display='none';imuLiveEl.classList.add('show');imuNextServiceBtn.style.display='none';imuStateOnly.textContent=`SERVICIO ${service} · ESPERANDO SALIDA`;imuRouteOnly.textContent=`${route[0]} → ${route[1]}`;imuTimerLabelOnly.textContent='ESPERANDO SALIDA';renderImuEvents();imuBeginCalibration();
+  imuOnlyLastCompleted=null;imuMoveCandidate=null;imuStopCandidate=null;imuClassifiedStation=false;imuScoreHistory=[];imuAutoCalStationKey=null;imuSetupEl.style.display='none';imuLiveEl.classList.add('show');imuNextServiceBtn.style.display='none';imuStateOnly.textContent=`SERVICIO ${service} · ESPERANDO SALIDA`;imuRouteOnly.textContent=`${route[0]} → ${route[1]}`;imuTimerLabelOnly.textContent='ESPERANDO SALIDA';renderImuEvents();imuBeginCalibration('initial');
   clearInterval(imuOnlyLoop);imuOnlyLoop=setInterval(imuOnlyTick,100);try{if('wakeLock'in navigator)wakeLock=await navigator.wakeLock.request('screen');}catch(e){}
 }
-function recalibrateImu(){if(!imuOnlyTrip)return;imuBeginCalibration();}
+function recalibrateImu(){if(!imuOnlyTrip)return;if(imuOnlyTrip.state==='MOVING'){imuCalText.textContent='Recalibración manual disponible solo con el tren detenido. Se conserva la calibración actual.';return;}imuBeginCalibration('manual');}
 function saveImuSession(){
   try{if(imuSession)localStorage.setItem(IMU_SESSION_KEY,JSON.stringify(imuSession));else localStorage.removeItem(IMU_SESSION_KEY);}catch(e){}
 }
@@ -1159,23 +1228,38 @@ function sd(a){if(a.length<2)return 0;const m=mean(a);return Math.sqrt(a.reduce(
 function serviceMetrics(t){
   const totalMs=t.actualStartAt&&t.endAt?Math.max(0,t.endAt-t.actualStartAt):0;
   const tramos=(t.events||[]).filter(e=>e.type==='TRAMO'),stations=(t.events||[]).filter(e=>e.type==='ESTACION'),brief=(t.events||[]).filter(e=>e.type==='BREVE');
-  return {totalMs,movingMs:tramos.reduce((a,e)=>a+e.durationMs,0),dwellMs:stations.reduce((a,e)=>a+e.durationMs,0),consentMs:stations.reduce((a,e)=>a+(e.consentMs||0),0),briefMs:brief.reduce((a,e)=>a+e.durationMs,0),briefCount:brief.length,delayMs:t.actualStartAt&&t.scheduledAt?t.actualStartAt-t.scheduledAt:0};
+  const movingMs=tramos.reduce((a,e)=>a+e.durationMs,0),dwellMs=stations.reduce((a,e)=>a+e.durationMs,0),consentMs=stations.reduce((a,e)=>a+(e.consentMs||0),0);
+  return {totalMs,movingMs,dwellMs,consentMs,avgSegmentMs:mean(tramos.map(e=>e.durationMs)),avgStationDwellMs:mean(stations.map(e=>e.durationMs)),avgStationConsentMs:mean(stations.map(e=>e.consentMs||0)),briefMs:brief.reduce((a,e)=>a+e.durationMs,0),briefCount:brief.length,delayMs:t.actualStartAt&&t.scheduledAt?t.actualStartAt-t.scheduledAt:0,segmentCount:tramos.length,stationCount:stations.length};
 }
 function escHtml(v){return String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));}
 function signedDuration(ms){return (ms>=0?'+':'−')+fmtDuration(Math.abs(ms));}
 function aggregateEvents(type){
   const map=new Map();
   for(const t of imuSession?.services||[])for(const e of t.events||[])if(e.type===type){const k=e.label;if(!map.has(k))map.set(k,[]);map.get(k).push(e.durationMs);}
-  return [...map.entries()].map(([label,vals])=>({label,n:vals.length,avg:mean(vals),min:Math.min(...vals),max:Math.max(...vals)}));
+  return [...map.entries()].map(([label,vals])=>({label,n:vals.length,avg:mean(vals),median:median(vals),min:Math.min(...vals),max:Math.max(...vals),sd:sd(vals)}));
+}
+function aggregateStations(){
+  const map=new Map();
+  for(const t of imuSession?.services||[])for(const e of t.events||[])if(e.type==='ESTACION'){
+    if(!map.has(e.label))map.set(e.label,{dwell:[],consent:[]});const x=map.get(e.label);x.dwell.push(e.durationMs);x.consent.push(e.consentMs||0);
+  }
+  return [...map.entries()].map(([label,x])=>({label,n:x.dwell.length,avgDwell:mean(x.dwell),avgConsent:mean(x.consent),minDwell:Math.min(...x.dwell),maxDwell:Math.max(...x.dwell)}));
 }
 function buildSessionReport(){
   if(!imuSession||!imuSession.services.length)return null;
-  const rows=imuSession.services.map(t=>({t,m:serviceMetrics(t)})),totals=rows.map(x=>x.m.totalMs),delays=rows.map(x=>x.m.delayMs),dwell=rows.map(x=>x.m.dwellMs),consent=rows.map(x=>x.m.consentMs);
+  const rows=imuSession.services.map(t=>({t,m:serviceMetrics(t)})),totals=rows.map(x=>x.m.totalMs),delays=rows.map(x=>x.m.delayMs),moving=rows.map(x=>x.m.movingMs),dwell=rows.map(x=>x.m.dwellMs),consent=rows.map(x=>x.m.consentMs);
+  const allSegments=[],allStations=[];for(const t of imuSession.services)for(const e of t.events||[]){if(e.type==='TRAMO')allSegments.push(e.durationMs);if(e.type==='ESTACION')allStations.push(e);}
   const fastest=rows.reduce((a,b)=>a.m.totalMs<=b.m.totalMs?a:b),slowest=rows.reduce((a,b)=>a.m.totalMs>=b.m.totalMs?a:b);
-  const stats={count:rows.length,avgTotal:mean(totals),medianTotal:median(totals),sdTotal:sd(totals),minTotal:Math.min(...totals),maxTotal:Math.max(...totals),avgDelay:mean(delays),totalDwell:dwell.reduce((a,b)=>a+b,0),totalConsent:consent.reduce((a,b)=>a+b,0),fastest:fastest.t.serviceNumber,slowest:slowest.t.serviceNumber};
-  let body=`<div class="reportGrid"><div class="reportBox"><div class="reportBoxLabel">SERVICIOS</div><div class="reportBoxValue">${stats.count}</div></div><div class="reportBox"><div class="reportBoxLabel">PROMEDIO VIAJE</div><div class="reportBoxValue">${fmtDuration(stats.avgTotal)}</div></div><div class="reportBox"><div class="reportBoxLabel">MEDIANA</div><div class="reportBoxValue">${fmtDuration(stats.medianTotal)}</div></div><div class="reportBox"><div class="reportBoxLabel">DESV. ESTÁNDAR</div><div class="reportBoxValue">${fmtDuration(stats.sdTotal)}</div></div></div>`;
-  body+=`<table class="reportTable"><thead><tr><th>SERVICIO</th><th>RECORRIDO</th><th>TOTAL</th><th>SALIDA</th><th>DET. EST.</th></tr></thead><tbody>`+rows.map(({t,m})=>`<tr><td><strong>${escHtml(t.serviceNumber)}</strong></td><td>${escHtml(t.startStation)} → ${escHtml(t.finalStation)}</td><td>${fmtDuration(m.totalMs)}</td><td>${signedDuration(m.delayMs)}</td><td>${fmtDuration(m.dwellMs)}</td></tr>`).join('')+`</tbody></table>`;
-  return {rows,stats,body};
+  const stats={count:rows.length,avgTotal:mean(totals),medianTotal:median(totals),sdTotal:sd(totals),minTotal:Math.min(...totals),maxTotal:Math.max(...totals),avgDelay:mean(delays),avgMoving:mean(moving),avgDwellTotal:mean(dwell),avgConsentTotal:mean(consent),avgSegment:mean(allSegments),avgStationDwell:mean(allStations.map(e=>e.durationMs)),avgStationConsent:mean(allStations.map(e=>e.consentMs||0)),fastest:fastest.t.serviceNumber,slowest:slowest.t.serviceNumber};
+  const avgRows=[
+    ['Tiempo total de viaje',stats.avgTotal],['Tiempo en movimiento por viaje',stats.avgMoving],['Tiempo de viaje entre estaciones',stats.avgSegment],['Detención total en estaciones por viaje',stats.avgDwellTotal],['Detención promedio por estación',stats.avgStationDwell],['Consentimiento total estimado por viaje',stats.avgConsentTotal],['Consentimiento promedio por estación',stats.avgStationConsent]
+  ];
+  let body=`<div style="font-size:17px;font-weight:950;margin:4px 0 8px">VIAJE PROMEDIO</div><table class="reportTable"><thead><tr><th>VARIABLE</th><th>PROMEDIO</th></tr></thead><tbody>${avgRows.map(([k,v])=>`<tr><td><strong>${k}</strong></td><td>${fmtDuration(v)}</td></tr>`).join('')}<tr><td><strong>Desfase promedio de salida</strong></td><td>${signedDuration(stats.avgDelay)}</td></tr><tr><td>Mediana tiempo total</td><td>${fmtDuration(stats.medianTotal)}</td></tr><tr><td>Desv. estándar tiempo total</td><td>${fmtDuration(stats.sdTotal)}</td></tr></tbody></table>`;
+  const segAgg=aggregateEvents('TRAMO'),stAgg=aggregateStations();
+  if(segAgg.length)body+=`<div style="font-size:17px;font-weight:950;margin:18px 0 4px">PROMEDIO POR TRAMO</div><table class="reportTable"><thead><tr><th>TRAMO</th><th>n</th><th>PROM.</th><th>MÍN.</th><th>MÁX.</th></tr></thead><tbody>${segAgg.map(x=>`<tr><td>${escHtml(x.label)}</td><td>${x.n}</td><td>${fmtDuration(x.avg)}</td><td>${fmtDuration(x.min)}</td><td>${fmtDuration(x.max)}</td></tr>`).join('')}</tbody></table>`;
+  if(stAgg.length)body+=`<div style="font-size:17px;font-weight:950;margin:18px 0 4px">PROMEDIO POR ESTACIÓN</div><table class="reportTable"><thead><tr><th>ESTACIÓN</th><th>n</th><th>DET.</th><th>CONSENT.</th></tr></thead><tbody>${stAgg.map(x=>`<tr><td>${escHtml(x.label)}</td><td>${x.n}</td><td>${fmtDuration(x.avgDwell)}</td><td>${fmtDuration(x.avgConsent)}</td></tr>`).join('')}</tbody></table>`;
+  body+=`<div style="font-size:17px;font-weight:950;margin:18px 0 4px">DETALLE DE CADA VIAJE</div><table class="reportTable"><thead><tr><th>SERVICIO</th><th>RECORRIDO</th><th>TOTAL</th><th>SALIDA</th><th>DET. EST.</th><th>CONSENT.</th></tr></thead><tbody>${rows.map(({t,m})=>`<tr><td><strong>${escHtml(t.serviceNumber)}</strong></td><td>${escHtml(t.startStation)} → ${escHtml(t.finalStation)}</td><td>${fmtDuration(m.totalMs)}</td><td>${signedDuration(m.delayMs)}</td><td>${fmtDuration(m.dwellMs)}</td><td>${fmtDuration(m.consentMs)}</td></tr>`).join('')}</tbody></table>`;
+  return {rows,stats,segAgg,stAgg,body};
 }
 function renderSessionReport(){
   const r=buildSessionReport();if(!r)return;
@@ -1183,14 +1267,17 @@ function renderSessionReport(){
   imuReportSub.textContent=`${r.stats.count} servicios · informe para ${imuSession.email}`;imuReportContent.innerHTML=r.body;imuSendState.textContent='';imuSendState.className='sendState';
 }
 function buildEmailPayload(){
-  const r=buildSessionReport();if(!r)return null;
-  const sessionDate=new Date(imuSession.createdAt).toLocaleString('es-CL');
-  const serviceRows=r.rows.map(({t,m})=>`<tr><td style="padding:7px;border-bottom:1px solid #ddd"><b>${escHtml(t.serviceNumber)}</b></td><td style="padding:7px;border-bottom:1px solid #ddd">${escHtml(t.startStation)} → ${escHtml(t.finalStation)}</td><td style="padding:7px;border-bottom:1px solid #ddd">${fmtDuration(m.totalMs)}</td><td style="padding:7px;border-bottom:1px solid #ddd">${signedDuration(m.delayMs)}</td><td style="padding:7px;border-bottom:1px solid #ddd">${fmtDuration(m.dwellMs)}</td><td style="padding:7px;border-bottom:1px solid #ddd">${fmtDuration(m.consentMs)}</td></tr>`).join('');
-  const detail=(imuSession.services||[]).map(t=>{const m=serviceMetrics(t);const ev=(t.events||[]).map(e=>{let extra='';if(e.type==='ESTACION')extra=` · consentimiento ${fmtDuration(e.consentMs||0)}`;if(e.type==='SALIDA'&&Number.isFinite(e.delayMs))extra=` · ${e.delayMs>=0?'atraso':'adelanto'} ${fmtDuration(Math.abs(e.delayMs))}`;return `<tr><td style="padding:5px;border-bottom:1px solid #eee">${escHtml(e.type)}</td><td style="padding:5px;border-bottom:1px solid #eee">${escHtml(e.label)}</td><td style="padding:5px;border-bottom:1px solid #eee">${fmtDuration(e.durationMs)}${extra}</td></tr>`;}).join('');return `<h3>Servicio ${escHtml(t.serviceNumber)} · ${escHtml(t.startStation)} → ${escHtml(t.finalStation)}</h3><p>Total ${fmtDuration(m.totalMs)} · salida ${signedDuration(m.delayMs)} · detenido en estaciones ${fmtDuration(m.dwellMs)} · consentimiento ${fmtDuration(m.consentMs)}</p><table style="border-collapse:collapse;width:100%"><tr><th align="left">Tipo</th><th align="left">Evento</th><th align="left">Duración</th></tr>${ev}</table>`;}).join('');
-  const segAgg=aggregateEvents('TRAMO'),stAgg=aggregateEvents('ESTACION');
-  const aggTable=(title,arr)=>arr.length?`<h3>${title}</h3><table style="border-collapse:collapse;width:100%"><tr><th align="left">Evento</th><th>n</th><th>Prom.</th><th>Mín.</th><th>Máx.</th></tr>${arr.map(x=>`<tr><td style="padding:5px;border-bottom:1px solid #eee">${escHtml(x.label)}</td><td align="center">${x.n}</td><td align="center">${fmtDuration(x.avg)}</td><td align="center">${fmtDuration(x.min)}</td><td align="center">${fmtDuration(x.max)}</td></tr>`).join('')}</table>`:'';
-  const html=`<div style="font-family:Arial,sans-serif;color:#111;max-width:900px;margin:auto"><h1>Informe de sesión · Registro IMU</h1><p>${escHtml(sessionDate)} · ${r.stats.count} servicios</p><h2>Resumen estadístico</h2><ul><li>Tiempo promedio de viaje: <b>${fmtDuration(r.stats.avgTotal)}</b></li><li>Mediana: <b>${fmtDuration(r.stats.medianTotal)}</b></li><li>Desviación estándar: <b>${fmtDuration(r.stats.sdTotal)}</b></li><li>Mínimo: <b>${fmtDuration(r.stats.minTotal)}</b> (servicio ${escHtml(r.stats.fastest)})</li><li>Máximo: <b>${fmtDuration(r.stats.maxTotal)}</b> (servicio ${escHtml(r.stats.slowest)})</li><li>Desfase promedio de salida: <b>${signedDuration(r.stats.avgDelay)}</b></li><li>Tiempo total detenido en estaciones: <b>${fmtDuration(r.stats.totalDwell)}</b></li><li>Consentimiento estimado acumulado: <b>${fmtDuration(r.stats.totalConsent)}</b></li></ul><h2>Servicios</h2><table style="border-collapse:collapse;width:100%"><tr><th align="left">Servicio</th><th align="left">Recorrido</th><th>Total</th><th>Salida</th><th>Det. estación</th><th>Consent.</th></tr>${serviceRows}</table>${aggTable('Tiempos por tramo',segAgg)}${aggTable('Detenciones por estación',stAgg)}<h2>Detalle completo</h2>${detail}<p style="color:#666;font-size:12px">Consentimiento estimado = tiempo detenido real − 12 s.</p></div>`;
-  const text=`Informe de sesión IMU\nServicios: ${r.stats.count}\nPromedio viaje: ${fmtDuration(r.stats.avgTotal)}\nMediana: ${fmtDuration(r.stats.medianTotal)}\nDesviación estándar: ${fmtDuration(r.stats.sdTotal)}\nMínimo: ${fmtDuration(r.stats.minTotal)} (servicio ${r.stats.fastest})\nMáximo: ${fmtDuration(r.stats.maxTotal)} (servicio ${r.stats.slowest})\nDesfase promedio salida: ${signedDuration(r.stats.avgDelay)}\nDetenido total estaciones: ${fmtDuration(r.stats.totalDwell)}\nConsentimiento acumulado: ${fmtDuration(r.stats.totalConsent)}`;
+  const r=buildSessionReport();if(!r)return null;const sessionDate=new Date(imuSession.createdAt).toLocaleString('es-CL');
+  const tableStyle='border-collapse:collapse;width:100%;font-size:13px',th='padding:7px;border-bottom:2px solid #333;text-align:left',td='padding:7px;border-bottom:1px solid #ddd;vertical-align:top';
+  const avgRows=[['Tiempo total de viaje',r.stats.avgTotal],['Tiempo en movimiento por viaje',r.stats.avgMoving],['Tiempo de viaje entre estaciones',r.stats.avgSegment],['Detención total en estaciones por viaje',r.stats.avgDwellTotal],['Detención promedio por estación',r.stats.avgStationDwell],['Consentimiento total estimado por viaje',r.stats.avgConsentTotal],['Consentimiento promedio por estación',r.stats.avgStationConsent]];
+  const averageTable=`<h2>Viaje promedio</h2><table style="${tableStyle}"><tr><th style="${th}">Variable</th><th style="${th}">Promedio</th></tr>${avgRows.map(([k,v])=>`<tr><td style="${td}">${escHtml(k)}</td><td style="${td}"><b>${fmtDuration(v)}</b></td></tr>`).join('')}<tr><td style="${td}">Desfase promedio de salida</td><td style="${td}"><b>${signedDuration(r.stats.avgDelay)}</b></td></tr><tr><td style="${td}">Mediana tiempo total</td><td style="${td}">${fmtDuration(r.stats.medianTotal)}</td></tr><tr><td style="${td}">Desv. estándar tiempo total</td><td style="${td}">${fmtDuration(r.stats.sdTotal)}</td></tr><tr><td style="${td}">Mínimo / máximo total</td><td style="${td}">${fmtDuration(r.stats.minTotal)} (serv. ${escHtml(r.stats.fastest)}) / ${fmtDuration(r.stats.maxTotal)} (serv. ${escHtml(r.stats.slowest)})</td></tr></table>`;
+  const segTable=r.segAgg.length?`<h2>Promedio de tiempo entre estaciones</h2><table style="${tableStyle}"><tr><th style="${th}">Tramo</th><th style="${th}">n</th><th style="${th}">Promedio</th><th style="${th}">Mín.</th><th style="${th}">Máx.</th></tr>${r.segAgg.map(x=>`<tr><td style="${td}">${escHtml(x.label)}</td><td style="${td}">${x.n}</td><td style="${td}"><b>${fmtDuration(x.avg)}</b></td><td style="${td}">${fmtDuration(x.min)}</td><td style="${td}">${fmtDuration(x.max)}</td></tr>`).join('')}</table>`:'';
+  const stTable=r.stAgg.length?`<h2>Promedio de detención y consentimiento por estación</h2><table style="${tableStyle}"><tr><th style="${th}">Estación</th><th style="${th}">n</th><th style="${th}">Detención promedio</th><th style="${th}">Consentimiento promedio</th></tr>${r.stAgg.map(x=>`<tr><td style="${td}">${escHtml(x.label)}</td><td style="${td}">${x.n}</td><td style="${td}"><b>${fmtDuration(x.avgDwell)}</b></td><td style="${td}"><b>${fmtDuration(x.avgConsent)}</b></td></tr>`).join('')}</table>`:'';
+  const serviceRows=r.rows.map(({t,m})=>`<tr><td style="${td}"><b>${escHtml(t.serviceNumber)}</b></td><td style="${td}">${escHtml(t.startStation)} → ${escHtml(t.finalStation)}</td><td style="${td}">${fmtDuration(m.totalMs)}</td><td style="${td}">${signedDuration(m.delayMs)}</td><td style="${td}">${fmtDuration(m.dwellMs)}</td><td style="${td}">${fmtDuration(m.consentMs)}</td></tr>`).join('');
+  const serviceSummary=`<h2>Detalle de cada viaje</h2><table style="${tableStyle}"><tr><th style="${th}">Servicio</th><th style="${th}">Recorrido</th><th style="${th}">Total</th><th style="${th}">Salida</th><th style="${th}">Det. estaciones</th><th style="${th}">Consent.</th></tr>${serviceRows}</table>`;
+  const detail=(imuSession.services||[]).map(t=>{const m=serviceMetrics(t);const ev=(t.events||[]).map(e=>{let extra='';if(e.type==='ESTACION')extra=`<br><span style="color:#666">Consentimiento: ${fmtDuration(e.consentMs||0)}</span>`;if(e.type==='SALIDA'&&Number.isFinite(e.delayMs))extra=`<br><span style="color:#666">${e.delayMs>=0?'Atraso':'Adelanto'}: ${fmtDuration(Math.abs(e.delayMs))}</span>`;return `<tr><td style="${td}">${escHtml(e.type)}</td><td style="${td}">${escHtml(e.label)}</td><td style="${td}">${fmtDuration(e.durationMs)}${extra}</td></tr>`;}).join('');return `<h3>Servicio ${escHtml(t.serviceNumber)} · ${escHtml(t.startStation)} → ${escHtml(t.finalStation)}</h3><p><b>Total:</b> ${fmtDuration(m.totalMs)} · <b>salida:</b> ${signedDuration(m.delayMs)} · <b>detención:</b> ${fmtDuration(m.dwellMs)} · <b>consentimiento:</b> ${fmtDuration(m.consentMs)}</p><table style="${tableStyle}"><tr><th style="${th}">Tipo</th><th style="${th}">Evento</th><th style="${th}">Duración</th></tr>${ev}</table>`;}).join('');
+  const html=`<div style="font-family:Arial,sans-serif;color:#111;max-width:920px;margin:auto"><h1>Informe de sesión · Registro IMU</h1><p>${escHtml(sessionDate)} · ${r.stats.count} servicios</p>${averageTable}${segTable}${stTable}${serviceSummary}${detail}<p style="color:#666;font-size:12px;margin-top:24px">Consentimiento estimado = tiempo detenido real − 12 s. La detección Solo IMU es inferida por patrones de movimiento/vibración y debe validarse operacionalmente.</p></div>`;
+  const text=`Informe de sesión IMU\nServicios: ${r.stats.count}\n\nVIAJE PROMEDIO\nTiempo total: ${fmtDuration(r.stats.avgTotal)}\nMovimiento: ${fmtDuration(r.stats.avgMoving)}\nEntre estaciones: ${fmtDuration(r.stats.avgSegment)}\nDetención total por viaje: ${fmtDuration(r.stats.avgDwellTotal)}\nDetención promedio por estación: ${fmtDuration(r.stats.avgStationDwell)}\nConsentimiento total por viaje: ${fmtDuration(r.stats.avgConsentTotal)}\nConsentimiento promedio por estación: ${fmtDuration(r.stats.avgStationConsent)}\nDesfase promedio salida: ${signedDuration(r.stats.avgDelay)}\nMediana total: ${fmtDuration(r.stats.medianTotal)}\nDesv. estándar: ${fmtDuration(r.stats.sdTotal)}`;
   return {email:imuSession.email,subject:`Informe sesión IMU · ${r.stats.count} servicios · ${new Date(imuSession.createdAt).toLocaleDateString('es-CL')}`,html,text,sessionId:imuSession.id};
 }
 function sendSessionReport(){
@@ -1213,10 +1300,10 @@ function finishImuTrip(auto=false){
   if(imuSession.services.length>=imuSession.plannedCount){imuNextServiceBtn.style.display='none';imuCalText.textContent='Sesión completa. Preparando informe…';renderSessionReport();setTimeout(sendSessionReport,600);}else{imuNextServiceBtn.style.display='inline-block';imuCalText.textContent=`Servicio ${imuSession.services.length} de ${imuSession.plannedCount} guardado. Continúa con el siguiente.`;}
 }
 function nextImuService(){
-  clearInterval(imuOnlyLoop);imuOnlyLoop=null;imuOnlyTrip=null;imuBaseline=null;imuLiveEl.classList.remove('show');imuSetupEl.style.display='block';imuNextServiceBtn.style.display='none';imuFinishBtn.style.display='inline-block';imuFinishBtn.textContent='FINALIZAR';imuRecalBtn.style.display='inline-block';imuServiceNumber.value='';imuSchedule.value='';setDefaultSchedule();renderImuSessionStatus();window.scrollTo({top:0,behavior:'smooth'});
+  clearInterval(imuOnlyLoop);imuOnlyLoop=null;imuOnlyTrip=null;imuBaseline=null;imuCalStart=null;imuCalValues=[];imuCalMode=null;imuScoreHistory=[];imuAutoCalStationKey=null;imuLiveEl.classList.remove('show');imuSetupEl.style.display='block';imuNextServiceBtn.style.display='none';imuFinishBtn.style.display='inline-block';imuFinishBtn.textContent='FINALIZAR';imuRecalBtn.style.display='inline-block';imuServiceNumber.value='';imuSchedule.value='';setDefaultSchedule();renderImuSessionStatus();window.scrollTo({top:0,behavior:'smooth'});
 }
 function resetImuSession(){
-  clearInterval(imuOnlyLoop);imuOnlyLoop=null;imuOnlyTrip=null;imuOnlyLastCompleted=null;imuBaseline=null;imuSession=null;saveImuSession();imuLiveEl.classList.remove('show');imuSessionReport.classList.remove('show');imuSetupEl.style.display='none';imuSessionStatus.classList.remove('show');imuSessionSetup.style.display='block';imuFinishBtn.style.display='inline-block';imuFinishBtn.textContent='FINALIZAR';imuRecalBtn.style.display='inline-block';imuEmail.value='';imuServiceCount.value='1';imuServiceNumber.value='';imuSessionMsg.textContent='Los servicios se guardan localmente hasta completar la sesión.';
+  clearInterval(imuOnlyLoop);imuOnlyLoop=null;imuOnlyTrip=null;imuOnlyLastCompleted=null;imuBaseline=null;imuCalStart=null;imuCalValues=[];imuCalMode=null;imuScoreHistory=[];imuAutoCalStationKey=null;imuSession=null;saveImuSession();imuLiveEl.classList.remove('show');imuSessionReport.classList.remove('show');imuSetupEl.style.display='none';imuSessionStatus.classList.remove('show');imuSessionSetup.style.display='block';imuFinishBtn.style.display='inline-block';imuFinishBtn.textContent='FINALIZAR';imuRecalBtn.style.display='inline-block';imuEmail.value='';imuServiceCount.value='1';imuServiceNumber.value='';imuSessionMsg.textContent='Los servicios se guardan localmente hasta completar la sesión.';
 }
 function restoreImuSession(){
   try{
