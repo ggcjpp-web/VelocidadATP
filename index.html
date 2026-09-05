@@ -4,7 +4,7 @@
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no" />
 <meta name="theme-color" content="#050708" />
-<title>Velocidad Sonora V6.6</title>
+<title>Velocidad Sonora V6.7</title>
 <style>
 :root{color-scheme:dark;font-family:system-ui,-apple-system,Segoe UI,Roboto,sans-serif}
 *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
@@ -79,6 +79,7 @@ body.mode-imu #imuMode{display:block}
 @media (max-width:520px){.modeButtons{grid-template-columns:1fr}.imuTimer{font-size:64px}.imuSetupGrid{grid-template-columns:1fr}.imuField.wide{grid-column:auto}.imuState{font-size:23px}.imuRoute{font-size:20px}.imuEventRow strong{font-size:15px}}
 
 .voicePrefs{display:grid;grid-template-columns:1fr;gap:7px;background:#171d20;border-radius:14px;padding:11px;margin-bottom:12px}.voiceToggle{display:flex;align-items:center;justify-content:space-between;gap:12px;font-size:13px;font-weight:850}.voiceToggle input{width:22px;height:22px;accent-color:#00a6a6}.voicePresetGrid{display:grid;grid-template-columns:1fr 1fr;gap:7px;margin-bottom:10px}.voicePresetBtn{padding:10px 9px;font-size:12px;text-align:left;border:1px solid rgba(255,255,255,.08)}.voicePresetBtn.selected{background:#00a6a6;color:#001414}.voiceOptional{display:flex;align-items:center;gap:8px;font-size:12px;font-weight:850;margin-top:3px}.voiceOptional input[type=checkbox]{width:20px;height:20px;accent-color:#00a6a6}.voicePreview{background:#171d20;border-radius:12px;padding:11px;font-size:14px;font-weight:900;line-height:1.35;margin-top:9px}.voiceEnabled{display:flex;align-items:center;gap:7px;font-size:11px;font-weight:900}.voiceEnabled input{width:18px;height:18px;accent-color:#00a6a6}.serviceRouteNote{font-size:11px;opacity:.58;margin-top:5px;line-height:1.35}
+.imuQuickBar{display:flex;gap:7px;align-items:center;flex-wrap:wrap;margin-top:10px}.imuQuickBar button{padding:9px 11px;font-size:11px;min-width:0;flex:0 1 auto}.imuQuickBar .armed{background:#0b6f59;color:#eafff9}.imuQuickMsg{font-size:10px;font-weight:850;opacity:.7;line-height:1.25;flex:1 1 100%;min-height:13px}
 
 #scan,#read{display:none}
 </style>
@@ -97,7 +98,7 @@ body.mode-imu #imuMode{display:block}
   </div>
   <section id="imuMode">
     <div class="imuShell">
-      <div class="imuTop"><div class="imuBrand">REGISTRO IMU · V6.6</div><button id="imuBackBtn" class="ghostBtn">CAMBIAR MODO</button></div>
+      <div class="imuTop"><div class="imuBrand">REGISTRO IMU · V6.7</div><button id="imuBackBtn" class="ghostBtn">CAMBIAR MODO</button></div>
       <div id="imuSessionSetup" class="imuSessionCard">
         <div style="font-size:20px;font-weight:950;margin-bottom:10px">SESIÓN DE SERVICIOS</div>
         <div class="imuSessionGrid">
@@ -140,9 +141,10 @@ body.mode-imu #imuMode{display:block}
         </div>
         <div id="imuSignal" class="imuSignal">IMU: esperando calibración</div>
         <div id="imuCalLive" class="imuCalLive"></div>
+        <div class="imuQuickBar"><button id="imuQuickVoiceBtn">＋ AVISO</button><button id="imuBellotoCutBtn">CORTE DOBLE · BELLOTO</button><div id="imuQuickMsg" class="imuQuickMsg"></div></div>
         <div class="imuProgress"><div class="imuProgressTitle">EVENTOS</div><div id="imuEvents" class="imuStops"><div style="font-size:11px;opacity:.45">Sin eventos todavía.</div></div></div>
         <div class="imuActions"><button id="imuRecalBtn">RECALIBRAR IMU</button><button id="imuNextServiceBtn" class="primary" style="display:none">SIGUIENTE SERVICIO</button><button id="imuFinishBtn" class="danger">FINALIZAR</button></div>
-        <div class="imuHint">La app aprende el reposo activo propio de cada teléfono y tren detenido/encendido. Ajuste automático protegido y recalibración manual. Un interruptor o golpe breve no inicia un trayecto. La estación final cierra el viaje al detectar la llegada y no suma detención ni consentimiento.</div>
+        <div class="imuHint">La app aprende el reposo activo propio de cada teléfono y tren detenido/encendido. Puedes añadir avisos durante el servicio con ＋ AVISO. El botón CORTE DOBLE arma un recordatorio solo para el servicio actual al iniciar El Sol → El Belloto. Un interruptor o golpe breve no inicia un trayecto.</div>
       </div>
       <div id="imuSessionReport" class="imuSessionReport">
         <div class="reportTitle">INFORME DE SESIÓN</div><div id="imuReportSub" class="reportSub"></div>
@@ -172,7 +174,7 @@ body.mode-imu #imuMode{display:block}
           <div id="voicePreview" class="voicePreview">Selecciona un mensaje.</div>
           <div id="voiceLock" class="voiceLock"></div>
           <div class="voiceActions"><button id="voiceTestBtn">PROBAR VOZ</button><button id="voiceSaveBtn" class="primary">GUARDAR MENSAJE</button><button id="voiceCancelEditBtn" style="display:none">CANCELAR EDICIÓN</button></div>
-          <div class="voiceNote">Los mensajes son globales: se reproducen en todos los servicios que circulen por la Vía 1, Vía 2 o ambas, según su configuración. Por defecto se activan al iniciar el tramo seleccionado.</div>
+          <div class="voiceNote">Los mensajes son globales y también pueden añadirse durante un servicio. Se reproducen en Vía 1, Vía 2 o ambas según su configuración. Por defecto se activan al iniciar el tramo seleccionado; puedes desactivarlos o borrarlos después.</div>
           <div id="voiceList" class="voiceList"></div>
         </div>
       </div>
@@ -273,6 +275,9 @@ const imuCalLive=document.getElementById('imuCalLive');
 const imuEventsEl=document.getElementById('imuEvents');
 const imuRecalBtn=document.getElementById('imuRecalBtn');
 const imuFinishBtn=document.getElementById('imuFinishBtn');
+const imuQuickVoiceBtn=document.getElementById('imuQuickVoiceBtn');
+const imuBellotoCutBtn=document.getElementById('imuBellotoCutBtn');
+const imuQuickMsg=document.getElementById('imuQuickMsg');
 const imuSessionSetup=document.getElementById('imuSessionSetup');
 const imuSessionStatus=document.getElementById('imuSessionStatus');
 const imuSessionProgress=document.getElementById('imuSessionProgress');
@@ -364,7 +369,7 @@ let currentSegmentAtpStoppedMs=0,lastCompletedTrip=null;
 let appMode=null,antiGlareApplied=false;
 let imuOnlyTrip=null,imuOnlyLoop=null,imuBaseline=null,imuBaselineAnchor=null,imuBaselineHistory=[],imuCalStart=null,imuCalValues=[],imuCalMode=null,imuCalPrevious=null,imuMoveCandidate=null,imuStopCandidate=null,imuLastEventAt=null,imuLastMotionScore=0,imuClassifiedStation=false,imuOnlyLastCompleted=null,imuScoreHistory=[],imuAutoCalStationKey=null,imuSensorLastT=null,imuCalUiTimer=null;
 let imuSession=null;
-let voiceEditingId=null,voiceSelectedPreset='Prevención',voiceTimers=new Map(),voiceTimerSeq=0,voiceSettings=null;
+let voiceEditingId=null,voiceSelectedPreset='Prevención',voiceTimers=new Map(),voiceTimerSeq=0,voiceSettings=null,voiceQuickMode=false;
 
 // Orden de segmentos: A,B,C,D,E,F,G.
 const digitPatterns={
@@ -1117,15 +1122,16 @@ function loadVoiceSettings(){
 }
 function saveVoiceSettings(){try{localStorage.setItem(VOICE_GLOBAL_KEY,JSON.stringify(voiceSettings||defaultVoiceSettings()));}catch(e){}}
 function voiceAlerts(){if(!voiceSettings)loadVoiceSettings();return voiceSettings.alerts;}
-function voiceCanEdit(){return !imuOnlyTrip||imuOnlyTrip.state!=='MOVING';}
+function voiceCanEdit(){return true;}
 function directionToVia(direction){return direction==='limache'?'via1':'via2';}
 function voiceDirectionLabel(d){return d==='via1'?'Vía 1':d==='via2'?'Vía 2':'Ambas vías';}
 function voiceBaseRoute(via){return via==='via2'?[...STATIONS_PUERTO_LIMACHE].reverse():[...STATIONS_PUERTO_LIMACHE];}
 function voicePopulateLocations(){
-  const via=voiceDirection.value;
-  const r=via==='via2'?voiceBaseRoute('via2'):[...STATIONS_PUERTO_LIMACHE];
-  const old=voiceLocation.value;
-  voiceLocation.innerHTML=r.slice(0,-1).map(s=>`<option value="${s}">${s}</option>`).join('');
+  const via=voiceDirection.value;let r=via==='via2'?voiceBaseRoute('via2'):[...STATIONS_PUERTO_LIMACHE];
+  if(voiceQuickMode&&imuOnlyTrip&&(via===imuOnlyTrip.via||via==='both')){
+    const start=Math.min(imuOnlyTrip.route.length-2,imuOnlyTrip.pos+(imuOnlyTrip.state==='MOVING'?1:0));const upcoming=imuOnlyTrip.route.slice(start,-1);if(upcoming.length)r=upcoming.concat(imuOnlyTrip.finalStation);
+  }
+  const old=voiceLocation.value;voiceLocation.innerHTML=r.slice(0,-1).map(s=>`<option value="${s}">${s}</option>`).join('');
   if(old&&[...voiceLocation.options].some(o=>o.value===old))voiceLocation.value=old;
 }
 function normalizePk(v){return String(v||'').trim().replace('.',',').replace(/\s+/g,'');}
@@ -1159,14 +1165,27 @@ function renderVoiceList(){
   voiceList.querySelectorAll('[data-v-enable]').forEach(b=>b.addEventListener('change',()=>{const a=voiceAlerts().find(x=>x.id===b.dataset.vEnable);if(a){a.enabled=b.checked;saveVoiceSettings();renderVoiceBar();}}));
 }
 function updateVoiceEditLock(){
-  const can=voiceCanEdit();voiceLock.textContent=can?'':'Edición bloqueada mientras el tren está en movimiento.';
+  const can=voiceCanEdit();voiceLock.textContent='';
   [voiceText,voiceDirection,voiceLocation,voiceUseSpeed,voiceSpeed,voiceUsePk,voicePkStart,voicePkEnd,voiceDelay,voiceTimes,voiceSaveBtn].forEach(el=>el.disabled=!can);
   voicePresetGrid.querySelectorAll('button').forEach(b=>b.disabled=!can);voiceTestBtn.disabled=false;renderVoiceList();
 }
-function openVoiceModal(){
-  if(!voiceSettings)loadVoiceSettings();voiceModal.classList.add('show');voiceAnnounceStations.checked=!!voiceSettings.announceStations;voiceRemindLights.checked=!!voiceSettings.remindLights;voiceRemindDoors.checked=!!voiceSettings.remindDoors;renderVoicePresets();voicePopulateLocations();syncVoiceOptionalUi();updateVoiceEditLock();renderVoiceList();
+function openVoiceModal(quick=false){
+  if(!voiceSettings)loadVoiceSettings();voiceQuickMode=!!quick;
+  if(quick){
+    voiceResetForm();voiceSelectedPreset='Nueva prevención';
+    if(imuOnlyTrip){
+      voiceDirection.value=imuOnlyTrip.via||directionToVia(imuOnlyTrip.direction);voicePopulateLocations();
+      const firstFuture=imuOnlyTrip.route[Math.min(imuOnlyTrip.route.length-2,imuOnlyTrip.pos+(imuOnlyTrip.state==='MOVING'?1:0))];
+      if(firstFuture&&[...voiceLocation.options].some(o=>o.value===firstFuture))voiceLocation.value=firstFuture;
+    }
+    renderVoicePresets();syncVoiceOptionalUi();
+  }
+  voiceModal.classList.add('show');voiceAnnounceStations.checked=!!voiceSettings.announceStations;voiceRemindLights.checked=!!voiceSettings.remindLights;voiceRemindDoors.checked=!!voiceSettings.remindDoors;renderVoicePresets();voicePopulateLocations();
+  if(quick&&imuOnlyTrip){const f=imuOnlyTrip.route[Math.min(imuOnlyTrip.route.length-2,imuOnlyTrip.pos+(imuOnlyTrip.state==='MOVING'?1:0))];if(f&&[...voiceLocation.options].some(o=>o.value===f))voiceLocation.value=f;updateVoicePreview();voiceLock.textContent='Aviso nuevo durante el servicio · selecciona el tramo y guarda.';}
+  syncVoiceOptionalUi();updateVoiceEditLock();renderVoiceList();
 }
-function closeVoiceModal(){voiceModal.classList.remove('show');}
+function closeVoiceModal(){voiceModal.classList.remove('show');voiceQuickMode=false;}
+function openQuickVoiceModal(){openVoiceModal(true);}
 function voiceResetForm(){
   voiceEditingId=null;voiceSelectedPreset='Prevención';voiceText.value='';voiceDirection.value='via1';voiceUseSpeed.checked=false;voiceSpeed.value='';voiceUsePk.checked=false;voicePkStart.value='';voicePkEnd.value='';voiceDelay.value='0';voiceTimes.value='1';voiceSaveBtn.textContent='GUARDAR MENSAJE';voiceCancelEditBtn.style.display='none';renderVoicePresets();voiceCustomField.style.display='none';voicePopulateLocations();syncVoiceOptionalUi();voiceLock.textContent='';
 }
@@ -1197,8 +1216,22 @@ function scheduleVoiceEvent(location,eventAt=Date.now()){
   if(!imuOnlyTrip)return;const trip=imuOnlyTrip,now=Date.now();for(const a of voiceAlerts()){if(!voiceEligible(a,trip)||a.location!==location)continue;const due=eventAt+(a.delayMs||0),wait=Math.max(0,due-now),id=++voiceTimerSeq;const timer=setTimeout(()=>{voiceTimers.delete(id);if(imuOnlyTrip&&imuOnlyTrip.serviceNumber===trip.serviceNumber)speakVoiceRepeated(composeVoiceText(a),a.repeatCount||1,trip.serviceNumber);},wait);voiceTimers.set(id,timer);}
 }
 function clearVoiceTimers(cancelSpeech=false){for(const t of voiceTimers.values())clearTimeout(t);voiceTimers.clear();if(cancelSpeech&&'speechSynthesis'in window)window.speechSynthesis.cancel();}
+function updateBellotoCutUi(msg=''){
+  if(!imuBellotoCutBtn)return;const armed=!!imuOnlyTrip?.doubleCutBellotoArmed;imuBellotoCutBtn.classList.toggle('armed',armed);imuBellotoCutBtn.textContent=armed?'CORTE DOBLE ARMADO ✓':'CORTE DOBLE · BELLOTO';if(imuQuickMsg&&msg)imuQuickMsg.textContent=msg;
+}
+function armBellotoDoubleCut(){
+  if(!imuOnlyTrip){updateBellotoCutUi('No hay un servicio activo.');return;}
+  const r=imuOnlyTrip.route,iSol=r.indexOf('El Sol'),iBell=r.indexOf('El Belloto');
+  if(iSol<0||iBell!==iSol+1){updateBellotoCutUi('Este servicio no pasa por El Sol → El Belloto.');return;}
+  const origin=r[imuOnlyTrip.pos],next=r[imuOnlyTrip.pos+1];
+  if(imuOnlyTrip.state==='MOVING'&&origin==='El Sol'&&next==='El Belloto'){imuOnlyTrip.doubleCutBellotoArmed=false;imuOnlyTrip.doubleCutBellotoDone=true;speakVoice('Recuerda: corte doble en estación El Belloto.');updateBellotoCutUi('Aviso reproducido ahora para este servicio.');return;}
+  if(imuOnlyTrip.pos>iSol||(imuOnlyTrip.pos===iSol&&imuOnlyTrip.state!=='STATION'&&imuOnlyTrip.state!=='WAITING')){updateBellotoCutUi('El tramo El Sol → El Belloto ya pasó o está cerrándose.');return;}
+  imuOnlyTrip.doubleCutBellotoArmed=true;imuOnlyTrip.doubleCutBellotoDone=false;updateBellotoCutUi('Armado: se dirá al iniciar El Sol → El Belloto.');
+}
 function scheduleDepartureVoice(station,nextStation,at){
-  if(!voiceSettings)loadVoiceSettings();if(voiceSettings.announceStations&&nextStation)speakVoice(`Próxima estación ${nextStation}.`);if(voiceSettings.remindLights)speakVoice('Recuerda mantener luces encendidas.');scheduleVoiceEvent(station,at);
+  if(!voiceSettings)loadVoiceSettings();if(voiceSettings.announceStations&&nextStation)speakVoice(`Próxima estación ${nextStation}.`);if(voiceSettings.remindLights)speakVoice('Recuerda mantener luces encendidas.');
+  if(imuOnlyTrip?.doubleCutBellotoArmed&&station==='El Sol'&&nextStation==='El Belloto'){imuOnlyTrip.doubleCutBellotoArmed=false;imuOnlyTrip.doubleCutBellotoDone=true;speakVoice('Recuerda: corte doble en estación El Belloto.');updateBellotoCutUi('Aviso de corte doble reproducido.');}
+  scheduleVoiceEvent(station,at);
 }
 function scheduleArrivalVoice(station,at){
   if(!voiceSettings)loadVoiceSettings();if(voiceSettings.announceStations)speakVoice(`Estación ${station}.`);if(voiceSettings.remindDoors)speakVoice('Recuerda abrir puertas.');
@@ -1400,8 +1433,8 @@ async function armImuTrip(){
   if(imuSession.services.some(t=>t.serviceNumber===service)){imuCalText.textContent='Ese número de servicio ya fue registrado en esta sesión.';return;}
   const ok=await enableIMU();if(!ok){imuCalText.textContent='No se pudo acceder al IMU del teléfono.';return;}
   applyImuRoutePreset();const full=routeForImu(),si=full.indexOf(imuStart.value),ei=full.indexOf(imuEnd.value);if(si<0||ei<=si){imuCalText.textContent='Revisa el recorrido.';return;}
-  clearVoiceTimers(false);if('speechSynthesis'in window)window.speechSynthesis.resume();const route=full.slice(si,ei+1),now=Date.now();imuOnlyTrip={id:'IMU'+now,serviceNumber:service,direction:imuDirection.value,via:directionToVia(imuDirection.value),armedAt:now,scheduledAt:imuScheduledTimestamp(),actualStartAt:null,endAt:null,route,pos:0,startStation:route[0],finalStation:route[route.length-1],state:'WAITING',eventLabel:'ESPERANDO SALIDA',eventStartAt:imuScheduledTimestamp(),segmentStartAt:null,events:[]};
-  imuOnlyLastCompleted=null;imuMoveCandidate=null;imuStopCandidate=null;imuClassifiedStation=false;imuScoreHistory=[];imuAutoCalStationKey=null;imuSetupEl.style.display='none';imuLiveEl.classList.add('show');imuNextServiceBtn.style.display='none';imuStateOnly.textContent=`SERVICIO ${service} · ESPERANDO SALIDA`;imuRouteOnly.textContent=`${route[0]} → ${route[1]}`;imuTimerLabelOnly.textContent='ESPERANDO SALIDA';renderImuEvents();imuBeginCalibration('initial');
+  clearVoiceTimers(false);if('speechSynthesis'in window)window.speechSynthesis.resume();const route=full.slice(si,ei+1),now=Date.now();imuOnlyTrip={id:'IMU'+now,serviceNumber:service,direction:imuDirection.value,via:directionToVia(imuDirection.value),armedAt:now,scheduledAt:imuScheduledTimestamp(),actualStartAt:null,endAt:null,route,pos:0,startStation:route[0],finalStation:route[route.length-1],state:'WAITING',eventLabel:'ESPERANDO SALIDA',eventStartAt:imuScheduledTimestamp(),segmentStartAt:null,events:[],doubleCutBellotoArmed:false,doubleCutBellotoDone:false};
+  imuOnlyLastCompleted=null;imuMoveCandidate=null;imuStopCandidate=null;imuClassifiedStation=false;imuScoreHistory=[];imuAutoCalStationKey=null;imuSetupEl.style.display='none';imuLiveEl.classList.add('show');imuQuickMsg.textContent='';updateBellotoCutUi();imuNextServiceBtn.style.display='none';imuStateOnly.textContent=`SERVICIO ${service} · ESPERANDO SALIDA`;imuRouteOnly.textContent=`${route[0]} → ${route[1]}`;imuTimerLabelOnly.textContent='ESPERANDO SALIDA';renderImuEvents();imuBeginCalibration('initial');
   clearInterval(imuOnlyLoop);imuOnlyLoop=setInterval(imuOnlyTick,100);try{if('wakeLock'in navigator)wakeLock=await navigator.wakeLock.request('screen');}catch(e){}
 }
 function recalibrateImu(){
@@ -1647,7 +1680,9 @@ imuRecalBtn.addEventListener('click',recalibrateImu);
 imuNextServiceBtn.addEventListener('click',nextImuService);
 imuFinishBtn.addEventListener('click',()=>finishImuTrip(false));
 imuNewSessionBtn.addEventListener('click',resetImuSession);
-voiceOpenBtn.addEventListener('click',openVoiceModal);
+voiceOpenBtn.addEventListener('click',()=>openVoiceModal(false));
+imuQuickVoiceBtn.addEventListener('click',openQuickVoiceModal);
+imuBellotoCutBtn.addEventListener('click',armBellotoDoubleCut);
 voiceCloseBtn.addEventListener('click',closeVoiceModal);
 voiceDirection.addEventListener('change',()=>{voicePopulateLocations();updateVoicePreview();});
 voiceUseSpeed.addEventListener('change',syncVoiceOptionalUi);voiceUsePk.addEventListener('change',syncVoiceOptionalUi);voiceSpeed.addEventListener('input',updateVoicePreview);voicePkStart.addEventListener('input',updateVoicePreview);voicePkEnd.addEventListener('input',updateVoicePreview);voiceText.addEventListener('input',updateVoicePreview);
