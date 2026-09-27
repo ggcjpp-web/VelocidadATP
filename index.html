@@ -4,7 +4,7 @@
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no" />
 <meta name="theme-color" content="#050708" />
-<title>Velocidad Sonora V7.6</title>
+<title>Velocidad Sonora V7.7</title>
 <style>
 :root{color-scheme:dark;font-family:system-ui,-apple-system,Segoe UI,Roboto,sans-serif}
 *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
@@ -100,7 +100,7 @@ body.mode-imu #imuMode{display:block}
   </div>
   <section id="imuMode">
     <div class="imuShell">
-      <div class="imuTop"><div class="imuBrand">REGISTRO IMU · V7.6</div><button id="imuBackBtn" class="ghostBtn">CAMBIAR MODO</button></div>
+      <div class="imuTop"><div class="imuBrand">REGISTRO IMU · V7.7</div><button id="imuBackBtn" class="ghostBtn">CAMBIAR MODO</button></div>
       <div id="imuSessionSetup" class="imuSessionCard">
         <div style="font-size:20px;font-weight:950;margin-bottom:10px">SESIÓN DE SERVICIOS</div>
         <div class="imuSessionGrid">
@@ -142,7 +142,7 @@ body.mode-imu #imuMode{display:block}
         <div class="imuQuickBar"><button id="imuQuickVoiceBtn">＋ AVISO</button><button id="imuBellotoCutBtn">CORTE DOBLE · BELLOTO</button><div id="imuQuickMsg" class="imuQuickMsg"></div></div>
         <div class="imuProgress"><div class="imuProgressTitle">EVENTOS</div><div id="imuEvents" class="imuStops"><div style="font-size:11px;opacity:.45">Sin eventos todavía.</div></div></div>
         <div class="imuActions"><button id="imuRecalBtn">RECALIBRAR IMU</button><button id="imuNextServiceBtn" class="primary" style="display:none">SIGUIENTE SERVICIO</button><button id="imuFinishBtn" class="danger">FINALIZAR</button></div>
-        <div class="imuHint">GPS identifica tramo, sentido y estación; IMU afina el instante real de detenerse o moverse. La posición nunca reemplaza la detección física de una detención.</div>
+        <div class="imuHint">GPS identifica tramo y estación; IMU afina detención y salida. Tras una llegada, la app bloquea falsas salidas durante los 12 s mínimos del ciclo de puertas.</div>
       </div>
       <div id="imuSessionReport" class="imuSessionReport">
         <div class="reportTitle">INFORME DE SESIÓN</div><div id="imuReportSub" class="reportSub"></div>
@@ -358,6 +358,13 @@ const IMU_FAST_DEPART_CONFIRM_MS=420;
 const IMU_DEPART_CONFIRM_MS=1350;
 const IMU_STOP_CONFIRM_MS=2600;
 const IMU_STATION_MS=12000;
+// Una salida de estación nunca se acepta antes de completar el ciclo físico mínimo
+// de puertas (4 s apertura + 8 s cierre). Después de esos 12 s se exige evidencia
+// sostenida de avance; un golpe corto de cabina no basta.
+const STATION_DEPARTURE_LOCK_MS=12000;
+const STATION_DEPARTURE_GPS_HOLD_MS=650;
+const STATION_DEPARTURE_IMU_WITH_GPS_MS=850;
+const STATION_DEPARTURE_IMU_ONLY_MS=1700;
 const IMU_MIN_SEGMENT_MS=65000;
 const IMU_EARLY_STOP_MS=40000;
 const IMU_VECTOR_WINDOW_MS=620;
@@ -1645,10 +1652,10 @@ function renderImuStopTable(now=Date.now()){
   if(imuOnlyTrip.state==='LOCATING'){
     imuMotionPhase='REPOSO';imuStateOnly.textContent=`SERVICIO ${imuOnlyTrip.serviceNumber} · LOCALIZANDO`;imuTimerLabelOnly.textContent='ESPERANDO UBICACIÓN GPS';imuExtraLabel.textContent='DESTINO';imuExtra.textContent=imuOnlyTrip.finalStation;imuRouteOnly.textContent=`Destino: ${imuOnlyTrip.finalStation}`;
   }else if(imuOnlyTrip.state==='STATION'){
-    const station=imuOnlyTrip.route[imuOnlyTrip.pos],dwell=Math.max(0,now-imuOnlyTrip.eventStartAt);rows.unshift({station,dwell,consent:Math.max(0,dwell-12000),live:true});
+    const station=imuOnlyTrip.route[imuOnlyTrip.pos],dwell=Math.max(0,now-imuOnlyTrip.eventStartAt);rows.unshift({station,dwell,consent:dwell<STATION_DEPARTURE_LOCK_MS?null:Math.max(0,dwell-12000),live:true});
   }
   if(!rows.length){imuStopRows.innerHTML='<div class="imuStopEmpty">Aún no hay detenciones registradas.</div>';return;}
-  imuStopRows.innerHTML=rows.map(r=>`<div class="imuStopRow${r.live?' live':''}"><strong>${escHtml(r.station)}${r.live?' · ahora':''}</strong><span class="time">${fmtTenths(r.dwell)}</span><span class="time">${fmtTenths(r.consent)}</span></div>`).join('');
+  imuStopRows.innerHTML=rows.map(r=>`<div class="imuStopRow${r.live?' live':''}"><strong>${escHtml(r.station)}${r.live?' · ahora':''}</strong><span class="time">${fmtTenths(r.dwell)}</span><span class="time">${r.consent===null?'—':fmtTenths(r.consent)}</span></div>`).join('');
 }
 function imuPercentile(sorted,q){
   if(!sorted.length)return 0;const p=(sorted.length-1)*q,i=Math.floor(p),f=p-i;return sorted[i]+(sorted[Math.min(i+1,sorted.length-1)]-sorted[i])*f;
@@ -1796,7 +1803,7 @@ function imuOnlyTick(){
   renderImuStopTable(now);
 
   if(state==='STATION'){
-    imuMotionPhase='REPOSO';imuStateOnly.textContent='DETENCIÓN EN ESTACIÓN';imuTimerLabelOnly.textContent='TIEMPO DETENIDO REAL';imuExtraLabel.textContent='CONSENTIMIENTO (−12 s)';imuExtra.textContent=fmtTenths(Math.max(0,mainElapsed-12000));
+    imuMotionPhase='REPOSO';imuStateOnly.textContent='DETENCIÓN EN ESTACIÓN';imuTimerLabelOnly.textContent='TIEMPO DETENIDO REAL';imuExtraLabel.textContent='CONSENTIMIENTO (−12 s)';imuExtra.textContent=mainElapsed<STATION_DEPARTURE_LOCK_MS?'—':fmtTenths(Math.max(0,mainElapsed-12000));
   }else if(state==='STOPPED'){
     imuMotionPhase='REPOSO';imuStateOnly.textContent='DETENCIÓN';imuTimerLabelOnly.textContent='TIEMPO DETENIDO';imuExtraLabel.textContent='DETECCIÓN';imuExtra.textContent=gps.valid?'Confirmando estación':'IMU';
   }else if(state==='WAITING'){
@@ -1843,6 +1850,42 @@ function imuOnlyTick(){
     if(depEv.fast){if(!imuMoveCandidate)imuMoveCandidate=now;return now-imuMoveCandidate>=IMU_FAST_DEPART_CONFIRM_MS;}
     if(depEv.moderate){if(!imuMoveCandidate)imuMoveCandidate=now;const need=gpsSpeed.moving?520:1050;return now-imuMoveCandidate>=need;}
     imuMoveCandidate=null;return false;
+  }
+
+  function stationDepartureEvidence(){
+    const arrival=imuOnlyTrip.eventStartAt||now,dwell=now-arrival;
+    // Durante los primeros 12 s de una detención de estación ignoramos cualquier pico:
+    // puertas, pasajeros, interruptores, vibraciones o golpes no pueden convertirse en salida.
+    if(dwell<STATION_DEPARTURE_LOCK_MS){
+      imuMoveCandidate=null;imuDepartureHintAt=null;gpsMovingSince=null;
+      return {ready:false,locked:true,dwell,reason:'ciclo_puertas'};
+    }
+    const raw=imuDepartureEvidence();
+    // Si ya aprendimos el eje longitudinal, solo aceptamos aceleración en el sentido de salida.
+    // Evita usar |proyección|, que podía confundir un golpe/rebote con avance.
+    const directional=imuLongAxis?raw.fast:(depEv.fast||depEv.moderate);
+    if(!directional){imuMoveCandidate=null;return {ready:false,locked:false,dwell};}
+    if(!imuMoveCandidate)imuMoveCandidate=now;
+    if(!imuDepartureHintAt)imuDepartureHintAt=imuMoveCandidate;
+    const imuHeld=now-imuMoveCandidate;
+
+    if(gps.valid&&gpsSpeed.available){
+      // Con GPS de velocidad: debe abandonar cero de forma sostenida. Se confirma después,
+      // pero se conserva como salida el primer instante físico detectado por el IMU.
+      const gpsHeld=gpsSpeed.moving&&Number.isFinite(gpsSpeed.movingSince)?now-gpsSpeed.movingSince:0;
+      return {ready:gpsSpeed.moving&&gpsHeld>=STATION_DEPARTURE_GPS_HOLD_MS&&imuHeld>=260,locked:false,dwell,imuHeld,gpsHeld,source:'IMU + GPS'};
+    }
+    if(gps.valid){
+      // Algunos navegadores no entregan speed. La dirección espacial puede confirmar sin
+      // esperar a salir de una geocerca exacta; si aún no está lista, pedimos IMU más largo.
+      const dir=gpsMovementDirectionEvidence(now);
+      const routeDir=imuOnlyTrip.direction==='limache'?1:-1;
+      const gpsDirOk=dir.confirmed&&dir.direction===routeDir;
+      return {ready:(gpsDirOk&&imuHeld>=STATION_DEPARTURE_IMU_WITH_GPS_MS)||imuHeld>=STATION_DEPARTURE_IMU_ONLY_MS,locked:false,dwell,imuHeld,source:gpsDirOk?'IMU + GPS dirección':'IMU sostenido'};
+    }
+    // Sin GPS (túnel/sin señal): IMU toma el control, pero con una confirmación bastante
+    // más larga que un golpe de switch.
+    return {ready:imuHeld>=STATION_DEPARTURE_IMU_ONLY_MS,locked:false,dwell,imuHeld,source:'IMU sin GPS'};
   }
 
   // Guardar el primer cambio físico de salida; la confirmación puede llegar después sin perder el instante.
@@ -1927,10 +1970,21 @@ function imuOnlyTick(){
   }
 
   if(state==='STATION'){
-    const imuDep=departureReadyImu();if(!imuDep)return;
-    const at=imuMoveCandidate||imuDepartureHintAt||now,arrival=imuOnlyTrip.eventStartAt,dwell=Math.max(0,at-arrival),station=imuOnlyTrip.route[imuOnlyTrip.pos];
-    if(imuCalMode==='auto'&&imuCalStart!==null)imuCancelCalibration('Salida detectada; se conserva la referencia anterior.');
-    imuLearnLongAxis(850);addImuEvent('ESTACION',station,arrival,at,{consentMs:Math.max(0,dwell-12000),source:gpsSpeed.moving?'IMU + GPS':'IMU'});
+    const dep=stationDepartureEvidence();
+    if(dep.locked){
+      // Esta protección evita exactamente los registros absurdos de 1–3 s observados:
+      // aunque haya picos del IMU, todavía no puede existir una salida física válida.
+      return;
+    }
+    if(!dep.ready)return;
+    const arrival=imuOnlyTrip.eventStartAt;
+    // El instante se toma del primer cambio físico aceptable DESPUÉS de los 12 s mínimos.
+    // Si GPS confirma más tarde, no añadimos esa latencia al tiempo detenido.
+    const at=Math.max(arrival+STATION_DEPARTURE_LOCK_MS,imuDepartureHintAt||imuMoveCandidate||now);
+    const dwell=Math.max(0,at-arrival),station=imuOnlyTrip.route[imuOnlyTrip.pos];
+    if(imuCalMode==='auto'&&imuCalStart!==null)imuCancelCalibration('Salida real confirmada; se conserva la referencia anterior.');
+    imuLearnLongAxis(850);
+    addImuEvent('ESTACION',station,arrival,at,{consentMs:Math.max(0,dwell-12000),source:dep.source||'IMU'});
     imuMoveCandidate=null;imuDepartureHintAt=null;imuCruiseScore=null;imuOnlyTrip.segmentStartAt=at;imuScoreHistory=[];
     const next=imuOnlyTrip.route[imuOnlyTrip.pos+1];imuSetEvent('MOVING','TRAYECTO',at);imuMotionPhase='CIRCULANDO';scheduleDepartureVoice(station,next,at);gpsStationLock=null;gpsDepartureCandidate=null;gpsZeroSince=null;gpsMovingSince=null;return;
   }
