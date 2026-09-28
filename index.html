@@ -4,7 +4,7 @@
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no" />
 <meta name="theme-color" content="#050708" />
-<title>Velocidad Sonora V7.10</title>
+<title>Velocidad Sonora V7.11</title>
 <style>
 :root{color-scheme:dark;font-family:system-ui,-apple-system,Segoe UI,Roboto,sans-serif}
 *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
@@ -100,7 +100,7 @@ body.mode-imu #imuMode{display:block}
   </div>
   <section id="imuMode">
     <div class="imuShell">
-      <div class="imuTop"><div class="imuBrand">REGISTRO IMU · V7.10</div><button id="imuBackBtn" class="ghostBtn">CAMBIAR MODO</button></div>
+      <div class="imuTop"><div class="imuBrand">REGISTRO IMU · V7.11</div><button id="imuBackBtn" class="ghostBtn">CAMBIAR MODO</button></div>
       <div id="imuSessionSetup" class="imuSessionCard">
         <div style="font-size:20px;font-weight:950;margin-bottom:10px">SESIÓN DE SERVICIOS</div>
         <div class="imuSessionGrid">
@@ -142,7 +142,7 @@ body.mode-imu #imuMode{display:block}
         <div class="imuQuickBar"><button id="imuQuickVoiceBtn">＋ AVISO</button><button id="imuBellotoCutBtn">CORTE DOBLE · BELLOTO</button><div id="imuQuickMsg" class="imuQuickMsg"></div></div>
         <div class="imuProgress"><div class="imuProgressTitle">EVENTOS</div><div id="imuEvents" class="imuStops"><div style="font-size:11px;opacity:.45">Sin eventos todavía.</div></div></div>
         <div class="imuActions"><button id="imuRecalBtn">RECALIBRAR IMU</button><button id="imuNextServiceBtn" class="primary" style="display:none">SIGUIENTE SERVICIO</button><button id="imuFinishBtn" class="danger">FINALIZAR</button></div>
-        <div class="imuHint">GPS solo aporta contexto de ubicación. Tras cada salida existe un periodo de rearme y la detección de una nueva estación solo se habilita cuando el siguiente punto es espacialmente plausible; el instante real de detención y salida lo decide el IMU mediante ventanas solapadas. Una estación requiere al menos 12 s de detención física.</div>
+        <div class="imuHint">GPS solo aporta contexto de ubicación: la app únicamente BUSCA una estación al acercarse a la siguiente parada y descarta candidatas si las coordenadas siguen avanzando por la vía. El instante físico de detención y salida lo decide el IMU con ventanas solapadas. Sin GPS, el IMU usa un respaldo más conservador. Una estación requiere al menos 12 s de detención física.</div>
       </div>
       <div id="imuSessionReport" class="imuSessionReport">
         <div class="reportTitle">INFORME DE SESIÓN</div><div id="imuReportSub" class="reportSub"></div>
@@ -389,25 +389,25 @@ const GPS_STATION_CONTEXT_MIN_M=220;
 const GPS_STATION_CONTEXT_MAX_M=360;
 const FUSION_STOP_CONFIRM_MS=420;
 const IMU_ONLY_STOP_CONFIRM_MS=950;
-// V7.10: máquina de estados física con histéresis.
-// GPS SOLO arma el contexto espacial (qué estación/tramo es plausible); nunca crea
-// DETENCIÓN ni CIRCULACIÓN. El IMU decide el instante físico mediante ventanas
-// solapadas y una transición sostenida. Tras una salida existe un periodo de
-// rearme para evitar confundir la aceleración inicial seguida de marcha suave con una parada.
-const IMU_STATE_WINDOW_MS=1800;
-const IMU_STATE_SHIFT_MS=900;
-const IMU_STOP_BREAK_HOLD_MS=1600;
-const IMU_DEPART_WINDOW_HOLD_MS=1400;
-const IMU_DEPART_BREAK_GRACE_MS=550;
+// V7.11: detector físico por ventanas solapadas + contexto espacial estricto.
+// El GPS NO crea estados: solo (1) indica cuándo tiene sentido BUSCAR la próxima estación
+// y (2) veta una falsa detención si las coordenadas siguen progresando por la vía.
+// Sin GPS, el IMU funciona solo, pero exige firma de frenado antes de aceptar una parada.
+const IMU_STATE_WINDOW_MS=2400;          // ventana más estable
+const IMU_STATE_SHIFT_MS=600;            // 75% de solapamiento
+const IMU_STOP_BREAK_HOLD_MS=1800;
+const IMU_DEPART_WINDOW_HOLD_MS=1500;
+const IMU_DEPART_BREAK_GRACE_MS=650;
 const IMU_STOP_DROP_RATIO=.78;
 const IMU_DEPART_RISE_RATIO=1.34;
-const IMU_STOP_TRANSITION_RATIO=.70;
-const IMU_STOP_EVIDENCE_HOLD_MS=1350;
-const IMU_POST_DEPART_STOP_GUARD_MS=12000;
-const IMU_GPS_STOP_ARM_BASE_M=620;
-const IMU_GPS_STOP_ARM_MAX_M=920;
-const IMU_NO_GPS_STOP_ARM_MS=22000;
-const IMU_BRAKE_MEMORY_MS=9000;
+const IMU_STOP_TRANSITION_RATIO=.68;
+const IMU_STOP_EVIDENCE_HOLD_MS=1800;
+const IMU_POST_DEPART_STOP_GUARD_MS=15000;
+const IMU_GPS_STOP_ARM_BASE_M=220;        // GPS solo abre la "zona de búsqueda" de estación
+const IMU_GPS_STOP_ARM_MAX_M=420;
+const IMU_NO_GPS_STOP_ARM_MS=30000;
+const IMU_BRAKE_MEMORY_MS=11000;
+const GPS_PROGRESS_WINDOW_MS=7000;
 const STATION_GPS_KEY='velocidadATP.learnedStationGps.v1';
 const IMU_SESSION_KEY='velocidadATP.imuServiceSession.v1';
 const VOICE_GLOBAL_KEY='velocidadATP.voiceGlobal.v2';
@@ -670,6 +670,40 @@ function gpsMovementDirectionEvidence(now=Date.now()){
   if(!sign||Math.abs(slope)<GPS_DIRECTION_MIN_MPS||Math.abs(delta)<minDelta||consistency<.62)return {confirmed:false,slope,delta,consistency,segmentIndex:last.segmentIndex,t:last.t,offRouteM:last.offRouteM};
   return {confirmed:true,direction:sign>0?'limache':'puerto',via:sign>0?'via1':'via2',slope,delta,consistency,segmentIndex:last.segmentIndex,t:last.t,offRouteM:last.offRouteM,startAt:first.ts,confirmedAt:now};
 }
+
+function gpsSpatialProgressEvidence(now=Date.now(),windowMs=GPS_PROGRESS_WINDOW_MS){
+  if(!gpsRequested||!gpsLast||!Number.isFinite(gpsLast.accuracy)||gpsLast.accuracy>GPS_MAX_ACCURACY_M)
+    return {available:false,moving:false};
+  const pts=gpsPositionHistory
+    .filter(p=>p.ts>=now-windowMs&&p.ts<=now&&Number.isFinite(p.accuracy)&&p.accuracy<=GPS_MAX_ACCURACY_M)
+    .map(p=>{const pr=gpsGlobalProjectionPoint({lat:p.lat,lon:p.lon});return pr?{...p,...pr}:null;})
+    .filter(Boolean)
+    .filter(p=>p.offRouteM<=Math.max(GPS_ROUTE_MAX_OFF_M,(p.accuracy||60)*2.4));
+  if(pts.length<4)return {available:false,moving:false};
+  const first=pts[0],last=pts[pts.length-1],durationMs=last.ts-first.ts;
+  if(durationMs<3500)return {available:false,moving:false};
+
+  const t0=first.ts,ts=pts.map(p=>(p.ts-t0)/1000),ys=pts.map(p=>p.chainageM);
+  const mt=ts.reduce((a,b)=>a+b,0)/ts.length,my=ys.reduce((a,b)=>a+b,0)/ys.length;
+  let num=0,den=0;
+  for(let i=0;i<pts.length;i++){num+=(ts[i]-mt)*(ys[i]-my);den+=(ts[i]-mt)*(ts[i]-mt);}
+  const slope=den?num/den:0;
+  const delta=last.chainageM-first.chainageM;
+  const avgAcc=pts.reduce((a,p)=>a+(p.accuracy||60),0)/pts.length;
+  const minDelta=Math.max(25,Math.min(75,avgAcc*.75));
+
+  let coherent=0,total=0,sign=Math.sign(slope||delta);
+  for(let i=1;i<pts.length;i++){
+    const d=pts[i].chainageM-pts[i-1].chainageM;
+    if(Math.abs(d)<2)continue;
+    total++;
+    if(Math.sign(d)===sign)coherent++;
+  }
+  const consistency=total?coherent/total:0;
+  const moving=!!sign&&Math.abs(delta)>=minDelta&&Math.abs(slope)>=.65&&consistency>=.55;
+  return {available:true,moving,slope,delta,consistency,minDelta,durationMs,accuracy:avgAcc};
+}
+
 function configureImuRouteFromMovement(ev,now=Date.now()){
   if(!imuOnlyTrip||!ev?.confirmed||!Number.isInteger(ev.segmentIndex))return false;
   const all=STATIONS_PUERTO_LIMACHE,dest=imuOnlyTrip.finalStation,destIdx=all.indexOf(dest),i=clamp(ev.segmentIndex,0,all.length-2);
@@ -1868,7 +1902,8 @@ function imuWindowStopEvidence(now=Date.now()){
   // Para una parada real exigimos meseta quieta + ausencia de aceleración neta y, además,
   // una firma previa de frenado O un reposo muy claro. El descenso desde el pico de salida
   // hacia marcha uniforme ya no basta por sí solo.
-  const ready=c.n>=6&&p.n>=6&&o.n>=6&&quietPair&&stableTriple&&dirQuiet&&netQuiet&&((afterBrake&&clearTransition)||veryQuiet);
+  const ready=c.n>=6&&p.n>=6&&o.n>=6&&quietPair&&stableTriple&&dirQuiet&&netQuiet&&
+    ((afterBrake&&clearTransition)||(veryQuiet&&clearTransition));
   const estimatedAt=now-Math.round(IMU_STATE_SHIFT_MS*1.05);
   return {...w,ready,quietPair,stableTriple,clearTransition,transitionRatio,dirQuiet,netQuiet,veryQuiet,afterBrake,estimatedAt};
 }
@@ -1882,23 +1917,25 @@ function imuWindowBrakeEvidence(){
   return {...w,strong,floor,brakeWindows};
 }
 function imuStopContextAllowed(gps,now=Date.now()){
-  if(!imuOnlyTrip||imuOnlyTrip.state!=='MOVING')return {allowed:false,reason:'no-moving-state'};
+  if(!imuOnlyTrip||imuOnlyTrip.state!=='MOVING')return {allowed:false,reason:'no-moving-state',mode:'none'};
   const start=imuOnlyTrip.segmentStartAt||imuOnlyTrip.eventStartAt||now;
   const age=Math.max(0,now-start);
-  // Tras una salida real, nunca armamos una nueva parada inmediatamente. Esto evita
-  // interpretar el pico de partida seguido por marcha suave como una detención.
-  if(age<IMU_POST_DEPART_STOP_GUARD_MS)return {allowed:false,reason:'post-depart-guard',age};
+
+  if(age<IMU_POST_DEPART_STOP_GUARD_MS)
+    return {allowed:false,reason:'post-depart-guard',age,mode:'none'};
+
   if(gps?.valid){
     const acc=Number.isFinite(gps.accuracy)?gps.accuracy:60;
-    const armRadius=clamp(IMU_GPS_STOP_ARM_BASE_M+acc*1.35,IMU_GPS_STOP_ARM_BASE_M,IMU_GPS_STOP_ARM_MAX_M);
-    // GPS solo responde "¿es espacialmente razonable buscar la próxima estación?".
-    // No dice si el tren está detenido.
-    if(Number.isFinite(gps.distanceNext))return {allowed:gps.distanceNext<=armRadius,reason:'gps-context',age,armRadius,distanceNext:gps.distanceNext};
-    return {allowed:age>=IMU_NO_GPS_STOP_ARM_MS,reason:'gps-no-distance',age,armRadius};
+    const armRadius=clamp(IMU_GPS_STOP_ARM_BASE_M+acc*.80,IMU_GPS_STOP_ARM_BASE_M,IMU_GPS_STOP_ARM_MAX_M);
+    // Con GPS válido, una parada de estación solo puede buscarse cerca de la estación esperada.
+    // La latitud NO declara la detención: únicamente evita buscarla en mitad del tramo.
+    if(Number.isFinite(gps.distanceNext))
+      return {allowed:gps.distanceNext<=armRadius,reason:'gps-station-zone',age,armRadius,distanceNext:gps.distanceNext,mode:'gps'};
+    return {allowed:false,reason:'gps-no-next-distance',age,armRadius,mode:'gps'};
   }
-  // Sin GPS dependemos solo del IMU, pero esperamos una cantidad mínima de marcha
-  // para no confundir la propia salida con una parada.
-  return {allowed:age>=IMU_NO_GPS_STOP_ARM_MS,reason:'imu-fallback',age};
+
+  // Sin GPS, habilitamos respaldo IMU más tarde y de forma conservadora.
+  return {allowed:age>=IMU_NO_GPS_STOP_ARM_MS,reason:'imu-fallback',age,mode:'imu'};
 }
 function imuWindowDepartureEvidence(){
   const w=imuOverlappingWindows(),c=w.current,p=w.previous,base=imuBaseline||{};
@@ -1965,7 +2002,8 @@ function imuOnlyTick(){
   }
 
   // Diagnóstico oculto: ventanas actual/anterior para poder ajustar después con datos reales.
-  imuSignalOnly.textContent=`IMU act ${winMotion.current.activity.toFixed(3)} · prev ${winMotion.previous.activity.toFixed(3)} · coh ${winMotion.current.coherence.toFixed(2)}${stationCtx?` · GPS ${stationCtx.name}`:''}`;
+  const gpsProgDiag=gps.valid?gpsSpatialProgressEvidence(now):{available:false,moving:false};
+  imuSignalOnly.textContent=`IMU act ${winMotion.current.activity.toFixed(3)} · prev ${winMotion.previous.activity.toFixed(3)} · coh ${winMotion.current.coherence.toFixed(2)}${stationCtx?` · GPS ${stationCtx.name}`:''}${gpsProgDiag.available?` · prog ${gpsProgDiag.moving?'sí':'no'}`:''}`;
 
   if(state==='LOCATING'){
     const globalGps=gpsGlobalMatch(now),globalCtx=gpsStationContext(globalGps),dirEv=gpsMovementDirectionEvidence(now);
@@ -2017,19 +2055,35 @@ function imuOnlyTick(){
     imuUpdateCruiseReference(Math.max(score,winMotion.current.activity),false);
 
     const stopContext=imuStopContextAllowed(gps,now);
+    const gpsProgress=gps?.valid?gpsSpatialProgressEvidence(now):{available:false,moving:false};
+
     if(!stopContext.allowed){
-      // Durante la salida y lejos de la próxima estación ni siquiera armamos una parada.
+      // Lejos de la siguiente estación NO existe detector de parada de estación.
+      // Así la marcha suave a mitad de trayecto no puede convertirse en una falsa detención.
       imuStopEvidenceSince=null;imuStopCandidate=null;imuArrivalHintAt=null;
       return;
     }
 
-    // La evidencia de reposo debe mantenerse durante varias evaluaciones solapadas.
-    if(winStop.ready){
+    // Aunque estemos dentro de la zona espacial de la estación, si las coordenadas siguen
+    // progresando claramente por la vía, la parada física todavía no ocurrió.
+    if(gpsProgress.available&&gpsProgress.moving){
+      imuStopEvidenceSince=null;imuStopCandidate=null;imuArrivalHintAt=null;
+      return;
+    }
+
+    // Con GPS ausente el detector IMU es deliberadamente conservador: exige frenado reciente.
+    const physicalStopReady=winStop.ready&&(stopContext.mode==='gps'||winStop.afterBrake);
+
+    // La evidencia de reposo debe mantenerse en varias ventanas muy solapadas.
+    if(physicalStopReady){
       if(imuStopEvidenceSince===null)imuStopEvidenceSince=now;
       if(now-imuStopEvidenceSince>=IMU_STOP_EVIDENCE_HOLD_MS){
         if(!imuStopCandidate){
-          const backdated=Math.min(IMU_STOP_EVIDENCE_HOLD_MS+IMU_STATE_SHIFT_MS,2600);
-          imuStopCandidate={since:Math.max(imuOnlyTrip.segmentStartAt||0,now-backdated),lastQuiet:now,breakSince:null,samples:[]};
+          const backdated=Math.min(IMU_STOP_EVIDENCE_HOLD_MS+IMU_STATE_SHIFT_MS*2,3200);
+          imuStopCandidate={
+            since:Math.max(imuOnlyTrip.segmentStartAt||0,now-backdated),
+            lastQuiet:now,breakSince:null,samples:[]
+          };
         }
         imuStopCandidate.lastQuiet=now;imuStopCandidate.breakSince=null;
         if(Number.isFinite(winStop.current.activity))imuStopCandidate.samples.push(winStop.current.activity);
@@ -2037,10 +2091,16 @@ function imuOnlyTick(){
     }else{
       imuStopEvidenceSince=null;
       if(imuStopCandidate){
-        // Solo movimiento equivalente a una salida real puede romper una detención candidata.
-        if(winMotion.strong&&winDepart.strong){
+        // Si GPS vuelve a mostrar progreso espacial, se elimina de inmediato la candidata.
+        const progressNow=gps?.valid?gpsSpatialProgressEvidence(now):{available:false,moving:false};
+        if(progressNow.available&&progressNow.moving){
+          imuStopCandidate=null;imuArrivalHintAt=null;
+        }else if(winMotion.strong&&winDepart.strong){
+          // Sin progreso GPS, solo una firma de salida real puede romper la candidata.
           if(!imuStopCandidate.breakSince)imuStopCandidate.breakSince=now;
-          if(now-imuStopCandidate.breakSince>=IMU_STOP_BREAK_HOLD_MS){imuStopCandidate=null;imuArrivalHintAt=null;}
+          if(now-imuStopCandidate.breakSince>=IMU_STOP_BREAK_HOLD_MS){
+            imuStopCandidate=null;imuArrivalHintAt=null;
+          }
         }else{
           imuStopCandidate.breakSince=null;
           if(Number.isFinite(winMotion.current.activity))imuStopCandidate.samples.push(winMotion.current.activity);
