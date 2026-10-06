@@ -4,7 +4,7 @@
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no" />
 <meta name="theme-color" content="#050708" />
-<title>Velocidad Sonora V7.16</title>
+<title>Velocidad Sonora V7.17</title>
 <style>
 :root{color-scheme:dark;font-family:system-ui,-apple-system,Segoe UI,Roboto,sans-serif}
 *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
@@ -122,7 +122,7 @@ body.mode-imu #imuMode{display:block}
   </div>
   <section id="imuMode">
     <div class="imuShell">
-      <div class="imuTop"><div class="imuBrand">REGISTRO IMU · V7.16</div><button id="imuBackBtn" class="ghostBtn">CAMBIAR MODO</button></div>
+      <div class="imuTop"><div class="imuBrand">REGISTRO IMU · V7.17</div><button id="imuBackBtn" class="ghostBtn">CAMBIAR MODO</button></div>
       <div id="imuSessionSetup" class="imuSessionCard">
         <div style="font-size:20px;font-weight:950;margin-bottom:10px">SESIÓN DE SERVICIOS</div>
         <div class="imuSessionGrid">
@@ -464,26 +464,18 @@ const PHYS_STOP_MIN_MS=12000;
 const PHYS_STOP_RELEASE_HOLD_MS=1900;
 const PHYS_MOTION_REF_MS=16000;
 
-// V7.16: el canal accelerationIncludingGravity filtrado deja de ser solo diagnóstico.
-// La magnitud relativa + coherencia vectorial decide mejor las salidas; el canal nativo
-// sigue como segunda evidencia. GPS solo aporta contexto espacial amplio de estación.
+// V7.17: perfil ferroviario inferido automáticamente por destino.
+// Destino Puerto = MC (coche motor). Cualquier destino desde Puerto = TCP (coche remolque).
+// Ambos usan el mismo detector adaptativo, con sensibilidad distinta según la firma observada.
+// GPS NUNCA autoriza ni bloquea DETENCIÓN/CIRCULACIÓN: solo ubica/nombra el tramo o estación.
 const GRAV_DEPART_LEVEL_MS=850;
 const GRAV_DEPART_VECTOR_MS=950;
-const GRAV_DEPART_COH_FIRST=.52;
-const GRAV_DEPART_COH_AXIS=.45;
-const GRAV_DEPART_ALIGN_MIN=.42;
-const GRAV_DEPART_RATIO=1.75;
-const GRAV_DEPART_ABS_INC=.055;
-const GRAV_DEPART_FLOOR=.13;
 const GRAV_STOP_LEVEL_MS=1400;
 const GRAV_MOVE_REF_MS=14000;
-const GRAV_STOP_ARM_BASE_M=280;
-const GRAV_STOP_ARM_MAX_M=480;
-const GRAV_STOP_FALLBACK_MIN_MS=28000;
-const GRAV_STOP_ONSET_RATIO=.82;
-const NATIVE_STOP_ONSET_RATIO=.88;
-const GRAV_STOP_CONFIRM_RATIO=.72;
-const NATIVE_STOP_CONFIRM_RATIO=.82;
+const VEHICLE_DETECTOR_PROFILES={
+  MC:{departRatio:1.65,departAbsInc:.045,departFloor:.115,cohFirst:.48,cohAxis:.40,alignMin:.20,nativeRatio:1.10,nativeAbsInc:.016,departHoldMs:650,stopOnsetG:.82,stopOnsetN:.88,stopConfirmG:.74,stopConfirmN:.84,stopSearchMinMs:5500},
+  TCP:{departRatio:1.45,departAbsInc:.028,departFloor:.095,cohFirst:.40,cohAxis:.34,alignMin:.16,nativeRatio:1.06,nativeAbsInc:.010,departHoldMs:520,stopOnsetG:.89,stopOnsetN:.93,stopConfirmG:.82,stopConfirmN:.89,stopSearchMinMs:4500}
+};
 const STATION_GPS_KEY='velocidadATP.learnedStationGps.v1';
 const IMU_SESSION_KEY='velocidadATP.imuServiceSession.v1';
 const VOICE_GLOBAL_KEY='velocidadATP.voiceGlobal.v2';
@@ -502,7 +494,7 @@ let cameraMode='trasera';
 let videoDevices=[],currentVideoDeviceIndex=-1;
 let masterGain=null,masterCompressor=null;
 let imuEnabled=false,imuPermission='--',imuSamples=[],gravityLP={x:0,y:0,z:0},gravityReady=false,imuHandlerInstalled=false;
-// V7.16: canal adicional usado por el detector híbrido; el filtro se mantiene separado del respaldo IMU nativo.
+// V7.17: canal adicional usado por el detector híbrido MC/TCP; el filtro se mantiene separado del respaldo IMU nativo.
 // La gravedad/orientación se estima con EMA y se analiza el componente pasa-altos.
 let validationGravityLP={x:0,y:0,z:0},validationGravityReady=false,validationGravityLastT=null;
 const VALIDATION_GRAVITY_TAU_SEC=2.0;
@@ -536,6 +528,18 @@ const digitPatterns={
 
 function setStatus(text,cls=''){statusText.textContent=text;statusEl.className=cls;}
 function clamp(v,a,b){return Math.max(a,Math.min(b,v));}
+function vehicleProfileFromDestination(destination){return destination==='Puerto'?'MC':'TCP';}
+function vehicleDetectorParams(profile=null){
+  const p=profile||imuOnlyTrip?.vehicleProfile||vehicleProfileFromDestination(imuOnlyTrip?.finalStation);
+  return VEHICLE_DETECTOR_PROFILES[p]||VEHICLE_DETECTOR_PROFILES.TCP;
+}
+function inferredDirectionFromDestination(destination){return destination==='Puerto'?'puerto':'limache';}
+function inferredViaFromDestination(destination){return destination==='Puerto'?'via2':'via1';}
+function inferredRouteFromDestination(destination){
+  const all=STATIONS_PUERTO_LIMACHE,idx=all.indexOf(destination);
+  if(idx<0)return [...all];
+  return destination==='Puerto'?[...all].reverse():all.slice(0,idx+1);
+}
 function lerp(a,b,t){return a+(b-a)*t;}
 function rectLerp(a,b,t){
   if(!a)return {...b};
@@ -1792,6 +1796,7 @@ function validationSnapshot(now=Date.now(),fastScore=null,slowScore=null,gps=nul
     t:now,
     elapsedMs:Math.max(0,Math.round(now-imuValidationCurrent.startedAt)),
     appState:imuOnlyTrip?.state||null,
+    vehicleProfile:imuOnlyTrip?.vehicleProfile||vehicleProfileFromDestination(imuOnlyTrip?.finalStation),
     eventLabel:imuOnlyTrip?.eventLabel||null,
     route:imuOnlyTrip?imuCurrentRouteText():null,
     stationPos:Number.isInteger(imuOnlyTrip?.pos)?imuOnlyTrip.pos:null,
@@ -1807,6 +1812,7 @@ function validationSnapshot(now=Date.now(),fastScore=null,slowScore=null,gps=nul
     gravityRest:validationRound(gravityRestProfileNow().gBase),
     gravityMoveRef:validationRound(gravityMovingReference()?.g),
     stopArmed:!!gravityLastStopContext?.armed,
+    stopContextMode:gravityLastStopContext?.mode||null,
     stopArmDistanceM:Number.isFinite(gravityLastStopContext?.distance)?Math.round(gravityLastStopContext.distance):null,
     fast:Number.isFinite(fastScore)?validationRound(fastScore):validationRound(imuLevel(PHYS_FAST_WINDOW_MS)),
     slow:Number.isFinite(slowScore)?validationRound(slowScore):validationRound(imuLevel(PHYS_SLOW_WINDOW_MS)),
@@ -1834,13 +1840,14 @@ function startValidationRun(){
   const now=Date.now();
   imuValidationCurrent={
     enabled:true,
-    schemaVersion:'1.2',
-    appVersion:'V7.16',
+    schemaVersion:'1.3',
+    appVersion:'V7.17',
     startedAt:now,
     startedPerf:performance.now(),
     endedAt:null,
     serviceNumber:(imuServiceNumber.value||'').trim(),
     destination:imuDestination?.value||null,
+    vehicleProfile:vehicleProfileFromDestination(imuDestination?.value),
     manual:[],
     automatic:[],
     samples:[],
@@ -1849,7 +1856,7 @@ function startValidationRun(){
       'gravity_x','gravity_y','gravity_z','gravity_magnitude',
       'filtered_x','filtered_y','filtered_z','filtered_magnitude',
       'acceleration_source','sensor_interval_ms'],
-    sampleColumns:['elapsed_ms','app_state','fast','slow','stop_threshold','move_threshold','ax','ay','az','mag','gps_valid','gps_lat','gps_lon','gps_accuracy_m','gps_speed_mps','gps_station','gps_distance_m','gravity_raw_magnitude','gravity_filtered_magnitude','gravity_level','gravity_coherence','gravity_alignment','gravity_rest','gravity_move_ref','stop_armed','stop_arm_distance_m'],
+    sampleColumns:['elapsed_ms','app_state','fast','slow','stop_threshold','move_threshold','ax','ay','az','mag','gps_valid','gps_lat','gps_lon','gps_accuracy_m','gps_speed_mps','gps_station','gps_distance_m','gravity_raw_magnitude','gravity_filtered_magnitude','gravity_level','gravity_coherence','gravity_alignment','gravity_rest','gravity_move_ref','stop_armed','stop_arm_distance_m','vehicle_profile','stop_context_mode'],
     nativeSamples:0,gravitySamples:0,
     lastRawPerf:null,
     rawTruncated:false,
@@ -1885,7 +1892,7 @@ function validationCaptureSample(now,fastScore,slowScore,gps,stationCtx){
     s.elapsedMs,s.appState,s.fast,s.slow,s.stopThreshold,s.moveThreshold,
     s.ax,s.ay,s.az,s.mag,s.gpsValid?1:0,s.gpsLat,s.gpsLon,s.gpsAccuracy,
     s.gpsSpeed,s.gpsStation,s.gpsDistanceM,s.gravityRawMagnitude,s.gravityFilteredMagnitude,
-    s.gravityLevel,s.gravityCoherence,s.gravityAlignment,s.gravityRest,s.gravityMoveRef,s.stopArmed?1:0,s.stopArmDistanceM
+    s.gravityLevel,s.gravityCoherence,s.gravityAlignment,s.gravityRest,s.gravityMoveRef,s.stopArmed?1:0,s.stopArmDistanceM,s.vehicleProfile,s.stopContextMode
   ]);
 }
 function validationAutomaticMark(state,label,effectiveAt=Date.now()){
@@ -1966,7 +1973,7 @@ function updateValidationReportExport(){
   }
   validationReportCard.classList.add('show');
   const marks=(v.manual||[]).length, raw=(v.rawImu||[]).length;
-  validationReportText.textContent=`${marks} marcas manuales · ${raw} muestras IMU · ${v.gravitySamples||0} con gravedad · servicio ${v.serviceNumber||'--'}. Descárgalo antes de iniciar una nueva sesión.`;
+  validationReportText.textContent=`${marks} marcas manuales · ${raw} muestras IMU · ${v.gravitySamples||0} con gravedad · ${v.vehicleProfile||vehicleProfileFromDestination(v.destination)} · servicio ${v.serviceNumber||'--'}. Descárgalo antes de iniciar una nueva sesión.`;
 }
 function exportValidationRun(){
   const v=(imuValidationCurrent?.enabled?imuValidationCurrent:imuValidationLast);
@@ -1975,13 +1982,13 @@ function exportValidationRun(){
   const payload={
     meta:{
       schemaVersion:v.schemaVersion,appVersion:v.appVersion,
-      serviceNumber:v.serviceNumber,destination:v.destination,
+      serviceNumber:v.serviceNumber,destination:v.destination,vehicleProfile:v.vehicleProfile||vehicleProfileFromDestination(v.destination),
       startedAt:v.startedAt,startedAtIso:new Date(v.startedAt).toISOString(),
       endedAt:v.endedAt,endedAtIso:v.endedAt?new Date(v.endedAt).toISOString():null,
       durationMs:v.endedAt?Math.max(0,v.endedAt-v.startedAt):Date.now()-v.startedAt,
       note:'Las marcas MANUAL representan la realidad indicada por el usuario. Las transiciones AUTOMATICAS son lo que decidió la app. GPS es contexto espacial, no una marca manual.',
       accelerationInfo:{units:'m/s2',gravityFilter:'pasa-altos independiente: accelerationIncludingGravity menos media exponencial (tau=2 segundos)',
-        note:'V7.16 usa el canal con gravedad filtrado como evidencia principal de salida y de caída relativa; el canal nativo confirma. GPS sigue reservado al contexto espacial.',
+        note:'V7.17 aplica perfil MC/TCP inferido por destino. El canal con gravedad filtrado es evidencia principal; GPS solo ubica/nombra y nunca bloquea el estado físico.',
         nativeRawRows:v.nativeSamples,gravityAvailableRows:v.gravitySamples,rawSamplingMinIntervalMs:VALIDATION_RAW_MIN_INTERVAL_MS}
     },
     manual:v.manual,
@@ -2024,9 +2031,9 @@ function renderImuStopTable(now=Date.now()){
     .reverse()
     .map(e=>({station:e.label,dwell:e.durationMs,consent:e.consentMs||0,live:false}));
   if(imuOnlyTrip.state==='LOCATING'){
-    imuMotionPhase='REPOSO';imuStateOnly.textContent=`SERVICIO ${imuOnlyTrip.serviceNumber} · LOCALIZANDO`;imuTimerLabelOnly.textContent='ESPERANDO UBICACIÓN GPS';imuExtraLabel.textContent='DESTINO';imuExtra.textContent=imuOnlyTrip.finalStation;imuRouteOnly.textContent=`Destino: ${imuOnlyTrip.finalStation}`;
+    imuMotionPhase='REPOSO';imuStateOnly.textContent=`SERVICIO ${imuOnlyTrip.serviceNumber} · ${imuOnlyTrip.vehicleProfile||'--'} · ESPERANDO MOVIMIENTO`;imuTimerLabelOnly.textContent='IMU ACTIVO';imuExtraLabel.textContent='DESTINO';imuExtra.textContent=imuOnlyTrip.finalStation;imuRouteOnly.textContent=`Destino: ${imuOnlyTrip.finalStation} · GPS solo ubicación`;
   }else if(imuOnlyTrip.state==='STATION'){
-    const station=imuOnlyTrip.route[imuOnlyTrip.pos],dwell=Math.max(0,now-imuOnlyTrip.eventStartAt);rows.unshift({station,dwell,consent:dwell<STATION_DEPARTURE_LOCK_MS?null:Math.max(0,dwell-12000),live:true});
+    const station=imuOnlyTrip.currentStationLabel||imuOnlyTrip.route[imuOnlyTrip.pos]||'Estación sin GPS',dwell=Math.max(0,now-imuOnlyTrip.eventStartAt);rows.unshift({station,dwell,consent:dwell<STATION_DEPARTURE_LOCK_MS?null:Math.max(0,dwell-12000),live:true});
   }
   if(!rows.length){imuStopRows.innerHTML='<div class="imuStopEmpty">Aún no hay detenciones registradas.</div>';return;}
   imuStopRows.innerHTML=rows.map(r=>`<div class="imuStopRow${r.live?' live':''}"><strong>${escHtml(r.station)}${r.live?' · ahora':''}</strong><span class="time">${fmtTenths(r.dwell)}</span><span class="time">${r.consent===null?'—':fmtTenths(r.consent)}</span></div>`).join('');
@@ -2095,7 +2102,11 @@ function imuUpdateCruiseReference(score,stationLike){
 }
 function imuCurrentRouteText(){
   if(!imuOnlyTrip)return '--';const r=imuOnlyTrip.route,p=imuOnlyTrip.pos;
-  if(imuOnlyTrip.state==='STATION'||imuOnlyTrip.state==='FINISHED')return r[p]||r[r.length-1];
+  if(imuOnlyTrip.locationPending){
+    if(imuOnlyTrip.state==='STATION')return imuOnlyTrip.currentStationLabel||'Estación sin GPS';
+    return `Ubicación pendiente · ${imuOnlyTrip.direction==='puerto'?'hacia Puerto':'hacia '+imuOnlyTrip.finalStation}`;
+  }
+  if(imuOnlyTrip.state==='STATION'||imuOnlyTrip.state==='FINISHED')return imuOnlyTrip.currentStationLabel||r[p]||r[r.length-1];
   return `${r[p]} → ${r[Math.min(p+1,r.length-1)]}`;
 }
 function imuSetEvent(state,label,at=Date.now()){
@@ -2327,7 +2338,9 @@ function gravityLearnLongAxis(windowMs=1100){
   if(!v.available||v.coherence<.42||v.meanMag<.045)return false;
   let nx=v.mx/v.meanMag,ny=v.my/v.meanMag,nz=v.mz/v.meanMag;
   if(gravityLongAxis){
-    const dot=nx*gravityLongAxis.x+ny*gravityLongAxis.y+nz*gravityLongAxis.z;
+    let dot=nx*gravityLongAxis.x+ny*gravityLongAxis.y+nz*gravityLongAxis.z;
+    // El pasa-altos puede invertir el signo entre aceleración y rebote. Nos interesa el EJE físico, no el signo.
+    if(dot<0){nx=-nx;ny=-ny;nz=-nz;dot=-dot;}
     if(dot<.15)return false; // una vibración transversal/puerta no redefine el eje del tren.
     const w=.26;
     nx=(1-w)*gravityLongAxis.x+w*nx;ny=(1-w)*gravityLongAxis.y+w*ny;nz=(1-w)*gravityLongAxis.z+w*nz;
@@ -2343,10 +2356,12 @@ function gravityCommitDepartureAxis(){
   if(!gravityLongAxis){
     gravityLongAxis={x:c.x,y:c.y,z:c.z,updatedAt:Date.now(),coherence:c.coherence};
   }else{
-    const dot=c.x*gravityLongAxis.x+c.y*gravityLongAxis.y+c.z*gravityLongAxis.z;
+    let cx=c.x,cy=c.y,cz=c.z;
+    let dot=cx*gravityLongAxis.x+cy*gravityLongAxis.y+cz*gravityLongAxis.z;
+    if(dot<0){cx=-cx;cy=-cy;cz=-cz;dot=-dot;}
     if(dot>=.15){
       const w=.28;
-      let x=(1-w)*gravityLongAxis.x+w*c.x,y=(1-w)*gravityLongAxis.y+w*c.y,z=(1-w)*gravityLongAxis.z+w*c.z;
+      let x=(1-w)*gravityLongAxis.x+w*cx,y=(1-w)*gravityLongAxis.y+w*cy,z=(1-w)*gravityLongAxis.z+w*cz;
       const norm=Math.hypot(x,y,z)||1;x/=norm;y/=norm;z/=norm;
       gravityLongAxis={x,y,z,updatedAt:Date.now(),coherence:c.coherence};
     }
@@ -2369,18 +2384,21 @@ function gravityMovingReference(){
 }
 function gravityStopContext(gps,now=Date.now()){
   if(!imuOnlyTrip||imuOnlyTrip.state!=='MOVING')return {armed:false,mode:'none',targetIndex:null,distance:null,radius:null};
-  const route=imuOnlyTrip.route||[],pos=imuOnlyTrip.pos||0,age=now-(imuOnlyTrip.segmentStartAt||imuOnlyTrip.eventStartAt||now);
+  const route=imuOnlyTrip.route||[],pos=Number.isInteger(imuOnlyTrip.pos)?imuOnlyTrip.pos:0;
+  const age=now-(imuOnlyTrip.segmentStartAt||imuOnlyTrip.eventStartAt||now),vp=vehicleDetectorParams();
+  let mode='imu',targetIndex=Math.min(pos+1,Math.max(0,route.length-1)),target=route[targetIndex]||null,distance=null,radius=null;
   if(gps?.valid&&gpsLast&&route.length>1){
-    const spatialNext=Number.isInteger(gps.segmentIndex)?gps.segmentIndex+1:pos+1;
-    const targetIndex=clamp(Math.max(pos+1,spatialNext),0,route.length-1);
-    const target=route[targetIndex],point=gpsStationPoint(target);
-    const distance=point?gpsHaversineMeters({lat:gpsLast.lat,lon:gpsLast.lon},point):null;
+    const spatialNext=Number.isInteger(gps.segmentIndex)?gps.segmentIndex+1:null;
+    // La posición GPS solo propone qué estación podría ser; jamás desarma el detector físico.
+    if(!imuOnlyTrip.locationPending&&Number.isInteger(spatialNext))targetIndex=clamp(Math.max(pos+1,spatialNext),0,route.length-1);
+    target=route[targetIndex]||target;
+    const point=target?gpsStationPoint(target):null;
+    distance=point?gpsHaversineMeters({lat:gpsLast.lat,lon:gpsLast.lon},point):null;
     const acc=Number.isFinite(gps.accuracy)?gps.accuracy:45;
-    const radius=clamp(GRAV_STOP_ARM_BASE_M+acc*1.35,GRAV_STOP_ARM_BASE_M,GRAV_STOP_ARM_MAX_M);
-    return {armed:Number.isFinite(distance)&&distance<=radius,mode:'gps',targetIndex,target,distance,radius,age};
+    radius=clamp(220+acc*1.8,240,520);
+    mode=Number.isFinite(distance)&&distance<=radius?'gps-near':'gps-reference';
   }
-  // Respaldo: sin GPS no bloqueamos el sistema, pero pedimos más tiempo de trayecto y una caída más marcada.
-  return {armed:age>=GRAV_STOP_FALLBACK_MIN_MS,mode:'imu',targetIndex:Math.min(pos+1,route.length-1),distance:null,radius:null,age};
+  return {armed:age>=vp.stopSearchMinMs,mode,targetIndex,target,distance,radius,age,vehicleProfile:imuOnlyTrip.vehicleProfile};
 }
 function gravityRecentStopPlateau(ms=3000){
   const vals=gravityStopSamples.filter(s=>s.t>=Date.now()-ms);
@@ -2426,12 +2444,13 @@ function physResetCandidates(){
 function physDepartureReady(now,fastScore,slowScore){
   const gLevel=gravityFilteredLevel(GRAV_DEPART_LEVEL_MS,.50),v=gravityVectorStats(GRAV_DEPART_VECTOR_MS);
   if(Number.isFinite(gLevel)&&v.available){
-    const rp=gravityRestProfileNow(),restG=Math.max(.025,rp.gBase||rp.gMedian||.07),restN=Math.max(.025,rp.nBase||rp.nMedian||.06);
-    const threshold=Math.max(restG*GRAV_DEPART_RATIO,restG+GRAV_DEPART_ABS_INC,GRAV_DEPART_FLOOR);
-    const coherenceMin=gravityLongAxis?GRAV_DEPART_COH_AXIS:GRAV_DEPART_COH_FIRST;
-    const axisOK=!gravityLongAxis||Number.isFinite(v.alignment)&&v.alignment>=GRAV_DEPART_ALIGN_MIN;
-    const nativeThreshold=Math.max(restN*1.12,restN+.018);
-    const nativeOK=slowScore>=nativeThreshold||gLevel>=restG*2.55;
+    const rp=gravityRestProfileNow(),restG=Math.max(.025,rp.gBase||rp.gMedian||.07),restN=Math.max(.025,rp.nBase||rp.nMedian||.06),vp=vehicleDetectorParams();
+    const threshold=Math.max(restG*vp.departRatio,restG+vp.departAbsInc,vp.departFloor);
+    const coherenceMin=gravityLongAxis?vp.cohAxis:vp.cohFirst;
+    // El signo puede invertirse por el rebote del pasa-altos: exigimos alineación con el eje, no un signo concreto.
+    const axisOK=!gravityLongAxis||Number.isFinite(v.alignment)&&Math.abs(v.alignment)>=vp.alignMin;
+    const nativeThreshold=Math.max(restN*vp.nativeRatio,restN+vp.nativeAbsInc);
+    const nativeOK=slowScore>=nativeThreshold||gLevel>=restG*(imuOnlyTrip?.vehicleProfile==='TCP'?2.20:2.45);
     const active=gLevel>=threshold&&v.coherence>=coherenceMin&&axisOK&&nativeOK;
     if(active){
       if(physDepartSince===null)physDepartSince=now;
@@ -2440,7 +2459,7 @@ function physDepartureReady(now,fastScore,slowScore){
       if(physDepartBreakSince===null)physDepartBreakSince=now;
       if(now-physDepartBreakSince>=PHYS_DEPART_BREAK_MS){physDepartSince=null;physDepartBreakSince=null;}
     }
-    const ready=physDepartSince!==null&&now-physDepartSince>=PHYS_DEPART_HOLD_MS;
+    const ready=physDepartSince!==null&&now-physDepartSince>=vp.departHoldMs;
     if(ready&&v.meanMag>.04){
       const norm=v.meanMag||1;
       gravityDepartureAxisCandidate={x:v.mx/norm,y:v.my/norm,z:v.mz/norm,coherence:v.coherence,at:physDepartSince};
@@ -2448,7 +2467,7 @@ function physDepartureReady(now,fastScore,slowScore){
     return {
       ready,
       at:physDepartSince,threshold,sensitive:threshold,gravityLevel:gLevel,
-      gravityCoherence:v.coherence,gravityAlignment:v.alignment,restGravity:restG,restNative:restN,source:'gravity-vector'
+      gravityCoherence:v.coherence,gravityAlignment:v.alignment,restGravity:restG,restNative:restN,vehicleProfile:imuOnlyTrip?.vehicleProfile||null,source:'gravity-vector'
     };
   }
 
@@ -2474,6 +2493,23 @@ function physUpdateStationProfile(score){
     if(p)physRestProfile=p;
   }
 }
+function syncTripLocationFromGps(gps,stationCtx,now=Date.now()){
+  if(!imuOnlyTrip||!gps?.valid||!Number.isInteger(gps.segmentIndex)||!Array.isArray(imuOnlyTrip.route)||imuOnlyTrip.route.length<2)return false;
+  // gpsSpatialEvidence/gpsRouteMatch ya entrega el índice relativo a la ruta actual (también si está invertida hacia Puerto).
+  let idx=clamp(gps.segmentIndex,0,imuOnlyTrip.route.length-2);
+  const wasPending=!!imuOnlyTrip.locationPending,oldPos=Number.isInteger(imuOnlyTrip.pos)?imuOnlyTrip.pos:null;
+  imuOnlyTrip.pos=idx;imuOnlyTrip.locationPending=false;imuOnlyTrip.gpsSpatialSegment=idx;imuOnlyTrip.gpsLastValidAt=now;
+  if(imuOnlyTrip.state==='STATION'&&stationCtx&&imuOnlyTrip.route.includes(stationCtx.name)){
+    const sidx=imuOnlyTrip.route.indexOf(stationCtx.name);
+    if(sidx>=0){imuOnlyTrip.pos=sidx;imuOnlyTrip.currentStationLabel=stationCtx.name;}
+  }
+  if(wasPending||oldPos===null||Math.abs(oldPos-imuOnlyTrip.pos)>1){
+    const label=imuOnlyTrip.state==='STATION'?(imuOnlyTrip.currentStationLabel||imuOnlyTrip.route[imuOnlyTrip.pos]):`${imuOnlyTrip.route[imuOnlyTrip.pos]} → ${imuOnlyTrip.route[Math.min(imuOnlyTrip.pos+1,imuOnlyTrip.route.length-1)]}`;
+    showImuCalibrationStatus(`GPS recuperado · ubicación resincronizada: ${label}. El estado físico siguió siendo determinado por IMU.`,'ok',5000);
+  }
+  return true;
+}
+
 function physStationNameFromGps(gps,stationCtx,expectedNext){
   let idx=expectedNext;
   if(gps?.valid&&gpsLast&&imuOnlyTrip?.route?.length){
@@ -2515,7 +2551,10 @@ function imuOnlyTick(){
 
   const gps=gpsSpatialEvidence(now),stationCtx=gpsStationContext(gps);
   const state=imuOnlyTrip.state;
-  if(gps.valid)imuOnlyTrip.gpsLastValidAt=now;
+  if(gps.valid){
+    imuOnlyTrip.gpsLastValidAt=now;
+    if(state==='MOVING'||state==='STATION')syncTripLocationFromGps(gps,stationCtx,now);
+  }
 
   let mainElapsed=now-(imuOnlyTrip.eventStartAt||now);
   if(state==='MOVING'&&imuOnlyTrip.segmentStartAt)mainElapsed=now-imuOnlyTrip.segmentStartAt;
@@ -2535,14 +2574,14 @@ function imuOnlyTick(){
     const delta=now-imuOnlyTrip.scheduledAt;
     imuExtra.textContent=(delta>=0?'+':'−')+fmtDuration(Math.abs(delta));
   }else if(state==='LOCATING'){
-    imuStateOnly.textContent=`SERVICIO ${imuOnlyTrip.serviceNumber} · CONFIRMANDO SENTIDO`;
-    imuTimerLabelOnly.textContent='ESPERANDO MOVIMIENTO';
+    imuStateOnly.textContent=`SERVICIO ${imuOnlyTrip.serviceNumber} · ${imuOnlyTrip.vehicleProfile} · ESPERANDO MOVIMIENTO`;
+    imuTimerLabelOnly.textContent='IMU ACTIVO · GPS SOLO UBICACIÓN';
     imuExtraLabel.textContent='DESTINO';imuExtra.textContent=imuOnlyTrip.finalStation;
     const gg=gpsGlobalMatch(now),gctx=gpsStationContext(gg);
     if(gg?.valid&&Number.isFinite(gg.segmentIndex)){
       const a=STATIONS_PUERTO_LIMACHE[gg.segmentIndex],b=STATIONS_PUERTO_LIMACHE[gg.segmentIndex+1];
-      imuRouteOnly.textContent=gctx?`${gctx.name} · esperando movimiento`:`${a} ↔ ${b} · detectando sentido`;
-    }else imuRouteOnly.textContent=`Destino: ${imuOnlyTrip.finalStation}`;
+      imuRouteOnly.textContent=gctx?`${gctx.name} · esperando movimiento`:`${a} ↔ ${b} · ${imuOnlyTrip.direction==='puerto'?'hacia Puerto':'hacia Limache'}`;
+    }else imuRouteOnly.textContent=`Destino: ${imuOnlyTrip.finalStation} · perfil ${imuOnlyTrip.vehicleProfile}`;
   }else if(state==='MOVING'){
     imuStateOnly.textContent='CIRCULANDO';
     imuTimerLabelOnly.textContent='TIEMPO DE TRAYECTO';
@@ -2557,37 +2596,36 @@ function imuOnlyTick(){
 
   const th=physThresholds(),stopTh=physStopThreshold(),gRest=gravityRestProfileNow(),gMoveRef=gravityMovingReference();
   const gText=Number.isFinite(gravityLevel)?gravityLevel.toFixed(3):'--';
-  imuSignalOnly.textContent=`IMU ${slowScore.toFixed(3)} · G ${gText}${gravityVector.available?` · coh ${gravityVector.coherence.toFixed(2)}`:''}${gps.valid?' · GPS ubicación':''}`;
+  imuSignalOnly.textContent=`${imuOnlyTrip.vehicleProfile||'--'} · IMU ${slowScore.toFixed(3)} · G ${gText}${gravityVector.available?` · coh ${gravityVector.coherence.toFixed(2)}`:''}${gps.valid?' · GPS ubicación':''}`;
 
   // Guardamos diagnósticos DESPUÉS de calcular las referencias que usa realmente el detector.
   gravityLastStopContext=state==='MOVING'?gravityStopContext(gps,now):null;
   validationCaptureSample(now,fastScore,slowScore,gps,stationCtx);
 
-  // 1) LOCALIZAR/SENTIDO: la salida física la detecta el canal filtrado; GPS confirma solo el sentido.
+  // 1) INICIO: el destino ya define dirección y perfil MC/TCP.
+  // El IMU puede comenzar a seguir el estado físico aun sin GPS (por ejemplo dentro de túnel).
   if(state==='LOCATING'){
     if(Number.isFinite(gravityLevel)&&physDepartSince===null)gravityUpdateRest(gravityLevel,slowScore);
-    const gg=gpsGlobalMatch(now),ctx=gpsStationContext(gg),dirEv=gpsMovementDirectionEvidence(now);
-    if(gg?.valid&&ctx){
-      imuOnlyTrip.locatedStation=ctx.name;
-      const st=gpsPositionStable(now,2200);
-      if(st.stable&&imuBaseline===null&&imuCalStart===null)imuBeginCalibration('initial');
-    }
+    const ctx=stationCtx;
+    if(gps?.valid&&ctx)imuOnlyTrip.locatedStation=ctx.name;
 
     const dep=physDepartureReady(now,fastScore,slowScore);
-    if(dep.ready&&Number.isFinite(dep.at))imuDepartureHintAt=Math.max(imuOnlyTrip.armedAt||0,dep.at);
-    if(Number.isFinite(imuDepartureHintAt)&&now-imuDepartureHintAt>INITIAL_DEPARTURE_MAX_AGE_MS){imuDepartureHintAt=null;gravityDepartureAxisCandidate=null;}
+    if(!dep.ready)return;
+    const at=Math.max(imuOnlyTrip.armedAt||0,dep.at||now);
+    imuOnlyTrip.actualStartAt=at;imuOnlyTrip.segmentStartAt=at;imuOnlyTrip.partialFirstSegment=true;imuOnlyTrip.startedInMotion=true;
 
-    // La aceleración puede terminar antes de que GPS reúna suficientes posiciones para confirmar el sentido.
-    // Conservamos solo una salida física robusta y reciente.
-    if(dirEv.confirmed&&Number.isFinite(imuDepartureHintAt)){
-      imuMoveCandidate=imuDepartureHintAt;
-      const ok=configureImuRouteFromMovement(dirEv,now);
-      if(ok){
-        gravityResetRest();gravityMoveHistory=[];gravityStopSamples=[];gravityStopFrozenRef=null;
-        physDepartSince=null;physDepartBreakSince=null;
-      }
-      return;
+    // Si ya existe una posición GPS, solo la usamos para ubicar el tramo. Si no existe, seguimos en modo provisional IMU.
+    if(gps?.valid&&Number.isInteger(gps.segmentIndex)){
+      syncTripLocationFromGps(gps,ctx,now);
+      imuOnlyTrip.partialFirstSegment=true;
+    }else{
+      imuOnlyTrip.locationPending=true;
     }
+    imuLearnLongAxis(1000);gravityCommitDepartureAxis();
+    addImuEvent('INICIO_PARCIAL',imuOnlyTrip.locationPending?'Inicio · ubicación pendiente':'Inicio de registro',imuOnlyTrip.scheduledAt,at,{delayMs:at-imuOnlyTrip.scheduledAt,source:`IMU ${imuOnlyTrip.vehicleProfile} · dirección inferida por destino`,partial:true});
+    physResetCandidates();imuScoreHistory=[];physMoveHistory=[];gravityMoveHistory=[];imuStationWindowSamples=[];gravityResetRest();
+    imuSetEvent('MOVING','TRAYECTO',at);
+    showImuCalibrationStatus(imuOnlyTrip.locationPending?`IMU activo con perfil ${imuOnlyTrip.vehicleProfile} · sin GPS. La ubicación se resincronizará cuando vuelva la señal.`:`Perfil ${imuOnlyTrip.vehicleProfile} · ubicación GPS disponible. El estado físico lo decide el IMU.`,'ok',6500);
     return;
   }
 
@@ -2609,8 +2647,8 @@ function imuOnlyTick(){
     return;
   }
 
-  // 3) CIRCULANDO: GPS solo abre una zona amplia de búsqueda de estación.
-  // El instante de parada lo define una caída RELATIVA y sostenida de ambos canales.
+  // 3) CIRCULANDO: GPS es únicamente contexto espacial.
+  // El instante de parada lo define una caída RELATIVA y sostenida de ambos canales, incluso sin GPS.
   if(state==='MOVING'){
     if(Number.isFinite(gravityLevel))gravityPushMoveReference(now,gravityLevel,slowScore);
     physPushMoveScore(now,slowScore);
@@ -2622,14 +2660,14 @@ function imuOnlyTick(){
     }
 
     if(ref&&Number.isFinite(gravityLevel)){
-      const gRatio=gravityLevel/Math.max(.025,ref.g),nRatio=slowScore/Math.max(.025,ref.n);
-      const strongFallback=ctx.mode==='imu'&&gRatio<.66&&nRatio<.74;
-      const onset=(gRatio<GRAV_STOP_ONSET_RATIO&&nRatio<NATIVE_STOP_ONSET_RATIO)||(strongFallback&&gravityVector.coherence<.48);
+      const vp=vehicleDetectorParams(),gRatio=gravityLevel/Math.max(.025,ref.g),nRatio=slowScore/Math.max(.025,ref.n);
+      const strongFallback=gRatio<Math.max(.58,vp.stopOnsetG-.16)&&nRatio<Math.max(.66,vp.stopOnsetN-.14);
+      const onset=(gRatio<vp.stopOnsetG&&nRatio<vp.stopOnsetN)||(strongFallback&&gravityVector.coherence<.48);
 
       if(physStopSince===null&&onset){
         physStopSince=now;
         physStopBreakSince=null;
-        gravityStopFrozenRef={g:ref.g,n:ref.n,targetIndex:ctx.targetIndex,mode:ctx.mode};
+        gravityStopFrozenRef={g:ref.g,n:ref.n,targetIndex:ctx.targetIndex,mode:ctx.mode,vehicleProfile:imuOnlyTrip?.vehicleProfile||null};
         physStopSamples=[slowScore];gravityStopSamples=[{t:now,g:gravityLevel,n:slowScore}];
       }else if(physStopSince!==null){
         physStopSamples.push(slowScore);gravityStopSamples.push({t:now,g:gravityLevel,n:slowScore});
@@ -2649,24 +2687,28 @@ function imuOnlyTick(){
         if(now-physStopSince>=PHYS_STOP_MIN_MS){
           const plateau=gravityRecentStopPlateau(3200),f=gravityStopFrozenRef||ref;
           if(plateau){
-            const gLow=plateau.g<=Math.max(.12,f.g*GRAV_STOP_CONFIRM_RATIO);
-            const nLow=plateau.n<=Math.max(.20,f.n*NATIVE_STOP_CONFIRM_RATIO);
+            const vp=vehicleDetectorParams();
+            const gLow=plateau.g<=Math.max(imuOnlyTrip?.vehicleProfile==='TCP' ? .105 : .10,f.g*vp.stopConfirmG);
+            const nLow=plateau.n<=Math.max(imuOnlyTrip?.vehicleProfile==='TCP' ? .18 : .16,f.n*vp.stopConfirmN);
             if(gLow&&nLow){
-              const expectedNext=Math.min(imuOnlyTrip.pos+1,imuOnlyTrip.route.length-1);
-              const idx=physStationNameFromGps(gps,stationCtx,expectedNext);
+              const expectedNext=Math.min((Number.isInteger(imuOnlyTrip.pos)?imuOnlyTrip.pos:0)+1,imuOnlyTrip.route.length-1);
+              const haveSpatial=!!gps.valid&&!imuOnlyTrip.locationPending;
+              const idx=haveSpatial?physStationNameFromGps(gps,stationCtx,expectedNext):null;
               const arrival=physStopSince;
-              const origin=imuOnlyTrip.route[imuOnlyTrip.pos],dest=imuOnlyTrip.route[idx];
-              const skipped=idx>expectedNext;
+              const origin=imuOnlyTrip.locationPending?'Ubicación pendiente':imuOnlyTrip.route[imuOnlyTrip.pos];
+              const dest=idx===null?'Estación sin GPS':imuOnlyTrip.route[idx];
+              const skipped=idx!==null&&idx>expectedNext;
 
               if(imuOnlyTrip.segmentStartAt){
-                const firstPartial=!!imuOnlyTrip.partialFirstSegment;
+                const firstPartial=!!imuOnlyTrip.partialFirstSegment||imuOnlyTrip.locationPending;
                 addImuEvent((firstPartial||skipped)?'TRAMO_PARCIAL':'TRAMO',`${origin} → ${dest}`,imuOnlyTrip.segmentStartAt,arrival,{
-                  source:'IMU híbrido · caída relativa',partial:firstPartial||skipped,resynced:skipped
+                  source:`IMU ${imuOnlyTrip.vehicleProfile} · caída relativa`,partial:firstPartial||skipped,resynced:skipped,locationPending:imuOnlyTrip.locationPending
                 });
                 imuOnlyTrip.partialFirstSegment=false;
               }
 
-              imuOnlyTrip.pos=idx;imuClassifiedStation=true;
+              if(idx!==null)imuOnlyTrip.pos=idx;
+              imuOnlyTrip.currentStationLabel=dest;imuClassifiedStation=true;
               const nativeTail=physStopSamples.slice(-80),gravTail=gravityStopSamples.slice(-80);
               const prof=physProfileFromScores(nativeTail);if(prof)physRestProfile=prof;
               gravityRestSamples=gravTail.map(s=>({g:s.g,n:s.n}));
@@ -2674,11 +2716,11 @@ function imuOnlyTick(){
               imuStationWindowSamples=nativeTail.slice(-160);
               physStopSince=null;physStopBreakSince=null;physStopSamples=[];gravityStopSamples=[];gravityStopFrozenRef=null;physDepartSince=null;physDepartBreakSince=null;physMoveHistory=[];gravityMoveHistory=[];
 
-              if(gps.valid)gpsLearnStationAnchor(dest);
-              if(dest===imuOnlyTrip.finalStation){
+              if(gps.valid&&idx!==null)gpsLearnStationAnchor(dest);
+              if(idx!==null&&dest===imuOnlyTrip.finalStation){
                 clearVoiceTimers(false);scheduleArrivalVoice(dest,arrival);finishImuTrip(true,arrival,true);return;
               }
-              scheduleArrivalVoice(dest,arrival);
+              if(idx!==null)scheduleArrivalVoice(dest,arrival);
               imuSetEvent('STATION','DETENCIÓN EN ESTACIÓN',arrival);
               if(skipped)showImuCalibrationStatus(`GPS resincronizó la ubicación en ${dest}; los tiempos de estaciones omitidas no se inventan.`,'info',6500);
               return;
@@ -2703,7 +2745,7 @@ function imuOnlyTick(){
     if(!dep.ready)return;
 
     const at=Math.max(arrival+12000,dep.at||now);
-    const station=imuOnlyTrip.route[imuOnlyTrip.pos],realDwell=Math.max(0,at-arrival);
+    const station=imuOnlyTrip.currentStationLabel||imuOnlyTrip.route[imuOnlyTrip.pos]||'Estación sin GPS',realDwell=Math.max(0,at-arrival);
     if(imuCalMode==='auto'&&imuCalStart!==null)imuCancelCalibration('Salida física confirmada; se conserva la referencia anterior.');
     imuLearnLongAxis(1000);gravityCommitDepartureAxis();
     addImuEvent('ESTACION',station,arrival,at,{
@@ -2712,8 +2754,9 @@ function imuOnlyTick(){
 
     physResetCandidates();physMoveHistory=[];gravityMoveHistory=[];imuScoreHistory=[];imuStationWindowSamples=[];gravityResetRest();
     imuOnlyTrip.segmentStartAt=at;
-    const next=imuOnlyTrip.route[imuOnlyTrip.pos+1];
-    imuSetEvent('MOVING','TRAYECTO',at);scheduleDepartureVoice(station,next,at);
+    const next=imuOnlyTrip.locationPending?null:imuOnlyTrip.route[imuOnlyTrip.pos+1];
+    imuOnlyTrip.currentStationLabel=null;
+    imuSetEvent('MOVING','TRAYECTO',at);if(next)scheduleDepartureVoice(station,next,at);
     return;
   }
 
@@ -2731,13 +2774,15 @@ async function armImuTrip(){
   const destination=imuDestination?.value;
   if(!destination||!STATIONS_PUERTO_LIMACHE.includes(destination)){imuCalText.textContent='Selecciona el destino final.';return;}
   const ok=await enableIMU();if(!ok){imuCalText.textContent='No se pudo acceder al IMU del teléfono.';return;}
-  if(!startGpsSupport()){imuCalText.textContent='No se pudo iniciar el GPS. El GPS es necesario para identificar la estación inicial.';return;}
+  const gpsStarted=startGpsSupport(); // GPS es opcional para el estado físico; si falla, IMU continúa.
   clearVoiceTimers(false);if('speechSynthesis'in window)window.speechSynthesis.resume();const now=Date.now();
-  imuOnlyTrip={id:'IMU'+now,serviceNumber:service,direction:null,via:null,armedAt:now,scheduledAt:imuScheduledTimestamp(),actualStartAt:null,endAt:null,route:[...STATIONS_PUERTO_LIMACHE],pos:0,startStation:null,finalStation:destination,state:'LOCATING',eventLabel:'LOCALIZANDO Y CONFIRMANDO SENTIDO',eventStartAt:now,segmentStartAt:null,events:[],gpsSupport:true,gpsOriginLocked:false,gpsLastValidAt:null,doubleCutBellotoArmed:false,doubleCutBellotoDone:false};
+  const vehicleProfile=vehicleProfileFromDestination(destination),inferredDirection=inferredDirectionFromDestination(destination),inferredVia=inferredViaFromDestination(destination),provisionalRoute=inferredRouteFromDestination(destination);
+  imuOnlyTrip={id:'IMU'+now,serviceNumber:service,direction:inferredDirection,via:inferredVia,vehicleProfile,armedAt:now,scheduledAt:imuScheduledTimestamp(),actualStartAt:null,endAt:null,route:provisionalRoute,pos:0,startStation:null,finalStation:destination,state:'LOCATING',eventLabel:'ESPERANDO MOVIMIENTO · IMU',eventStartAt:now,segmentStartAt:null,events:[],gpsSupport:gpsStarted,gpsOriginLocked:false,gpsLastValidAt:null,locationPending:true,currentStationLabel:null,doubleCutBellotoArmed:false,doubleCutBellotoDone:false};
+  imuDirection.value=inferredDirection;
   startValidationRun();
   physResetCandidates(); // no heredar candidatos del viaje/prueba anterior.
   gravityResetRest();gravityMoveHistory=[];gravityLongAxis=null;gravityDepartureAxisCandidate=null;gravityStopSamples=[];gravityStopFrozenRef=null;gravityLastStopContext=null;
-  imuOnlyLastCompleted=null;imuMoveCandidate=null;imuStopCandidate=null;imuDepartureHintAt=null;imuArrivalHintAt=null;imuClassifiedStation=false;imuScoreHistory=[];imuAutoCalStationKey=null;imuLongAxis=null;imuDepartureHintAt=null;imuArrivalHintAt=null;imuMotionPhase='REPOSO';imuLastBrakeAt=0;imuCruiseScore=null;imuStationWindowBaseline=null;imuStationWindowSamples=[];imuWindowMoveBreakAt=null;gpsSyncCandidate=null;gpsStationLock=null;gpsDepartureCandidate=null;gpsWaitingSegmentCandidate=null;imuSetupEl.style.display='none';imuLiveEl.classList.add('show');imuQuickMsg.textContent='';updateBellotoCutUi();imuNextServiceBtn.style.display='none';imuStateOnly.textContent=`SERVICIO ${service} · CONFIRMANDO SENTIDO`;imuRouteOnly.textContent=`Destino: ${destination}`;imuTimerOnly.textContent='00:00.0';imuTimerLabelOnly.textContent='ESPERANDO MOVIMIENTO';renderImuEvents();imuRecalBtn.disabled=true;setImuCalibrationMessage('GPS localizando el tren. En cuanto se confirme hacia qué lado se desplaza, la app identificará el tramo y comenzará el cronómetro usando el primer cambio físico detectado por el IMU.','info');
+  imuOnlyLastCompleted=null;imuMoveCandidate=null;imuStopCandidate=null;imuDepartureHintAt=null;imuArrivalHintAt=null;imuClassifiedStation=false;imuScoreHistory=[];imuAutoCalStationKey=null;imuLongAxis=null;imuDepartureHintAt=null;imuArrivalHintAt=null;imuMotionPhase='REPOSO';imuLastBrakeAt=0;imuCruiseScore=null;imuStationWindowBaseline=null;imuStationWindowSamples=[];imuWindowMoveBreakAt=null;gpsSyncCandidate=null;gpsStationLock=null;gpsDepartureCandidate=null;gpsWaitingSegmentCandidate=null;imuSetupEl.style.display='none';imuLiveEl.classList.add('show');imuQuickMsg.textContent='';updateBellotoCutUi();imuNextServiceBtn.style.display='none';imuStateOnly.textContent=`SERVICIO ${service} · ${vehicleProfile} · ESPERANDO MOVIMIENTO`;imuRouteOnly.textContent=`Destino: ${destination} · ${inferredDirection==='puerto'?'hacia Puerto':'desde Puerto'} · perfil ${vehicleProfile}`;imuTimerOnly.textContent='00:00.0';imuTimerLabelOnly.textContent='IMU ACTIVO';renderImuEvents();imuRecalBtn.disabled=true;setImuCalibrationMessage(gpsStarted?`Perfil ${vehicleProfile} seleccionado automáticamente por destino. GPS buscará ubicación; DETENCIÓN/CIRCULACIÓN dependen solo del IMU.`:`Perfil ${vehicleProfile} seleccionado automáticamente por destino. Sin GPS: el IMU seguirá detectando movimiento y detenciones; la ubicación se resincronizará cuando vuelva la señal.`,'info');
   clearInterval(imuOnlyLoop);imuOnlyLoop=setInterval(imuOnlyTick,100);try{if('wakeLock'in navigator)wakeLock=await navigator.wakeLock.request('screen');}catch(e){}
 }
 function recalibrateImu(){
@@ -3019,4 +3064,4 @@ document.addEventListener('visibilitychange',()=>{if(document.visibilityState===
 fillTripSelectors();loadVoiceSettings();fillImuDestination();setDefaultSchedule();restoreImuSession();renderVoiceBar();voiceResetForm();updateMiniReadout();
 </script>
 </body>
-  </html>
+            </html>
