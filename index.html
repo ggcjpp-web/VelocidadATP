@@ -4,7 +4,7 @@
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no" />
 <meta name="theme-color" content="#050708" />
-<title>Velocidad Sonora V7.20</title>
+<title>Velocidad Sonora V7.21</title>
 <style>
 :root{color-scheme:dark;font-family:system-ui,-apple-system,Segoe UI,Roboto,sans-serif}
 *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
@@ -76,10 +76,10 @@ body.mode-imu #imuMode{display:block}
 .imuStopTable{margin-top:12px;background:#0e1315;border-radius:16px;padding:12px}.imuStopTitle{font-size:12px;font-weight:950;letter-spacing:.08em;margin-bottom:8px}.imuStopHead,.imuStopRow{display:grid;grid-template-columns:minmax(120px,1fr) auto auto;gap:10px;align-items:center}.imuStopHead{font-size:9px;font-weight:900;opacity:.55;padding:0 2px 6px}.imuStopRow{padding:9px 2px;border-top:1px solid rgba(255,255,255,.07);font-size:13px}.imuStopRow strong{font-size:14px}.imuStopRow .time{font-variant-numeric:tabular-nums;font-weight:900;text-align:right}.imuStopRow.live{color:#bff;}.imuStopEmpty{font-size:12px;opacity:.46;padding:5px 2px}.imuCalLive.show{display:block}.imuCalLive.ok{color:#70e89a;border-color:rgba(112,232,154,.28)}.imuCalLive.bad{color:#ff878d;border-color:rgba(255,135,141,.28)}.imuCalLive.info{color:#ffcf75}
 .imuSessionCard{background:#0e1315;border-radius:18px;padding:14px;margin-bottom:12px}.imuSessionGrid{display:grid;grid-template-columns:1fr 120px;gap:9px}.imuSessionGrid .wide{grid-column:1/-1}.imuSessionStatus{display:none;background:#0e1315;border-radius:14px;padding:10px 12px;margin-bottom:12px;font-size:13px;font-weight:900}.imuSessionStatus.show{display:flex;justify-content:space-between;gap:10px;align-items:center}.imuSessionReport{display:none;background:#0e1315;border-radius:18px;padding:14px;margin-top:12px}.imuSessionReport.show{display:block}.reportTitle{font-size:22px;font-weight:950;margin-bottom:4px}.reportSub{font-size:12px;opacity:.62;margin-bottom:12px}.reportGrid{display:grid;grid-template-columns:1fr 1fr;gap:8px}.reportBox{background:#171d20;border-radius:13px;padding:11px}.reportBoxLabel{font-size:9px;font-weight:900;letter-spacing:.08em;opacity:.58}.reportBoxValue{font-size:21px;font-weight:950;margin-top:4px}.reportTable{width:100%;border-collapse:collapse;margin-top:12px;font-size:12px}.reportTable th,.reportTable td{text-align:left;padding:8px 5px;border-top:1px solid rgba(255,255,255,.08)}.reportTable th{font-size:9px;letter-spacing:.07em;opacity:.6}.sendState{font-size:12px;font-weight:850;min-height:18px;margin-top:10px}.sendState.ok{color:#70e89a}.sendState.bad{color:#ff878d}
 #voiceBar{display:none;background:#0e1315;border-radius:14px;padding:9px 10px;margin-bottom:12px;align-items:center;justify-content:space-between;gap:10px}#voiceBar.show{display:flex}.voiceBarText{min-width:0}.voiceBarTitle{font-size:12px;font-weight:950;letter-spacing:.07em}.voiceBarSub{font-size:10px;opacity:.58;margin-top:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.voiceBarBtn{padding:9px 11px;font-size:11px;white-space:nowrap}
-#voiceModal{display:none;position:fixed;z-index:180;inset:0;background:rgba(0,0,0,.92);padding:max(14px,env(safe-area-inset-top)) max(12px,env(safe-area-inset-right)) max(18px,env(safe-area-inset-bottom)) max(12px,env(safe-area-inset-left));overflow:auto}#voiceModal.show{display:block}.voiceCard{width:min(560px,100%);margin:0 auto;background:#0e1315;border-radius:20px;padding:15px}.voiceHead{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:12px}.voiceTitle{font-size:21px;font-weight:950}.voiceClose{padding:8px 10px;font-size:11px}.voiceGrid{display:grid;grid-template-columns:1fr 1fr;gap:8px}.voiceField{display:flex;flex-direction:column;gap:5px}.voiceField.wide{grid-column:1/-1}.voiceField label{font-size:9px;font-weight:900;letter-spacing:.08em;opacity:.62}.voiceField select,.voiceField input,.voiceField textarea{width:100%;border:0;border-radius:12px;padding:12px;background:#171d20;color:#fff;font-size:14px;font-weight:800;outline:none}.voiceField textarea{min-height:86px;resize:vertical;font-family:inherit;line-height:1.35}.voiceActions{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}.voiceActions button{flex:1;min-width:120px}.voiceNote{font-size:10px;opacity:.56;line-height:1.4;margin:10px 1px}.voiceList{margin-top:13px;border-top:1px solid rgba(255,255,255,.08);padding-top:6px}.voiceItem{padding:10px 1px;border-top:1px solid rgba(255,255,255,.07)}.voiceItem:first-child{border-top:0}.voiceItemText{font-size:14px;font-weight:900;line-height:1.3}.voiceItemMeta{font-size:10px;opacity:.58;margin-top:4px;line-height:1.35}.voiceItemBtns{display:flex;gap:6px;margin-top:7px}.voiceItemBtns button{padding:7px 9px;font-size:10px}.voiceLock{font-size:11px;font-weight:850;color:#ffcf75;min-height:16px;margin-top:7px}@media(max-width:460px){.voiceGrid{grid-template-columns:1fr}.voiceField.wide{grid-column:auto}}
+#voiceModal{display:none;position:fixed;z-index:180;inset:0;background:rgba(0,0,0,.92);padding:max(14px,env(safe-area-inset-top)) max(12px,env(safe-area-inset-right)) max(18px,env(safe-area-inset-bottom)) max(12px,env(safe-area-inset-left));overflow:auto}#voiceModal.show{display:block}.voiceCard{width:min(560px,100%);margin:0 auto;background:#0e1315;border-radius:20px;padding:15px}.voiceHead{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:12px}.voiceTitle{font-size:21px;font-weight:950}.voiceClose{padding:8px 10px;font-size:11px}.voiceSection{background:#13191c;border:1px solid rgba(255,255,255,.055);border-radius:15px;padding:11px;margin-top:10px}.voiceSectionTitle{font-size:10px;font-weight:950;letter-spacing:.09em;opacity:.6;margin:0 0 9px}.voiceGrid{display:grid;grid-template-columns:1fr 1fr;gap:8px}.voiceField{display:flex;flex-direction:column;gap:5px}.voiceField.wide{grid-column:1/-1}.voiceField label{font-size:9px;font-weight:900;letter-spacing:.08em;opacity:.62}.voiceField select,.voiceField input,.voiceField textarea{width:100%;border:1px solid rgba(255,255,255,.055);border-radius:12px;padding:12px;background:#171d20;color:#fff;font-size:14px;font-weight:800;outline:none}.voiceField textarea{min-height:78px;resize:vertical;font-family:inherit;line-height:1.35}.voiceRouteHint{font-size:10px;line-height:1.35;opacity:.56;margin-top:2px}.voiceActions{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}.voiceActions button{flex:1;min-width:120px}.voiceNote{font-size:10px;opacity:.5;line-height:1.4;margin:10px 1px}.voiceList{margin-top:13px;border-top:1px solid rgba(255,255,255,.08);padding-top:6px}.voiceItem{padding:10px 1px;border-top:1px solid rgba(255,255,255,.07)}.voiceItem:first-child{border-top:0}.voiceItemText{font-size:14px;font-weight:900;line-height:1.3}.voiceItemMeta{font-size:10px;opacity:.58;margin-top:4px;line-height:1.35}.voiceItemBtns{display:flex;gap:6px;margin-top:7px}.voiceItemBtns button{padding:7px 9px;font-size:10px}.voiceLock{font-size:11px;font-weight:850;color:#ffcf75;min-height:16px;margin-top:7px}@media(max-width:460px){.voiceGrid{grid-template-columns:1fr}.voiceField.wide{grid-column:auto}}
 @media (max-width:520px){.modeButtons{grid-template-columns:1fr}.imuTimer{font-size:64px}.imuSetupGrid{grid-template-columns:1fr}.imuField.wide{grid-column:auto}.imuState{font-size:23px}.imuRoute{font-size:20px}.imuEventRow strong{font-size:15px}}
 
-.voicePrefs{display:grid;grid-template-columns:1fr;gap:7px;background:#171d20;border-radius:14px;padding:11px;margin-bottom:12px}.voiceToggle{display:flex;align-items:center;justify-content:space-between;gap:12px;font-size:13px;font-weight:850}.voiceToggle input{width:22px;height:22px;accent-color:#00a6a6}.voicePresetGrid{display:grid;grid-template-columns:1fr 1fr;gap:7px;margin-bottom:10px}.voicePresetBtn{padding:10px 9px;font-size:12px;text-align:left;border:1px solid rgba(255,255,255,.08)}.voicePresetBtn.selected{background:#00a6a6;color:#001414}.voiceOptional{display:flex;align-items:center;gap:8px;font-size:12px;font-weight:850;margin-top:3px}.voiceOptional input[type=checkbox]{width:20px;height:20px;accent-color:#00a6a6}.voicePreview{background:#171d20;border-radius:12px;padding:11px;font-size:14px;font-weight:900;line-height:1.35;margin-top:9px}.voiceEnabled{display:flex;align-items:center;gap:7px;font-size:11px;font-weight:900}.voiceEnabled input{width:18px;height:18px;accent-color:#00a6a6}.serviceRouteNote{font-size:11px;opacity:.58;margin-top:5px;line-height:1.35}
+.voicePrefs{display:grid;grid-template-columns:1fr;gap:2px;background:#13191c;border:1px solid rgba(255,255,255,.055);border-radius:15px;padding:6px 10px;margin-bottom:10px}.voiceToggle{display:flex;align-items:center;justify-content:space-between;gap:12px;font-size:12px;font-weight:850;padding:8px 2px;border-top:1px solid rgba(255,255,255,.045)}.voiceToggle:first-child{border-top:0}.voiceToggle input{width:21px;height:21px;accent-color:#00a6a6}.voicePresetGrid{display:grid;grid-template-columns:1fr 1fr;gap:7px}.voicePresetBtn{padding:10px 9px;font-size:12px;text-align:left;border:1px solid rgba(255,255,255,.08)}.voicePresetBtn.selected{background:#00a6a6;color:#001414}.voicePreview{background:#171d20;border-radius:12px;padding:11px;font-size:13px;font-weight:900;line-height:1.35;margin-top:9px}.voiceEnabled{display:flex;align-items:center;gap:7px;font-size:11px;font-weight:900}.voiceEnabled input{width:18px;height:18px;accent-color:#00a6a6}.serviceRouteNote{font-size:11px;opacity:.58;margin-top:5px;line-height:1.35}
 .gpsOption{display:flex;align-items:center;justify-content:space-between;gap:12px;background:#171d20;border-radius:12px;padding:11px 12px;font-size:13px;font-weight:850;line-height:1.25}.gpsOption input{width:22px;height:22px;accent-color:#00a6a6;flex:0 0 auto}.gpsNote{font-size:10px;opacity:.55;line-height:1.35;margin-top:5px}
 .imuQuickBar{display:flex;gap:7px;align-items:center;flex-wrap:wrap;margin-top:10px}.imuQuickBar button{padding:9px 11px;font-size:11px;min-width:0;flex:0 1 auto}.imuQuickBar .armed{background:#0b6f59;color:#eafff9}.imuQuickMsg{font-size:10px;font-weight:850;opacity:.7;line-height:1.25;flex:1 1 100%;min-height:13px}
 
@@ -122,7 +122,7 @@ body.mode-imu #imuMode{display:block}
   </div>
   <section id="imuMode">
     <div class="imuShell">
-      <div class="imuTop"><div class="imuBrand">REGISTRO IMU · V7.20</div><button id="imuBackBtn" class="ghostBtn">CAMBIAR MODO</button></div>
+      <div class="imuTop"><div class="imuBrand">REGISTRO IMU · V7.21</div><button id="imuBackBtn" class="ghostBtn">CAMBIAR MODO</button></div>
       <div id="imuSessionSetup" class="imuSessionCard">
         <div style="font-size:20px;font-weight:950;margin-bottom:10px">SESIÓN DE SERVICIOS</div>
         <div class="imuSessionGrid">
@@ -138,7 +138,7 @@ body.mode-imu #imuMode{display:block}
       <div id="imuSetup" class="imuSetup" style="display:none">
         <div class="imuSetupGrid">
           <div class="imuField wide"><label>NÚMERO DE SERVICIO</label><input id="imuServiceNumber" type="text" inputmode="numeric" maxlength="3" pattern="[0-9]{3}" placeholder="Ej. 605"></div>
-          <div class="imuField wide"><label>DESTINO FINAL</label><select id="imuDestination"></select><div class="serviceRouteNote">La app detecta automáticamente el tramo actual y confirma el sentido al comenzar a desplazarse. Puede iniciarse incluso a mitad de un trayecto.</div></div>
+          <div class="imuField wide"><label>DESTINO</label><select id="imuDestination"></select><div id="imuOtherDestinationWrap" style="display:none;margin-top:8px"><select id="imuDestinationOther"></select></div><div class="serviceRouteNote">La app detecta automáticamente el tramo actual y confirma el sentido al comenzar a desplazarse. Puede iniciarse incluso a mitad de un trayecto.</div></div>
           <div class="imuField wide"><label>SALIDA PROGRAMADA</label><input id="imuSchedule" type="time" step="60"></div>
           <div class="validationSetup">
             <label class="validationToggle"><span>MODO PRUEBA DE DETECCIÓN</span><input id="imuValidationMode" type="checkbox"></label>
@@ -198,24 +198,36 @@ body.mode-imu #imuMode{display:block}
           <div class="voiceHead"><div class="voiceTitle">AVISOS DE VOZ</div><button id="voiceCloseBtn" class="voiceClose">CERRAR</button></div>
           <div class="voicePrefs">
             <label class="voiceToggle"><span>Anunciar estación y próxima estación</span><input id="voiceAnnounceStations" type="checkbox"></label>
-            <label class="voiceToggle"><span>Trayecto: “Recuerda mantener luces encendidas”</span><input id="voiceRemindLights" type="checkbox"></label>
-            <label class="voiceToggle"><span>Detención: “Recuerda abrir puertas”</span><input id="voiceRemindDoors" type="checkbox"></label>
+            <label class="voiceToggle"><span>Recordar luces durante el trayecto</span><input id="voiceRemindLights" type="checkbox"></label>
+            <label class="voiceToggle"><span>Recordar apertura de puertas</span><input id="voiceRemindDoors" type="checkbox"></label>
           </div>
-          <div style="font-size:11px;font-weight:950;letter-spacing:.08em;opacity:.65;margin:3px 0 8px">NUEVO MENSAJE</div>
-          <div id="voicePresetGrid" class="voicePresetGrid"></div>
-          <div class="voiceGrid">
-            <div id="voiceCustomField" class="voiceField wide" style="display:none"><label>MENSAJE PERSONALIZADO</label><textarea id="voiceText" maxlength="320" placeholder="Escribe el mensaje"></textarea></div>
-            <div class="voiceField"><label>VÍA</label><select id="voiceDirection"><option value="via1">VÍA 1</option><option value="via2">VÍA 2</option><option value="both">AMBAS</option></select></div>
-            <div class="voiceField"><label>REPRODUCIR AL SALIR DE</label><select id="voiceLocation"></select></div>
-            <div class="voiceField wide"><label class="voiceOptional"><input id="voiceUseSpeed" type="checkbox"> AÑADIR VELOCIDAD</label><input id="voiceSpeed" type="number" inputmode="decimal" min="0" max="160" step="1" placeholder="Ej. 20" style="display:none"></div>
-            <div class="voiceField wide"><label class="voiceOptional"><input id="voiceUsePk" type="checkbox"> AÑADIR PK</label><div id="voicePkFields" style="display:none;grid-template-columns:1fr 1fr;gap:8px"><input id="voicePkStart" type="text" inputmode="decimal" maxlength="10" placeholder="PK inicio · 13,15"><input id="voicePkEnd" type="text" inputmode="decimal" maxlength="10" placeholder="PK fin opcional · 13,19"></div></div>
-            <div class="voiceField"><label>RETRASO (s) · opcional</label><input id="voiceDelay" type="number" inputmode="numeric" min="0" max="1800" step="1" value="0"></div>
-            <div class="voiceField"><label>REPETIR (veces)</label><input id="voiceTimes" type="number" inputmode="numeric" min="1" max="10" step="1" value="1"></div>
+          <div class="voiceSection">
+            <div class="voiceSectionTitle">NUEVO AVISO</div>
+            <div id="voicePresetGrid" class="voicePresetGrid"></div>
+          </div>
+          <div class="voiceSection">
+            <div class="voiceSectionTitle">DÓNDE AVISAR</div>
+            <div class="voiceGrid">
+              <div id="voiceCustomField" class="voiceField wide" style="display:none"><label>MENSAJE PERSONALIZADO</label><textarea id="voiceText" maxlength="320" placeholder="Escribe el mensaje"></textarea></div>
+              <div class="voiceField"><label>VÍA</label><select id="voiceDirection"><option value="both" selected>AMBAS</option><option value="via1">VÍA 1 · TCP</option><option value="via2">VÍA 2 · MC</option></select></div>
+              <div class="voiceField"><label id="voiceLocationLabel">TRAMO</label><select id="voiceLocation"></select><div id="voiceRouteHint" class="voiceRouteHint">En ambas vías se avisa al entrar al mismo tramo desde cualquiera de sus extremos.</div></div>
+            </div>
+          </div>
+          <div class="voiceSection">
+            <div class="voiceSectionTitle">DATOS OPCIONALES</div>
+            <div class="voiceGrid">
+              <input id="voiceUseSpeed" type="checkbox" hidden>
+              <div class="voiceField"><label>VELOCIDAD</label><input id="voiceSpeed" type="number" inputmode="decimal" min="0" max="160" step="1" placeholder="Ej. 20"></div>
+              <input id="voiceUsePk" type="checkbox" hidden>
+              <div id="voicePkFields" class="voiceField wide"><label>PK / TRAMO DE PK</label><div style="display:grid;grid-template-columns:1fr 1fr;gap:8px"><input id="voicePkStart" type="text" inputmode="text" maxlength="10" placeholder="Inicio · 07-13"><input id="voicePkEnd" type="text" inputmode="text" maxlength="10" placeholder="Fin opcional · 07-19"></div></div>
+              <div class="voiceField"><label>RETRASO (s)</label><input id="voiceDelay" type="number" inputmode="numeric" min="0" max="1800" step="1" value="0"></div>
+              <div class="voiceField"><label>REPETIR (veces)</label><input id="voiceTimes" type="number" inputmode="numeric" min="1" max="10" step="1" value="1"></div>
+            </div>
           </div>
           <div id="voicePreview" class="voicePreview">Selecciona un mensaje.</div>
           <div id="voiceLock" class="voiceLock"></div>
           <div class="voiceActions"><button id="voiceTestBtn">PROBAR VOZ</button><button id="voiceSaveBtn" class="primary">GUARDAR MENSAJE</button><button id="voiceCancelEditBtn" style="display:none">CANCELAR EDICIÓN</button></div>
-          <div class="voiceNote">Los mensajes son globales y también pueden añadirse durante un servicio. Se reproducen en Vía 1, Vía 2 o ambas según su configuración. Por defecto se activan al iniciar el tramo seleccionado; puedes desactivarlos o borrarlos después.</div>
+          <div class="voiceNote">Los avisos son globales. Con “AMBAS”, un mismo tramo queda cubierto en los dos sentidos: TCP desde Puerto y MC hacia Puerto.</div>
           <div id="voiceList" class="voiceList"></div>
         </div>
       </div>
@@ -299,6 +311,8 @@ const imuLiveEl=document.getElementById('imuLive');
 const imuDirection=document.getElementById('imuDirection');
 const imuRoutePreset=document.getElementById('imuRoutePreset');
 const imuDestination=document.getElementById('imuDestination');
+const imuOtherDestinationWrap=document.getElementById('imuOtherDestinationWrap');
+const imuDestinationOther=document.getElementById('imuDestinationOther');
 const imuCustomRouteFields=document.getElementById('imuCustomRouteFields');
 const imuSchedule=document.getElementById('imuSchedule');
 const imuGpsSupport=document.getElementById('imuGpsSupport');
@@ -356,6 +370,8 @@ const voiceCustomField=document.getElementById('voiceCustomField');
 const voiceText=document.getElementById('voiceText');
 const voiceDirection=document.getElementById('voiceDirection');
 const voiceLocation=document.getElementById('voiceLocation');
+const voiceLocationLabel=document.getElementById('voiceLocationLabel');
+const voiceRouteHint=document.getElementById('voiceRouteHint');
 const voiceUseSpeed=document.getElementById('voiceUseSpeed');
 const voiceSpeed=document.getElementById('voiceSpeed');
 const voiceUsePk=document.getElementById('voiceUsePk');
@@ -500,7 +516,8 @@ const VEHICLE_DETECTOR_PROFILES={
 const STATION_GPS_KEY='velocidadATP.learnedStationGps.v1';
 const IMU_SESSION_KEY='velocidadATP.imuServiceSession.v1';
 const VOICE_GLOBAL_KEY='velocidadATP.voiceGlobal.v2';
-const VOICE_PRESETS=['Prevención','Nueva prevención','Hombres trabajando','Cruce desprotegido','Barreras en falla','Barrera peatonal en falla','Marcha restringida','Marcha de emergencia','Personalizado'];
+const VOICE_PRESETS=['Prevención','Nueva prevención','Personas en la vía','Hombres trabajando','Cruce desprotegido','Barreras en falla','Barrera peatonal en falla','Marcha restringida','Marcha de emergencia','Personalizado'];
+const COMMON_IMU_DESTINATIONS=['Puerto','El Belloto','Sargento Aldea','Limache'];
 const REPORT_ENDPOINT='PEGAR_AQUI_URL_WEB_APP_APPS_SCRIPT';
 
 let stream=null,loopTimer=null,running=false,wakeLock=null,audioCtx=null;
@@ -1746,25 +1763,70 @@ function saveVoiceSettings(){try{localStorage.setItem(VOICE_GLOBAL_KEY,JSON.stri
 function voiceAlerts(){if(!voiceSettings)loadVoiceSettings();return voiceSettings.alerts;}
 function voiceCanEdit(){return true;}
 function directionToVia(direction){return direction==='limache'?'via1':'via2';}
-function voiceDirectionLabel(d){return d==='via1'?'Vía 1':d==='via2'?'Vía 2':'Ambas vías';}
+function voiceDirectionLabel(d){return d==='via1'?'Vía 1 · TCP':d==='via2'?'Vía 2 · MC':'Ambas vías';}
 function voiceBaseRoute(via){return via==='via2'?[...STATIONS_PUERTO_LIMACHE].reverse():[...STATIONS_PUERTO_LIMACHE];}
+function canonicalVoiceSegmentKey(a,b){
+  const ia=STATIONS_PUERTO_LIMACHE.indexOf(a),ib=STATIONS_PUERTO_LIMACHE.indexOf(b);
+  if(ia<0||ib<0||Math.abs(ia-ib)!==1)return '';
+  return ia<ib?`${a}||${b}`:`${b}||${a}`;
+}
+function voiceSegmentFromKey(key){
+  const p=String(key||'').split('||');if(p.length!==2)return null;
+  const a=p[0],b=p[1],ia=STATIONS_PUERTO_LIMACHE.indexOf(a),ib=STATIONS_PUERTO_LIMACHE.indexOf(b);
+  if(ia<0||ib!==ia+1)return null;
+  return {key:`${a}||${b}`,via1:a,via2:b,label:`${a} ↔ ${b}`};
+}
+function voiceLegacySegmentKey(location){
+  const i=STATIONS_PUERTO_LIMACHE.indexOf(location);return i>=0&&i<STATIONS_PUERTO_LIMACHE.length-1?canonicalVoiceSegmentKey(STATIONS_PUERTO_LIMACHE[i],STATIONS_PUERTO_LIMACHE[i+1]):'';
+}
+function voiceQuickSuggestedLocation(){
+  if(!imuOnlyTrip||!imuOnlyTrip.route?.length)return '';
+  const i=Math.min(imuOnlyTrip.route.length-2,imuOnlyTrip.pos+(imuOnlyTrip.state==='MOVING'?1:0));
+  if(i<0||i>=imuOnlyTrip.route.length-1)return '';
+  return voiceDirection.value==='both'?canonicalVoiceSegmentKey(imuOnlyTrip.route[i],imuOnlyTrip.route[i+1]):imuOnlyTrip.route[i];
+}
 function voicePopulateLocations(){
-  const via=voiceDirection.value;let r=via==='via2'?voiceBaseRoute('via2'):[...STATIONS_PUERTO_LIMACHE];
-  if(voiceQuickMode&&imuOnlyTrip&&(via===imuOnlyTrip.via||via==='both')){
-    const start=Math.min(imuOnlyTrip.route.length-2,imuOnlyTrip.pos+(imuOnlyTrip.state==='MOVING'?1:0));const upcoming=imuOnlyTrip.route.slice(start,-1);if(upcoming.length)r=upcoming.concat(imuOnlyTrip.finalStation);
+  const via=voiceDirection.value,old=voiceLocation.value;
+  if(via==='both'){
+    let segments=[];
+    if(voiceQuickMode&&imuOnlyTrip?.route?.length){
+      const start=Math.min(imuOnlyTrip.route.length-2,imuOnlyTrip.pos+(imuOnlyTrip.state==='MOVING'?1:0));
+      for(let i=Math.max(0,start);i<imuOnlyTrip.route.length-1;i++){
+        const key=canonicalVoiceSegmentKey(imuOnlyTrip.route[i],imuOnlyTrip.route[i+1]),seg=voiceSegmentFromKey(key);if(seg&&!segments.some(x=>x.key===seg.key))segments.push(seg);
+      }
+    }else{
+      for(let i=0;i<STATIONS_PUERTO_LIMACHE.length-1;i++)segments.push(voiceSegmentFromKey(canonicalVoiceSegmentKey(STATIONS_PUERTO_LIMACHE[i],STATIONS_PUERTO_LIMACHE[i+1])));
+    }
+    voiceLocation.innerHTML=segments.filter(Boolean).map(s=>`<option value="${s.key}">${s.label}</option>`).join('');
+    voiceLocationLabel.textContent='TRAMO';voiceRouteHint.textContent='En ambas vías se avisa al entrar al mismo tramo desde cualquiera de sus extremos.';
+  }else{
+    let r=voiceBaseRoute(via);
+    if(voiceQuickMode&&imuOnlyTrip&&via===imuOnlyTrip.via){
+      const start=Math.min(imuOnlyTrip.route.length-2,imuOnlyTrip.pos+(imuOnlyTrip.state==='MOVING'?1:0)),upcoming=imuOnlyTrip.route.slice(Math.max(0,start),-1);if(upcoming.length)r=upcoming.concat(imuOnlyTrip.finalStation);
+    }
+    voiceLocation.innerHTML=r.slice(0,-1).map(s=>`<option value="${s}">${s}</option>`).join('');
+    voiceLocationLabel.textContent='REPRODUCIR AL SALIR DE';voiceRouteHint.textContent=via==='via1'?'TCP · sentido desde Puerto.':'MC · sentido hacia Puerto.';
   }
-  const old=voiceLocation.value;voiceLocation.innerHTML=r.slice(0,-1).map(s=>`<option value="${s}">${s}</option>`).join('');
   if(old&&[...voiceLocation.options].some(o=>o.value===old))voiceLocation.value=old;
 }
-function normalizePk(v){return String(v||'').trim().replace('.',',').replace(/\s+/g,'');}
+function normalizePk(v){
+  let s=String(v||'').trim().replace(/[.,/]/g,'-').replace(/[–—]/g,'-').replace(/\s*\-\s*/g,'-').replace(/\s+/g,'');
+  s=s.replace(/-+/g,'-').replace(/^-|-$/g,'');return s;
+}
+function validPk(v){return /^\d{1,3}(?:-\d{1,3})?$/.test(normalizePk(v));}
+function pkSpeech(v){
+  const p=normalizePk(v).split('-'),km=String(parseInt(p[0]||'0',10));
+  if(p.length<2)return `kilómetro ${km}`;
+  return `kilómetro ${km}, poste ${String(parseInt(p[1]||'0',10))}`;
+}
 function composeVoiceText(a=null){
   const preset=a?.preset??voiceSelectedPreset;
   const custom=(a?.customText??voiceText.value??'').trim();
   let text=preset==='Personalizado'?custom:preset;
-  const useSpeed=a?.useSpeed??voiceUseSpeed.checked,speed=String(a?.speed??voiceSpeed.value??'').trim();
-  const usePk=a?.usePk??voiceUsePk.checked,pk1=normalizePk(a?.pkStart??voicePkStart.value),pk2=normalizePk(a?.pkEnd??voicePkEnd.value);
-  if(useSpeed&&speed)text+=` a ${speed}`;
-  if(usePk&&pk1)text+=` en el PK ${pk1}${pk2?` a ${pk2}`:''}`;
+  const speed=String(a?.speed??voiceSpeed.value??'').trim(),useSpeed=a?!!a.useSpeed&&!!speed:!!speed;
+  const pk1=normalizePk(a?.pkStart??voicePkStart.value),pk2=normalizePk(a?.pkEnd??voicePkEnd.value),usePk=a?!!a.usePk&&!!pk1:!!pk1;
+  if(useSpeed)text+=` a ${speed}`;
+  if(usePk)text+=` en el ${pkSpeech(pk1)}${pk2?` hasta el ${pkSpeech(pk2)}`:''}`;
   return text.trim();
 }
 function renderVoicePresets(){
@@ -1772,57 +1834,66 @@ function renderVoicePresets(){
   voicePresetGrid.querySelectorAll('[data-preset]').forEach(b=>b.addEventListener('click',()=>{if(!voiceCanEdit())return;voiceSelectedPreset=b.dataset.preset;renderVoicePresets();voiceCustomField.style.display=voiceSelectedPreset==='Personalizado'?'flex':'none';updateVoicePreview();}));
 }
 function updateVoicePreview(){voicePreview.textContent=composeVoiceText()||'Completa el mensaje.';}
-function syncVoiceOptionalUi(){voiceSpeed.style.display=voiceUseSpeed.checked?'block':'none';voicePkFields.style.display=voiceUsePk.checked?'grid':'none';updateVoicePreview();}
+function syncVoiceOptionalUi(){
+  voiceUseSpeed.checked=!!String(voiceSpeed.value||'').trim();voiceUsePk.checked=!!(String(voicePkStart.value||'').trim()||String(voicePkEnd.value||'').trim());updateVoicePreview();
+}
 function renderVoiceBar(){
   if(!voiceSettings)loadVoiceSettings();voiceBar.classList.add('show');const n=voiceAlerts().filter(a=>a.enabled!==false).length;
   const opts=[voiceSettings.announceStations?'estaciones':'',voiceSettings.remindLights?'luces':'',voiceSettings.remindDoors?'puertas':''].filter(Boolean).join(' · ');
   voiceBarSub.textContent=`${n} mensaje${n===1?'':'s'} activo${n===1?'':'s'}${opts?' · '+opts:''}`;
 }
+function voiceAlertWhereLabel(a){
+  if(a.via==='both'&&a.segmentKey){const seg=voiceSegmentFromKey(a.segmentKey);if(seg)return `tramo ${seg.label}`;}
+  return `al salir de ${a.location||'--'}`;
+}
 function renderVoiceList(){
   const arr=voiceAlerts();if(!arr.length){voiceList.innerHTML='<div style="font-size:11px;opacity:.48;padding:10px 1px">Sin mensajes configurados.</div>';return;}
   const locked=!voiceCanEdit();
-  voiceList.innerHTML=arr.map(a=>`<div class="voiceItem"><div style="display:flex;justify-content:space-between;gap:8px;align-items:flex-start"><div class="voiceItemText">${escHtml(composeVoiceText(a))}</div><label class="voiceEnabled"><input type="checkbox" data-v-enable="${a.id}" ${a.enabled===false?'':'checked'} ${locked?'disabled':''}> ON</label></div><div class="voiceItemMeta">${voiceDirectionLabel(a.via)} · al salir de ${escHtml(a.location)} · +${Math.round((a.delayMs||0)/1000)} s · ${a.repeatCount||1} vez${(a.repeatCount||1)===1?'':'es'}</div><div class="voiceItemBtns"><button data-v-edit="${a.id}" ${locked?'disabled':''}>EDITAR</button><button data-v-del="${a.id}" ${locked?'disabled':''}>BORRAR</button></div></div>`).join('');
+  voiceList.innerHTML=arr.map(a=>`<div class="voiceItem"><div style="display:flex;justify-content:space-between;gap:8px;align-items:flex-start"><div class="voiceItemText">${escHtml(composeVoiceText(a))}</div><label class="voiceEnabled"><input type="checkbox" data-v-enable="${a.id}" ${a.enabled===false?'':'checked'} ${locked?'disabled':''}> ON</label></div><div class="voiceItemMeta">${voiceDirectionLabel(a.via)} · ${escHtml(voiceAlertWhereLabel(a))} · +${Math.round((a.delayMs||0)/1000)} s · ${a.repeatCount||1} vez${(a.repeatCount||1)===1?'':'es'}</div><div class="voiceItemBtns"><button data-v-edit="${a.id}" ${locked?'disabled':''}>EDITAR</button><button data-v-del="${a.id}" ${locked?'disabled':''}>BORRAR</button></div></div>`).join('');
   voiceList.querySelectorAll('[data-v-edit]').forEach(b=>b.addEventListener('click',()=>voiceEdit(b.dataset.vEdit)));
   voiceList.querySelectorAll('[data-v-del]').forEach(b=>b.addEventListener('click',()=>voiceDelete(b.dataset.vDel)));
   voiceList.querySelectorAll('[data-v-enable]').forEach(b=>b.addEventListener('change',()=>{const a=voiceAlerts().find(x=>x.id===b.dataset.vEnable);if(a){a.enabled=b.checked;saveVoiceSettings();renderVoiceBar();}}));
 }
 function updateVoiceEditLock(){
   const can=voiceCanEdit();voiceLock.textContent='';
-  [voiceText,voiceDirection,voiceLocation,voiceUseSpeed,voiceSpeed,voiceUsePk,voicePkStart,voicePkEnd,voiceDelay,voiceTimes,voiceSaveBtn].forEach(el=>el.disabled=!can);
+  [voiceText,voiceDirection,voiceLocation,voiceSpeed,voicePkStart,voicePkEnd,voiceDelay,voiceTimes,voiceSaveBtn].forEach(el=>el.disabled=!can);
   voicePresetGrid.querySelectorAll('button').forEach(b=>b.disabled=!can);voiceTestBtn.disabled=false;renderVoiceList();
 }
 function openVoiceModal(quick=false){
   if(!voiceSettings)loadVoiceSettings();voiceQuickMode=!!quick;
   if(quick){
-    voiceResetForm();voiceSelectedPreset='Nueva prevención';
-    if(imuOnlyTrip){
-      voiceDirection.value=imuOnlyTrip.via||directionToVia(imuOnlyTrip.direction);voicePopulateLocations();
-      const firstFuture=imuOnlyTrip.route[Math.min(imuOnlyTrip.route.length-2,imuOnlyTrip.pos+(imuOnlyTrip.state==='MOVING'?1:0))];
-      if(firstFuture&&[...voiceLocation.options].some(o=>o.value===firstFuture))voiceLocation.value=firstFuture;
-    }
-    renderVoicePresets();syncVoiceOptionalUi();
+    voiceResetForm();voiceSelectedPreset='Nueva prevención';renderVoicePresets();voicePopulateLocations();const suggested=voiceQuickSuggestedLocation();if(suggested&&[...voiceLocation.options].some(o=>o.value===suggested))voiceLocation.value=suggested;syncVoiceOptionalUi();
   }
   voiceModal.classList.add('show');voiceAnnounceStations.checked=!!voiceSettings.announceStations;voiceRemindLights.checked=!!voiceSettings.remindLights;voiceRemindDoors.checked=!!voiceSettings.remindDoors;renderVoicePresets();voicePopulateLocations();
-  if(quick&&imuOnlyTrip){const f=imuOnlyTrip.route[Math.min(imuOnlyTrip.route.length-2,imuOnlyTrip.pos+(imuOnlyTrip.state==='MOVING'?1:0))];if(f&&[...voiceLocation.options].some(o=>o.value===f))voiceLocation.value=f;updateVoicePreview();voiceLock.textContent='Aviso nuevo durante el servicio · selecciona el tramo y guarda.';}
+  if(quick){const suggested=voiceQuickSuggestedLocation();if(suggested&&[...voiceLocation.options].some(o=>o.value===suggested))voiceLocation.value=suggested;updateVoicePreview();voiceLock.textContent='Aviso nuevo · selecciona el tramo y guarda.';}
   syncVoiceOptionalUi();updateVoiceEditLock();renderVoiceList();
 }
 function closeVoiceModal(){voiceModal.classList.remove('show');voiceQuickMode=false;}
 function openQuickVoiceModal(){openVoiceModal(true);}
 function voiceResetForm(){
-  voiceEditingId=null;voiceSelectedPreset='Prevención';voiceText.value='';voiceDirection.value='via1';voiceUseSpeed.checked=false;voiceSpeed.value='';voiceUsePk.checked=false;voicePkStart.value='';voicePkEnd.value='';voiceDelay.value='0';voiceTimes.value='1';voiceSaveBtn.textContent='GUARDAR MENSAJE';voiceCancelEditBtn.style.display='none';renderVoicePresets();voiceCustomField.style.display='none';voicePopulateLocations();syncVoiceOptionalUi();voiceLock.textContent='';
+  voiceEditingId=null;voiceSelectedPreset='Prevención';voiceText.value='';voiceDirection.value='both';voiceSpeed.value='';voicePkStart.value='';voicePkEnd.value='';voiceDelay.value='0';voiceTimes.value='1';voiceSaveBtn.textContent='GUARDAR MENSAJE';voiceCancelEditBtn.style.display='none';renderVoicePresets();voiceCustomField.style.display='none';voicePopulateLocations();syncVoiceOptionalUi();voiceLock.textContent='';
 }
 function voiceEdit(id){
-  if(!voiceCanEdit())return;const a=voiceAlerts().find(x=>x.id===id);if(!a)return;voiceEditingId=id;voiceSelectedPreset=a.preset||'Personalizado';voiceText.value=a.customText||'';voiceDirection.value=a.via||'both';voicePopulateLocations();voiceLocation.value=a.location||voiceLocation.value;voiceUseSpeed.checked=!!a.useSpeed;voiceSpeed.value=a.speed||'';voiceUsePk.checked=!!a.usePk;voicePkStart.value=a.pkStart||'';voicePkEnd.value=a.pkEnd||'';voiceDelay.value=String(Math.round((a.delayMs||0)/1000));voiceTimes.value=String(a.repeatCount||1);voiceSaveBtn.textContent='ACTUALIZAR MENSAJE';voiceCancelEditBtn.style.display='inline-block';renderVoicePresets();voiceCustomField.style.display=voiceSelectedPreset==='Personalizado'?'flex':'none';syncVoiceOptionalUi();
+  if(!voiceCanEdit())return;const a=voiceAlerts().find(x=>x.id===id);if(!a)return;voiceEditingId=id;voiceSelectedPreset=a.preset||'Personalizado';voiceText.value=a.customText||'';voiceDirection.value=a.via||'both';voicePopulateLocations();
+  let loc=a.location||voiceLocation.value;if(voiceDirection.value==='both')loc=a.segmentKey||voiceLegacySegmentKey(a.location)||voiceLocation.value;if(loc&&[...voiceLocation.options].some(o=>o.value===loc))voiceLocation.value=loc;
+  voiceSpeed.value=a.useSpeed?a.speed||'':'';voicePkStart.value=a.usePk?normalizePk(a.pkStart||''):'';voicePkEnd.value=a.usePk?normalizePk(a.pkEnd||''):'';voiceDelay.value=String(Math.round((a.delayMs||0)/1000));voiceTimes.value=String(a.repeatCount||1);voiceSaveBtn.textContent='ACTUALIZAR MENSAJE';voiceCancelEditBtn.style.display='inline-block';renderVoicePresets();voiceCustomField.style.display=voiceSelectedPreset==='Personalizado'?'flex':'none';syncVoiceOptionalUi();
 }
 function voiceDelete(id){if(!voiceCanEdit())return;const arr=voiceAlerts(),i=arr.findIndex(x=>x.id===id);if(i<0)return;arr.splice(i,1);saveVoiceSettings();if(voiceEditingId===id)voiceResetForm();renderVoiceBar();renderVoiceList();}
 function voiceSave(){
-  if(!voiceCanEdit())return;const custom=(voiceText.value||'').trim(),delaySec=Number(voiceDelay.value||0),repeatCount=parseInt(voiceTimes.value||'1',10),speed=String(voiceSpeed.value||'').trim(),pkStart=normalizePk(voicePkStart.value),pkEnd=normalizePk(voicePkEnd.value);
+  if(!voiceCanEdit())return;
+  const custom=(voiceText.value||'').trim(),delaySec=Number(voiceDelay.value||0),repeatCount=parseInt(voiceTimes.value||'1',10),speed=String(voiceSpeed.value||'').trim(),pkStart=normalizePk(voicePkStart.value),pkEnd=normalizePk(voicePkEnd.value),via=voiceDirection.value;
   if(voiceSelectedPreset==='Personalizado'&&!custom){voiceLock.textContent='Escribe el mensaje personalizado.';return;}
-  if(voiceUseSpeed.checked&&(!speed||!Number.isFinite(Number(speed.replace(',','.'))))){voiceLock.textContent='Ingresa una velocidad válida.';return;}
-  if(voiceUsePk.checked&&!pkStart){voiceLock.textContent='Ingresa al menos el PK inicial.';return;}
+  if(speed&&!Number.isFinite(Number(speed.replace(',','.')))){voiceLock.textContent='Ingresa una velocidad válida.';return;}
+  if(pkStart&&!validPk(pkStart)){voiceLock.textContent='Usa el PK como 07-13: kilómetro 7, poste 13.';return;}
+  if(pkEnd&&!pkStart){voiceLock.textContent='Ingresa primero el PK de inicio.';return;}
+  if(pkEnd&&!validPk(pkEnd)){voiceLock.textContent='Usa el PK final como 07-19.';return;}
   if(!Number.isFinite(delaySec)||delaySec<0||delaySec>1800){voiceLock.textContent='El retraso debe estar entre 0 y 1800 segundos.';return;}
   if(!Number.isInteger(repeatCount)||repeatCount<1||repeatCount>10){voiceLock.textContent='La repetición debe estar entre 1 y 10 veces.';return;}
-  const old=voiceAlerts().find(x=>x.id===voiceEditingId);const a={id:old?.id||('V'+Date.now()+Math.random().toString(36).slice(2,6)),preset:voiceSelectedPreset,customText:voiceSelectedPreset==='Personalizado'?custom:'',via:voiceDirection.value,location:voiceLocation.value,useSpeed:voiceUseSpeed.checked,speed:voiceUseSpeed.checked?speed:'',usePk:voiceUsePk.checked,pkStart:voiceUsePk.checked?pkStart:'',pkEnd:voiceUsePk.checked?pkEnd:'',delayMs:Math.round(delaySec*1000),repeatCount,enabled:old?.enabled!==false};
+  let location=voiceLocation.value,segmentKey='',locationVia1='',locationVia2='';
+  if(via==='both'){
+    const seg=voiceSegmentFromKey(location);if(!seg){voiceLock.textContent='Selecciona un tramo válido.';return;}segmentKey=seg.key;locationVia1=seg.via1;locationVia2=seg.via2;location=seg.via1;
+  }
+  const old=voiceAlerts().find(x=>x.id===voiceEditingId);const a={id:old?.id||('V'+Date.now()+Math.random().toString(36).slice(2,6)),preset:voiceSelectedPreset,customText:voiceSelectedPreset==='Personalizado'?custom:'',via,location,segmentKey,locationVia1,locationVia2,useSpeed:!!speed,speed,usePk:!!pkStart,pkStart,pkEnd,delayMs:Math.round(delaySec*1000),repeatCount,enabled:old?.enabled!==false};
   if(old)Object.assign(old,a);else voiceAlerts().push(a);saveVoiceSettings();voiceResetForm();voiceLock.textContent='Mensaje guardado.';renderVoiceBar();renderVoiceList();
 }
 function voicePickSpanishVoice(){const vs=window.speechSynthesis?.getVoices?.()||[];return vs.find(v=>/^es(-|_)/i.test(v.lang)&&v.localService)||vs.find(v=>/^es(-|_)/i.test(v.lang))||null;}
@@ -1834,8 +1905,12 @@ function speakVoiceRepeated(text,times=1,serviceNumber=null){
 }
 function voiceTest(){const text=composeVoiceText()||'Prueba de aviso de voz.';if(!speakVoice(text))voiceLock.textContent='Este navegador no expone texto a voz.';else voiceLock.textContent='Reproduciendo prueba de voz.';}
 function voiceEligible(a,trip){return a.enabled!==false&&(a.via==='both'||a.via===directionToVia(trip.direction));}
+function voiceMatchesDeparture(a,trip,location){
+  if(a.via==='both'&&a.segmentKey){const target=directionToVia(trip.direction)==='via2'?a.locationVia2:a.locationVia1;return target===location;}
+  return a.location===location;
+}
 function scheduleVoiceEvent(location,eventAt=Date.now()){
-  if(!imuOnlyTrip)return;const trip=imuOnlyTrip,now=Date.now();for(const a of voiceAlerts()){if(!voiceEligible(a,trip)||a.location!==location)continue;const due=eventAt+(a.delayMs||0),wait=Math.max(0,due-now),id=++voiceTimerSeq;const timer=setTimeout(()=>{voiceTimers.delete(id);if(imuOnlyTrip&&imuOnlyTrip.serviceNumber===trip.serviceNumber)speakVoiceRepeated(composeVoiceText(a),a.repeatCount||1,trip.serviceNumber);},wait);voiceTimers.set(id,timer);}
+  if(!imuOnlyTrip)return;const trip=imuOnlyTrip,now=Date.now();for(const a of voiceAlerts()){if(!voiceEligible(a,trip)||!voiceMatchesDeparture(a,trip,location))continue;const due=eventAt+(a.delayMs||0),wait=Math.max(0,due-now),id=++voiceTimerSeq;const timer=setTimeout(()=>{voiceTimers.delete(id);if(imuOnlyTrip&&imuOnlyTrip.serviceNumber===trip.serviceNumber)speakVoiceRepeated(composeVoiceText(a),a.repeatCount||1,trip.serviceNumber);},wait);voiceTimers.set(id,timer);}
 }
 function clearVoiceTimers(cancelSpeech=false){for(const t of voiceTimers.values())clearTimeout(t);voiceTimers.clear();if(cancelSpeech&&'speechSynthesis'in window)window.speechSynthesis.cancel();}
 function updateBellotoCutUi(msg=''){
@@ -1858,9 +1933,20 @@ function scheduleDepartureVoice(station,nextStation,at){
 function scheduleArrivalVoice(station,at){
   if(!voiceSettings)loadVoiceSettings();if(voiceSettings.announceStations)speakVoice(`Estación ${station}.`);if(voiceSettings.remindDoors)speakVoice('Recuerda abrir puertas.');
 }
+function selectedImuDestination(){
+  if(!imuDestination)return null;return imuDestination.value==='__other__'?(imuDestinationOther?.value||null):imuDestination.value;
+}
+function syncImuDestinationUi(){
+  if(!imuDestination||!imuOtherDestinationWrap)return;imuOtherDestinationWrap.style.display=imuDestination.value==='__other__'?'block':'none';
+}
 function fillImuDestination(){
-  if(!imuDestination)return;const old=imuDestination.value;imuDestination.innerHTML=STATIONS_PUERTO_LIMACHE.map(s=>`<option value="${s}">${s}</option>`).join('');
-  if(old&&STATIONS_PUERTO_LIMACHE.includes(old))imuDestination.value=old;else imuDestination.value='Limache';
+  if(!imuDestination)return;const old=selectedImuDestination();
+  imuDestination.innerHTML=COMMON_IMU_DESTINATIONS.map(s=>`<option value="${s}">${s}</option>`).join('')+'<option value="__other__">Otro destino</option>';
+  if(imuDestinationOther)imuDestinationOther.innerHTML=STATIONS_PUERTO_LIMACHE.filter(s=>!COMMON_IMU_DESTINATIONS.includes(s)).map(s=>`<option value="${s}">${s}</option>`).join('');
+  if(old&&COMMON_IMU_DESTINATIONS.includes(old))imuDestination.value=old;
+  else if(old&&STATIONS_PUERTO_LIMACHE.includes(old)){imuDestination.value='__other__';if(imuDestinationOther)imuDestinationOther.value=old;}
+  else imuDestination.value='Limache';
+  syncImuDestinationUi();
 }
 function applyImuRoutePreset(){fillImuDestination();}
 function routeForImu(){return imuOnlyTrip?.route?.length?[...imuOnlyTrip.route]:[...STATIONS_PUERTO_LIMACHE];}
@@ -1958,13 +2044,13 @@ function startValidationRun(){
   imuValidationCurrent={
     enabled:true,
     schemaVersion:'1.6',
-    appVersion:'V7.20',
+    appVersion:'V7.21',
     startedAt:now,
     startedPerf:performance.now(),
     endedAt:null,
     serviceNumber:(imuServiceNumber.value||'').trim(),
-    destination:imuDestination?.value||null,
-    vehicleProfile:vehicleProfileFromDestination(imuDestination?.value),
+    destination:selectedImuDestination(),
+    vehicleProfile:vehicleProfileFromDestination(selectedImuDestination()),
     manual:[],
     automatic:[],
     samples:[],
@@ -2110,7 +2196,7 @@ function exportValidationRun(){
       durationMs:v.endedAt?Math.max(0,v.endedAt-v.startedAt):Date.now()-v.startedAt,
       note:'Las marcas MANUAL representan la realidad indicada por el usuario. Las transiciones AUTOMATICAS son lo que decidió la app. GPS es contexto espacial, no una marca manual.',
       accelerationInfo:{units:'m/s2',gravityFilter:'pasa-altos independiente: accelerationIncludingGravity menos media exponencial (tau=2 segundos)',
-        note:'V7.20 usa accelerationIncludingGravity filtrado como autoridad física principal, auto-calibra bias/ruido del canal nativo por dispositivo y elimina los umbrales nativos absolutos como veto.',
+        note:'V7.21 conserva sin cambios el motor de detección V7.20: accelerationIncludingGravity filtrado como autoridad física principal y auto-calibración del canal nativo por dispositivo. Esta versión modifica interfaz/destinos/avisos de voz.',
         nativeRawRows:v.nativeSamples,gravityAvailableRows:v.gravitySamples,rawSamplingMinIntervalMs:VALIDATION_RAW_MIN_INTERVAL_MS},
       sensorProfile:{...nativeDeviceProfileNow()}
     },
@@ -3046,8 +3132,8 @@ async function armImuTrip(){
   const service=(imuServiceNumber.value||'').trim();
   if(!/^\d{3}$/.test(service)){imuCalText.textContent='Ingresa un número de servicio de 3 dígitos, por ejemplo 605.';return;}
   if(imuSession.services.some(t=>t.serviceNumber===service)){imuCalText.textContent='Ese número de servicio ya fue registrado en esta sesión.';return;}
-  const destination=imuDestination?.value;
-  if(!destination||!STATIONS_PUERTO_LIMACHE.includes(destination)){imuCalText.textContent='Selecciona el destino final.';return;}
+  const destination=selectedImuDestination();
+  if(!destination||!STATIONS_PUERTO_LIMACHE.includes(destination)){imuCalText.textContent='Selecciona el destino.';return;}
   const ok=await enableIMU();if(!ok){imuCalText.textContent='No se pudo acceder al IMU del teléfono.';return;}
   const gpsStarted=startGpsSupport(); // GPS es opcional para el estado físico; si falla, IMU continúa.
   clearVoiceTimers(false);if('speechSynthesis'in window)window.speechSynthesis.resume();const now=Date.now();
@@ -3309,6 +3395,7 @@ imuModeBtn.addEventListener('click',()=>chooseMode('imu'));
 imuBackBtn.addEventListener('click',()=>{if(!imuOnlyTrip)resetMode();});
 imuSessionStartBtn.addEventListener('click',startImuSession);
 imuArmBtn.addEventListener('click',armImuTrip);
+imuDestination.addEventListener('change',syncImuDestinationUi);
 imuRecalBtn.addEventListener('click',recalibrateImu);
 validationStopBtn.addEventListener('click',()=>validationManualMark('DETENCION_REAL'));
 validationMoveBtn.addEventListener('click',()=>validationManualMark('INICIO_MOVIMIENTO_REAL'));
@@ -3322,7 +3409,7 @@ imuQuickVoiceBtn.addEventListener('click',openQuickVoiceModal);
 imuBellotoCutBtn.addEventListener('click',armBellotoDoubleCut);
 voiceCloseBtn.addEventListener('click',closeVoiceModal);
 voiceDirection.addEventListener('change',()=>{voicePopulateLocations();updateVoicePreview();});
-voiceUseSpeed.addEventListener('change',syncVoiceOptionalUi);voiceUsePk.addEventListener('change',syncVoiceOptionalUi);voiceSpeed.addEventListener('input',updateVoicePreview);voicePkStart.addEventListener('input',updateVoicePreview);voicePkEnd.addEventListener('input',updateVoicePreview);voiceText.addEventListener('input',updateVoicePreview);
+voiceSpeed.addEventListener('input',syncVoiceOptionalUi);voicePkStart.addEventListener('input',syncVoiceOptionalUi);voicePkEnd.addEventListener('input',syncVoiceOptionalUi);voiceText.addEventListener('input',updateVoicePreview);
 voiceAnnounceStations.addEventListener('change',()=>{voiceSettings.announceStations=voiceAnnounceStations.checked;saveVoiceSettings();renderVoiceBar();});
 voiceRemindLights.addEventListener('change',()=>{voiceSettings.remindLights=voiceRemindLights.checked;saveVoiceSettings();renderVoiceBar();});
 voiceRemindDoors.addEventListener('change',()=>{voiceSettings.remindDoors=voiceRemindDoors.checked;saveVoiceSettings();renderVoiceBar();});
@@ -3343,4 +3430,4 @@ document.addEventListener('visibilitychange',()=>{if(document.visibilityState===
 fillTripSelectors();loadVoiceSettings();fillImuDestination();setDefaultSchedule();restoreImuSession();renderVoiceBar();voiceResetForm();updateMiniReadout();
 </script>
 </body>
-</html>
+  </html>
