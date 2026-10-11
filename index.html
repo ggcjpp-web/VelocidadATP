@@ -4,7 +4,7 @@
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no" />
 <meta name="theme-color" content="#050708" />
-<title>Velocidad Sonora V7.21</title>
+<title>Velocidad Sonora V7.22</title>
 <style>
 :root{color-scheme:dark;font-family:system-ui,-apple-system,Segoe UI,Roboto,sans-serif}
 *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
@@ -122,7 +122,7 @@ body.mode-imu #imuMode{display:block}
   </div>
   <section id="imuMode">
     <div class="imuShell">
-      <div class="imuTop"><div class="imuBrand">REGISTRO IMU · V7.21</div><button id="imuBackBtn" class="ghostBtn">CAMBIAR MODO</button></div>
+      <div class="imuTop"><div class="imuBrand">REGISTRO IMU · V7.22</div><button id="imuBackBtn" class="ghostBtn">CAMBIAR MODO</button></div>
       <div id="imuSessionSetup" class="imuSessionCard">
         <div style="font-size:20px;font-weight:950;margin-bottom:10px">SESIÓN DE SERVICIOS</div>
         <div class="imuSessionGrid">
@@ -802,7 +802,7 @@ function onDeviceMotion(e){
   validationCaptureRaw(now,x,y,z,Math.min(m,8),extra,source,e.interval,{rawNativeX,rawNativeY,rawNativeZ,device:dev});
   imuSamples.push({
     t:now,m:Math.min(m,8),x,y,z,
-    nativeRawX,nativeRawY,nativeRawZ,nativeBiasCorrected:hasNative&&dev.calibrated,
+    nativeRawX:rawNativeX,nativeRawY:rawNativeY,nativeRawZ:rawNativeZ,nativeBiasCorrected:hasNative&&dev.calibrated,
     gravityRawMag:extra?.gm??null,gravityFilteredMag:extra?.hm??null,
     gravityFilteredX:extra?.hx??null,gravityFilteredY:extra?.hy??null,gravityFilteredZ:extra?.hz??null
   });
@@ -2044,7 +2044,7 @@ function startValidationRun(){
   imuValidationCurrent={
     enabled:true,
     schemaVersion:'1.6',
-    appVersion:'V7.21',
+    appVersion:'V7.22',
     startedAt:now,
     startedPerf:performance.now(),
     endedAt:null,
@@ -2196,7 +2196,7 @@ function exportValidationRun(){
       durationMs:v.endedAt?Math.max(0,v.endedAt-v.startedAt):Date.now()-v.startedAt,
       note:'Las marcas MANUAL representan la realidad indicada por el usuario. Las transiciones AUTOMATICAS son lo que decidió la app. GPS es contexto espacial, no una marca manual.',
       accelerationInfo:{units:'m/s2',gravityFilter:'pasa-altos independiente: accelerationIncludingGravity menos media exponencial (tau=2 segundos)',
-        note:'V7.21 conserva sin cambios el motor de detección V7.20: accelerationIncludingGravity filtrado como autoridad física principal y auto-calibración del canal nativo por dispositivo. Esta versión modifica interfaz/destinos/avisos de voz.',
+        note:'V7.22 conserva los criterios físicos del motor V7.20/V7.21. Corrige la captura de muestras IMU adaptativas y registra el desfase real de salida respecto de la hora programada, incluyendo adelantos.',
         nativeRawRows:v.nativeSamples,gravityAvailableRows:v.gravitySamples,rawSamplingMinIntervalMs:VALIDATION_RAW_MIN_INTERVAL_MS},
       sensorProfile:{...nativeDeviceProfileNow()}
     },
@@ -2962,7 +2962,7 @@ function imuOnlyTick(){
     if(!dep.ready)return;
 
     if(imuCalStart!==null)imuCancelCalibration('Salida física detectada; se conserva la referencia aprendida.');
-    const at=Math.max(imuOnlyTrip.scheduledAt,dep.at||now);
+    const at=Math.max(imuOnlyTrip.armedAt||0,dep.at||now);
     imuLearnLongAxis(1000);gravityCommitDepartureAxis();
     addImuEvent('SALIDA','Salida',imuOnlyTrip.scheduledAt,at,{delayMs:at-imuOnlyTrip.scheduledAt,source:dep.source||'IMU híbrido'});
     imuOnlyTrip.actualStartAt=at;imuOnlyTrip.segmentStartAt=at;
@@ -3430,4 +3430,4 @@ document.addEventListener('visibilitychange',()=>{if(document.visibilityState===
 fillTripSelectors();loadVoiceSettings();fillImuDestination();setDefaultSchedule();restoreImuSession();renderVoiceBar();voiceResetForm();updateMiniReadout();
 </script>
 </body>
-  </html>
+                                                                                                                                                               </html>
