@@ -4,7 +4,7 @@
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no" />
 <meta name="theme-color" content="#050708" />
-<title>Velocidad Sonora V7.22</title>
+<title>Velocidad Sonora V7.23</title>
 <style>
 :root{color-scheme:dark;font-family:system-ui,-apple-system,Segoe UI,Roboto,sans-serif}
 *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
@@ -122,7 +122,7 @@ body.mode-imu #imuMode{display:block}
   </div>
   <section id="imuMode">
     <div class="imuShell">
-      <div class="imuTop"><div class="imuBrand">REGISTRO IMU · V7.22</div><button id="imuBackBtn" class="ghostBtn">CAMBIAR MODO</button></div>
+      <div class="imuTop"><div class="imuBrand">REGISTRO IMU · V7.23</div><button id="imuBackBtn" class="ghostBtn">CAMBIAR MODO</button></div>
       <div id="imuSessionSetup" class="imuSessionCard">
         <div style="font-size:20px;font-weight:950;margin-bottom:10px">SESIÓN DE SERVICIOS</div>
         <div class="imuSessionGrid">
@@ -495,7 +495,7 @@ const VEHICLE_DETECTOR_PROFILES={
   MC:{
     departRatio:1.65,departAbsInc:.045,departFloor:.115,cohFirst:.48,cohAxis:.40,alignMin:.20,
     nativeRatio:1.10,nativeAbsInc:.016,departHoldMs:650,
-    initialDepartG:.24,initialDepartN:.20,initialCoh:.36,initialHoldMs:520,initialIgnoreMs:650,
+    initialDepartG:.24,initialDepartN:.20,initialCoh:.36,initialHoldMs:520,initialIgnoreMs:3000,
     stopOnsetG:.82,stopOnsetN:.88,stopSearchMinMs:10000,
     stopRestGMax:.15,stopRestNMax:.20,stopRestP75Factor:1.50,stopFastP75Max:.22,
     arrivalAmbiguityFactor:.65,arrivalHighGMult:2.00,arrivalHighGAdd:.040,arrivalHighNMult:1.70,arrivalHighNAdd:.030,
@@ -504,7 +504,7 @@ const VEHICLE_DETECTOR_PROFILES={
   TCP:{
     departRatio:1.45,departAbsInc:.028,departFloor:.095,cohFirst:.40,cohAxis:.34,alignMin:.16,
     nativeRatio:1.06,nativeAbsInc:.010,departHoldMs:520,
-    initialDepartG:.17,initialDepartN:.15,initialCoh:.31,initialHoldMs:1400,initialIgnoreMs:650,
+    initialDepartG:.17,initialDepartN:.15,initialCoh:.31,initialHoldMs:1400,initialIgnoreMs:1800,
     stopOnsetG:.89,stopOnsetN:.93,stopSearchMinMs:10000,
     // TCP puede circular muy suave. Además del nivel absoluto se exige que el canal rápido
     // permanezca bajo durante la candidata completa; esto evita confundir rodadura suave con reposo.
@@ -2044,7 +2044,7 @@ function startValidationRun(){
   imuValidationCurrent={
     enabled:true,
     schemaVersion:'1.6',
-    appVersion:'V7.22',
+    appVersion:'V7.23',
     startedAt:now,
     startedPerf:performance.now(),
     endedAt:null,
@@ -2196,7 +2196,7 @@ function exportValidationRun(){
       durationMs:v.endedAt?Math.max(0,v.endedAt-v.startedAt):Date.now()-v.startedAt,
       note:'Las marcas MANUAL representan la realidad indicada por el usuario. Las transiciones AUTOMATICAS son lo que decidió la app. GPS es contexto espacial, no una marca manual.',
       accelerationInfo:{units:'m/s2',gravityFilter:'pasa-altos independiente: accelerationIncludingGravity menos media exponencial (tau=2 segundos)',
-        note:'V7.22 conserva los criterios físicos del motor V7.20/V7.21. Corrige la captura de muestras IMU adaptativas y registra el desfase real de salida respecto de la hora programada, incluyendo adelantos.',
+        note:'V7.23 mantiene el detector adaptativo por dispositivo, añade estabilización inicial real, permite coherencia alta cuando la energía de reposo es casi nula y usa el reposo aprendido del propio teléfono para rechazar falsas estaciones.',
         nativeRawRows:v.nativeSamples,gravityAvailableRows:v.gravitySamples,rawSamplingMinIntervalMs:VALIDATION_RAW_MIN_INTERVAL_MS},
       sensorProfile:{...nativeDeviceProfileNow()}
     },
@@ -2690,6 +2690,32 @@ function gravityInferArrivalFromStableRest(now,candidateProfile,finalPlateau){
   if(!after)return physStopSince;
   return clamp(after.t,physStopSince,now);
 }
+function gravityLearnedRestLimits(trustedG){
+  if(!Number.isFinite(trustedG))return {available:false,median:null,tail:null,fast:null};
+  // El piso evita sobreajustar teléfonos extremadamente silenciosos: una estación puede vibrar
+  // más que otra, pero una meseta claramente por encima de estos límites no debe convertirse en reposo.
+  return {
+    available:true,
+    median:Math.max(.09,trustedG*2.25+.020),
+    tail:Math.max(.12,trustedG*2.70+.030),
+    fast:Math.max(.16,trustedG*3.20+.040)
+  };
+}
+function gravityRejectedCandidateShouldAbsorb(finalPlateau,trustedG,frozen,vp){
+  if(!finalPlateau)return false;
+  const lim=gravityLearnedRestLimits(trustedG);
+  if(lim.available){
+    const clearlyHighMedian=finalPlateau.g>lim.median*1.18;
+    const clearlyHighTail=finalPlateau.gP75>lim.tail*1.15;
+    const clearlyHighFast=finalPlateau.fP75>lim.fast*1.18;
+    return clearlyHighMedian||(clearlyHighTail&&clearlyHighFast);
+  }
+  const frozenG=Number.isFinite(frozen?.g)?frozen.g:null;
+  const highByAbsolute=finalPlateau.g>vp.stopRestGMax*1.15;
+  const highByMotionRef=Number.isFinite(frozenG)&&finalPlateau.g>frozenG*.78;
+  const highFast=finalPlateau.fP75>Math.max(vp.stopFastP75Max*1.08,.24);
+  return highByAbsolute||(highByMotionRef&&highFast);
+}
 function gravityClearStopCandidate(absorb=false,now=Date.now()){
   if(absorb)gravityAbsorbRejectedCandidate(now);
   physStopSince=null;physStopBreakSince=null;physStopInferredArrival=null;physStopQualifiedAt=null;
@@ -2742,7 +2768,15 @@ function physResetCandidates(){
 }
 function physDepartureReady(now,fastScore,slowScore){
   const vp=vehicleDetectorParams();
-  const startup=imuOnlyTrip?.state==='LOCATING'&&now-(imuOnlyTrip?.armedAt||now)>=vp.initialIgnoreMs;
+  const locating=imuOnlyTrip?.state==='LOCATING';
+  const locatingAge=locating?now-(imuOnlyTrip?.armedAt||now):Infinity;
+  // V7.23: la ventana inicial sí es un periodo de estabilización real. Durante ella no abrimos
+  // candidatas de movimiento con el transitorio de encendido del sensor.
+  if(locating&&locatingAge<vp.initialIgnoreMs){
+    physDepartSince=null;physDepartBreakSince=null;
+    return {ready:false,at:null,threshold:null,sensitive:null,source:'startup-settle'};
+  }
+  const startup=locating&&locatingAge>=vp.initialIgnoreMs;
   // En el primer arranque miramos un percentil más alto para no perder una salida inmediata
   // por haber empezado a aprender "reposo" cuando el tren ya comenzó a moverse.
   const gLevel=gravityFilteredLevel(GRAV_DEPART_LEVEL_MS,startup ? .70 : .50),v=gravityVectorStats(GRAV_DEPART_VECTOR_MS);
@@ -2933,7 +2967,9 @@ function imuOnlyTick(){
     // para no convertir los primeros segundos de movimiento en la nueva "línea base".
     const dep=physDepartureReady(now,fastScore,slowScore);
     if(!dep.ready){
-      if(Number.isFinite(gravityLevel)&&physDepartSince===null){gravityUpdateRest(gravityLevel,slowScore);nativeMaybeCalibrateAtRest();}
+      if(dep.source!=='startup-settle'&&Number.isFinite(gravityLevel)&&physDepartSince===null){
+        gravityUpdateRest(gravityLevel,slowScore);nativeMaybeCalibrateAtRest();
+      }
       return;
     }
     const at=Math.max(imuOnlyTrip.armedAt||0,dep.at||now);
@@ -3029,14 +3065,41 @@ function imuOnlyTick(){
             const finalMedianOK=finalPlateau.g<=adaptiveGMax&&finalPlateau.g<=frozen.g*.72;
             const finalTailOK=finalPlateau.gP75<=Math.max(adaptiveGMax*1.30,frozen.g*.82);
             const finalFastOK=finalPlateau.fP75<=Math.max(adaptiveGMax*1.55,frozen.g*.88);
-            const finalCoherenceOK=!Number.isFinite(finalPlateau.cP75)||finalPlateau.cP75<=.52;
             const finalStableOK=finalPlateau.gMad<=Math.max(.060,finalPlateau.g*.85);
-            const trueRest=finalMedianOK&&finalTailOK&&finalFastOK&&finalCoherenceOK&&finalStableOK;
+
+            // V7.23: en algunos teléfonos una señal casi nula queda matemáticamente muy "coherente".
+            // Si la energía real es ínfima y estable, esa coherencia no puede vetar una detención.
+            const ultraQuietStable=
+              gravityChannelAvailable &&
+              finalPlateau.g<=.040 &&
+              finalPlateau.gP75<=.055 &&
+              finalPlateau.fP75<=.090 &&
+              finalStableOK;
+            const finalCoherenceOK=
+              ultraQuietStable ||
+              !Number.isFinite(finalPlateau.cP75) ||
+              finalPlateau.cP75<=.52;
+
+            // Una vez que conocemos el reposo real del teléfono/tren, lo usamos como ancla adicional.
+            // Conservamos un piso suficientemente amplio para permitir estaciones más ruidosas sin
+            // convertir una circulación suave claramente energética en "detenido".
+            const learned=gravityLearnedRestLimits(trustedG);
+            const learnedRestOK=
+              !learned.available ||
+              (finalPlateau.g<=learned.median &&
+               finalPlateau.gP75<=learned.tail &&
+               finalPlateau.fP75<=learned.fast);
+
+            const trueRest=
+              finalMedianOK&&finalTailOK&&finalFastOK&&
+              finalCoherenceOK&&finalStableOK&&learnedRestOK;
 
             if(!trueRest){
-              // Era frenado, muñequeo, rodadura suave o vibración de vía. No aprendemos esto como reposo:
-              // lo absorbemos como nueva referencia de MOVIMIENTO para que una caída posterior pueda ser la real.
-              gravityClearStopCandidate(true,now);
+              // Solo absorbemos como MOVIMIENTO una candidata que quedó claramente por encima
+              // del reposo aprendido. Una candidata baja/ambigua se descarta sin contaminar
+              // la referencia de marcha; así no "aprendemos" un tren detenido como si circulara.
+              const absorbAsMovement=gravityRejectedCandidateShouldAbsorb(finalPlateau,trustedG,frozen,vp);
+              gravityClearStopCandidate(absorbAsMovement,now);
               return;
             }
 
@@ -3086,7 +3149,14 @@ function imuOnlyTick(){
             return;
           }
 
-          if(now-physStopSince>=vp.stopCandidateMaxMs){gravityClearStopCandidate(true,now);return;}
+          if(now-physStopSince>=vp.stopCandidateMaxMs){
+            const timeoutPlateau=gravityRecentStopPlateau(3600);
+            const absorbAsMovement=gravityRejectedCandidateShouldAbsorb(
+              timeoutPlateau,imuOnlyTrip?.trustedRestG,gravityStopFrozenRef||ref,vp
+            );
+            gravityClearStopCandidate(absorbAsMovement,now);
+            return;
+          }
         }
       }
     }
@@ -3430,4 +3500,4 @@ document.addEventListener('visibilitychange',()=>{if(document.visibilityState===
 fillTripSelectors();loadVoiceSettings();fillImuDestination();setDefaultSchedule();restoreImuSession();renderVoiceBar();voiceResetForm();updateMiniReadout();
 </script>
 </body>
-                                                                                                                                                               </html>
+  </html>
