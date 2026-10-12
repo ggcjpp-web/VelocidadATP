@@ -112,92 +112,92 @@ body.mode-imu #imuMode{display:block}
 <div id="app">
   <div id="modePicker">
     <div class="modeCard">
-      <div class="modeTitle">ATP Â· Registro</div>
-      <div class="modeSub">Elige cÃ³mo usar el telÃ©fono. El modo IMU funciona sin cÃ¡mara y estÃ¡ pensado para vista vertical.</div>
+      <div class="modeTitle">ATP · Registro</div>
+      <div class="modeSub">Elige cómo usar el teléfono. El modo IMU funciona sin cámara y está pensado para vista vertical.</div>
       <div class="modeButtons">
-        <button id="visionModeBtn" class="primary">VISIÃ“N ATP<small>CÃ¡mara + lectura del panel + guÃ­a sonora.</small></button>
-        <button id="imuModeBtn">SOLO IMU<small>Movimiento, tramos y detenciones sin usar cÃ¡mara.</small></button>
+        <button id="visionModeBtn" class="primary">VISIÓN ATP<small>Cámara + lectura del panel + guía sonora.</small></button>
+        <button id="imuModeBtn">SOLO IMU<small>Movimiento, tramos y detenciones sin usar cámara.</small></button>
       </div>
     </div>
   </div>
   <section id="imuMode">
     <div class="imuShell">
-      <div class="imuTop"><div class="imuBrand">REGISTRO IMU Â· V7.24</div><button id="imuBackBtn" class="ghostBtn">CAMBIAR MODO</button></div>
+      <div class="imuTop"><div class="imuBrand">REGISTRO IMU · V7.24</div><button id="imuBackBtn" class="ghostBtn">CAMBIAR MODO</button></div>
       <div id="imuSessionSetup" class="imuSessionCard">
-        <div style="font-size:20px;font-weight:950;margin-bottom:10px">SESIÃ“N DE SERVICIOS</div>
+        <div style="font-size:20px;font-weight:950;margin-bottom:10px">SESIÓN DE SERVICIOS</div>
         <div class="imuSessionGrid">
           <div class="imuField wide"><label>MAIL PARA EL INFORME</label><input id="imuEmail" type="email" inputmode="email" autocomplete="email" placeholder="correo@ejemplo.cl"></div>
-          <div class="imuField"><label>N.Âº DE SERVICIOS</label><input id="imuServiceCount" type="number" inputmode="numeric" min="1" max="20" value="1"></div>
-          <div class="imuField"><label>ENVÃO</label><div style="padding:13px 2px;font-size:12px;font-weight:850;opacity:.65">Todos juntos al final</div></div>
+          <div class="imuField"><label>N.º DE SERVICIOS</label><input id="imuServiceCount" type="number" inputmode="numeric" min="1" max="20" value="1"></div>
+          <div class="imuField"><label>ENVÍO</label><div style="padding:13px 2px;font-size:12px;font-weight:850;opacity:.65">Todos juntos al final</div></div>
         </div>
-        <button id="imuSessionStartBtn" class="primary" style="width:100%;margin-top:11px;padding:15px">INICIAR SESIÃ“N</button>
-        <div id="imuSessionMsg" class="imuCal">Los servicios se guardan localmente hasta completar la sesiÃ³n.</div>
+        <button id="imuSessionStartBtn" class="primary" style="width:100%;margin-top:11px;padding:15px">INICIAR SESIÓN</button>
+        <div id="imuSessionMsg" class="imuCal">Los servicios se guardan localmente hasta completar la sesión.</div>
       </div>
       <div id="imuSessionStatus" class="imuSessionStatus"><span id="imuSessionProgress">SERVICIO 1 DE 1</span><span id="imuSessionEmailLabel"></span></div>
       <div id="voiceBar"><div class="voiceBarText"><div class="voiceBarTitle">AVISOS DE VOZ</div><div id="voiceBarSub" class="voiceBarSub">Sin avisos configurados.</div></div><button id="voiceOpenBtn" class="voiceBarBtn">EDITAR AVISOS</button></div>
       <div id="imuSetup" class="imuSetup" style="display:none">
         <div class="imuSetupGrid">
-          <div class="imuField wide"><label>NÃšMERO DE SERVICIO</label><input id="imuServiceNumber" type="text" inputmode="numeric" maxlength="3" pattern="[0-9]{3}" placeholder="Ej. 605"></div>
-          <div class="imuField wide"><label>DESTINO</label><select id="imuDestination"></select><div id="imuOtherDestinationWrap" style="display:none;margin-top:8px"><select id="imuDestinationOther"></select></div><div class="serviceRouteNote">La app detecta automÃ¡ticamente el tramo actual y confirma el sentido al comenzar a desplazarse. Puede iniciarse incluso a mitad de un trayecto.</div></div>
+          <div class="imuField wide"><label>NÚMERO DE SERVICIO</label><input id="imuServiceNumber" type="text" inputmode="numeric" maxlength="3" pattern="[0-9]{3}" placeholder="Ej. 605"></div>
+          <div class="imuField wide"><label>DESTINO</label><select id="imuDestination"></select><div id="imuOtherDestinationWrap" style="display:none;margin-top:8px"><select id="imuDestinationOther"></select></div><div class="serviceRouteNote">La app detecta automáticamente el tramo actual y confirma el sentido al comenzar a desplazarse. Puede iniciarse incluso a mitad de un trayecto.</div></div>
           <div class="imuField wide"><label>SALIDA PROGRAMADA</label><input id="imuSchedule" type="time" step="60"></div>
           <div class="validationSetup">
-            <label class="validationToggle"><span>MODO PRUEBA DE DETECCIÃ“N</span><input id="imuValidationMode" type="checkbox"></label>
-            <div class="validationSetupNote">AÃ±ade dos marcas manuales â€”detenciÃ³n real e inicio real de movimientoâ€” y registra IMU/GPS para comparar despuÃ©s. No modifica la detecciÃ³n automÃ¡tica.</div>
+            <label class="validationToggle"><span>MODO PRUEBA DE DETECCIÓN</span><input id="imuValidationMode" type="checkbox"></label>
+            <div class="validationSetupNote">Añade dos marcas manuales —detención real e inicio real de movimiento— y registra IMU/GPS para comparar después. No modifica la detección automática.</div>
           </div>
-          <div class="imuField wide" style="display:none"><label>UBICACIÃ“N</label><div class="gpsOption"><span>GPS automÃ¡tico</span></div></div>
+          <div class="imuField wide" style="display:none"><label>UBICACIÓN</label><div class="gpsOption"><span>GPS automático</span></div></div>
           <input id="imuGpsSupport" type="checkbox" checked style="display:none">
-          <select id="imuDirection" style="display:none"><option value="limache">VÃ­a 1</option><option value="puerto">VÃ­a 2</option></select>
-          <select id="imuRoutePreset" style="display:none"><option value="auto">AutomÃ¡tico</option></select>
+          <select id="imuDirection" style="display:none"><option value="limache">Vía 1</option><option value="puerto">Vía 2</option></select>
+          <select id="imuRoutePreset" style="display:none"><option value="auto">Automático</option></select>
           <div id="imuCustomRouteFields" style="display:none"><select id="imuStart"></select><select id="imuEnd"></select></div>
         </div>
-        <div id="imuCalText" class="imuCal">Al armar, la app localiza el tren. En cuanto el GPS confirma hacia quÃ© lado avanza, identifica el tramo y comienza a cronometrar; el IMU conserva el instante fÃ­sico de inicio para reducir la latencia.</div>
+        <div id="imuCalText" class="imuCal">Al armar, el IMU queda esperando el movimiento físico. El GPS solo ayuda a ubicar la estación o el tramo y a mantener sincronizada la posición del recorrido.</div>
         <button id="imuArmBtn" class="primary">ARMAR SERVICIO</button>
       </div>
       <div id="imuLive" class="imuLive">
         <div id="imuState" class="imuState">ESPERANDO SALIDA</div>
         <div id="imuRoute" class="imuRoute">--</div>
         <div id="imuTimer" class="imuTimer">00:00.0</div>
-        <div id="imuTimerLabel" class="imuTimerLabel">DURACIÃ“N DEL EVENTO ACTUAL</div>
+        <div id="imuTimerLabel" class="imuTimerLabel">DURACIÓN DEL EVENTO ACTUAL</div>
         <div class="imuSecondary">
           <div class="imuStat"><div class="imuStatLabel">VIAJE</div><div id="imuTotal" class="imuStatValue">00:00</div></div>
-          <div class="imuStat"><div id="imuExtraLabel" class="imuStatLabel">SEÃ‘AL IMU</div><div id="imuExtra" class="imuStatValue">--</div></div>
+          <div class="imuStat"><div id="imuExtraLabel" class="imuStatLabel">SEÑAL IMU</div><div id="imuExtra" class="imuStatValue">--</div></div>
         </div>
-        <div id="imuSignal" class="imuSignal">IMU: esperando calibraciÃ³n</div>
+        <div id="imuSignal" class="imuSignal">IMU: esperando calibración</div>
         <div id="imuCalLive" class="imuCalLive"></div>
         <div id="validationPanel" class="validationPanel">
-          <div class="validationTitle">VALIDACIÃ“N MANUAL</div>
-          <div class="validationNote">Marca lo que ocurre realmente. Estos botones NO fuerzan el estado automÃ¡tico ni cambian los cronÃ³metros.</div>
+          <div class="validationTitle">VALIDACIÓN MANUAL</div>
+          <div class="validationNote">Marca lo que ocurre realmente. Estos botones NO fuerzan el estado automático ni cambian los cronómetros.</div>
           <div class="validationButtons">
-            <button id="validationStopBtn">DETENCIÃ“N<br>REAL</button>
+            <button id="validationStopBtn">DETENCIÓN<br>REAL</button>
             <button id="validationMoveBtn">INICIO REAL<br>DE MOVIMIENTO</button>
           </div>
-          <div id="validationStatus" class="validationStatus">Sin marcas manuales todavÃ­a.</div>
+          <div id="validationStatus" class="validationStatus">Sin marcas manuales todavía.</div>
           <div class="validationActions">
             <button id="validationExportBtn">EXPORTAR PRUEBA</button>
           </div>
         </div>
-        <div class="imuStopTable"><div class="imuStopTitle">TIEMPOS DE DETENCIÃ“N POR ESTACIÃ“N</div><div class="imuStopHead"><span>ESTACIÃ“N</span><span>DETENCIÃ“N</span><span>CONSENT.</span></div><div id="imuStopRows"><div class="imuStopEmpty">AÃºn no hay detenciones registradas.</div></div></div>
-        <div class="imuQuickBar"><button id="imuQuickVoiceBtn">ï¼‹ AVISO</button><button id="imuBellotoCutBtn">CORTE DOBLE Â· BELLOTO</button><div id="imuQuickMsg" class="imuQuickMsg"></div></div>
-        <div class="imuProgress"><div class="imuProgressTitle">EVENTOS</div><div id="imuEvents" class="imuStops"><div style="font-size:11px;opacity:.45">Sin eventos todavÃ­a.</div></div></div>
-        <div class="imuActions"><button id="imuRecalBtn">RECALIBRAR REPOSO Â· OPCIONAL</button><button id="imuNextServiceBtn" class="primary" style="display:none">SIGUIENTE SERVICIO</button><button id="imuFinishBtn" class="danger">FINALIZAR</button></div>
-        <div class="imuHint">GPS entrega contexto de ubicaciÃ³n. V7.16 combina aceleraciÃ³n nativa con el canal con gravedad filtrado; el modo prueba sigue registrando la realidad sin alterar la detecciÃ³n automÃ¡tica.</div>
+        <div class="imuStopTable"><div class="imuStopTitle">TIEMPOS DE DETENCIÓN POR ESTACIÓN</div><div class="imuStopHead"><span>ESTACIÓN</span><span>DETENCIÓN</span><span>CONSENT.</span></div><div id="imuStopRows"><div class="imuStopEmpty">Aún no hay detenciones registradas.</div></div></div>
+        <div class="imuQuickBar"><button id="imuQuickVoiceBtn">＋ AVISO</button><button id="imuBellotoCutBtn">CORTE DOBLE · BELLOTO</button><div id="imuQuickMsg" class="imuQuickMsg"></div></div>
+        <div class="imuProgress"><div class="imuProgressTitle">EVENTOS</div><div id="imuEvents" class="imuStops"><div style="font-size:11px;opacity:.45">Sin eventos todavía.</div></div></div>
+        <div class="imuActions"><button id="imuRecalBtn">RECALIBRAR REPOSO · OPCIONAL</button><button id="imuNextServiceBtn" class="primary" style="display:none">SIGUIENTE SERVICIO</button><button id="imuFinishBtn" class="danger">FINALIZAR</button></div>
+        <div class="imuHint">El IMU decide movimiento y detención. El GPS solo entrega contexto de ubicación. En modo prueba, las marcas manuales registran la realidad sin alterar la detección automática.</div>
       </div>
       <div id="imuSessionReport" class="imuSessionReport">
-        <div class="reportTitle">INFORME DE SESIÃ“N</div><div id="imuReportSub" class="reportSub"></div>
+        <div class="reportTitle">INFORME DE SESIÓN</div><div id="imuReportSub" class="reportSub"></div>
         <div id="imuReportContent"></div>
         <div id="imuSendState" class="sendState"></div>
         <div id="validationReportCard" class="validationReportCard">
           <div class="validationReportTitle">REGISTRO DE PRUEBA DISPONIBLE</div>
-          <div id="validationReportText" class="validationReportText">Las marcas manuales y la seÃ±al IMU quedaron guardadas temporalmente en esta sesiÃ³n.</div>
+          <div id="validationReportText" class="validationReportText">Las marcas manuales y la señal IMU quedaron guardadas temporalmente en esta sesión.</div>
           <button id="validationReportExportBtn">DESCARGAR REGISTRO MANUAL / IMU</button>
         </div>
-        <div class="imuActions"><button id="imuNewSessionBtn" class="primary">NUEVA SESIÃ“N</button></div>
+        <div class="imuActions"><button id="imuNewSessionBtn" class="primary">NUEVA SESIÓN</button></div>
       </div>
       <div id="voiceModal">
         <div class="voiceCard">
           <div class="voiceHead"><div class="voiceTitle">AVISOS DE VOZ</div><button id="voiceCloseBtn" class="voiceClose">CERRAR</button></div>
           <div class="voicePrefs">
-            <label class="voiceToggle"><span>Anunciar estaciÃ³n y prÃ³xima estaciÃ³n</span><input id="voiceAnnounceStations" type="checkbox"></label>
+            <label class="voiceToggle"><span>Anunciar estación y próxima estación</span><input id="voiceAnnounceStations" type="checkbox"></label>
             <label class="voiceToggle"><span>Recordar luces durante el trayecto</span><input id="voiceRemindLights" type="checkbox"></label>
             <label class="voiceToggle"><span>Recordar apertura de puertas</span><input id="voiceRemindDoors" type="checkbox"></label>
           </div>
@@ -206,11 +206,11 @@ body.mode-imu #imuMode{display:block}
             <div id="voicePresetGrid" class="voicePresetGrid"></div>
           </div>
           <div class="voiceSection">
-            <div class="voiceSectionTitle">DÃ“NDE AVISAR</div>
+            <div class="voiceSectionTitle">DÓNDE AVISAR</div>
             <div class="voiceGrid">
               <div id="voiceCustomField" class="voiceField wide" style="display:none"><label>MENSAJE PERSONALIZADO</label><textarea id="voiceText" maxlength="320" placeholder="Escribe el mensaje"></textarea></div>
-              <div class="voiceField"><label>VÃA</label><select id="voiceDirection"><option value="both" selected>AMBAS</option><option value="via1">VÃA 1 Â· TCP</option><option value="via2">VÃA 2 Â· MC</option></select></div>
-              <div class="voiceField"><label id="voiceLocationLabel">TRAMO</label><select id="voiceLocation"></select><div id="voiceRouteHint" class="voiceRouteHint">En ambas vÃ­as se avisa al entrar al mismo tramo desde cualquiera de sus extremos.</div></div>
+              <div class="voiceField"><label>VÍA</label><select id="voiceDirection"><option value="both" selected>AMBAS</option><option value="via1">VÍA 1 · TCP</option><option value="via2">VÍA 2 · MC</option></select></div>
+              <div class="voiceField"><label id="voiceLocationLabel">TRAMO</label><select id="voiceLocation"></select><div id="voiceRouteHint" class="voiceRouteHint">En ambas vías se avisa al entrar al mismo tramo desde cualquiera de sus extremos.</div></div>
             </div>
           </div>
           <div class="voiceSection">
@@ -219,15 +219,15 @@ body.mode-imu #imuMode{display:block}
               <input id="voiceUseSpeed" type="checkbox" hidden>
               <div class="voiceField"><label>VELOCIDAD</label><input id="voiceSpeed" type="number" inputmode="decimal" min="0" max="160" step="1" placeholder="Ej. 20"></div>
               <input id="voiceUsePk" type="checkbox" hidden>
-              <div id="voicePkFields" class="voiceField wide"><label>PK / TRAMO DE PK</label><div style="display:grid;grid-template-columns:1fr 1fr;gap:8px"><input id="voicePkStart" type="text" inputmode="text" maxlength="10" placeholder="Inicio Â· 07-13"><input id="voicePkEnd" type="text" inputmode="text" maxlength="10" placeholder="Fin opcional Â· 07-19"></div></div>
+              <div id="voicePkFields" class="voiceField wide"><label>PK / TRAMO DE PK</label><div style="display:grid;grid-template-columns:1fr 1fr;gap:8px"><input id="voicePkStart" type="text" inputmode="text" maxlength="10" placeholder="Inicio · 07-13"><input id="voicePkEnd" type="text" inputmode="text" maxlength="10" placeholder="Fin opcional · 07-19"></div></div>
               <div class="voiceField"><label>RETRASO (s)</label><input id="voiceDelay" type="number" inputmode="numeric" min="0" max="1800" step="1" value="0"></div>
               <div class="voiceField"><label>REPETIR (veces)</label><input id="voiceTimes" type="number" inputmode="numeric" min="1" max="10" step="1" value="1"></div>
             </div>
           </div>
           <div id="voicePreview" class="voicePreview">Selecciona un mensaje.</div>
           <div id="voiceLock" class="voiceLock"></div>
-          <div class="voiceActions"><button id="voiceTestBtn">PROBAR VOZ</button><button id="voiceSaveBtn" class="primary">GUARDAR MENSAJE</button><button id="voiceCancelEditBtn" style="display:none">CANCELAR EDICIÃ“N</button></div>
-          <div class="voiceNote">Los avisos son globales. Con â€œAMBASâ€, un mismo tramo queda cubierto en los dos sentidos: TCP desde Puerto y MC hacia Puerto.</div>
+          <div class="voiceActions"><button id="voiceTestBtn">PROBAR VOZ</button><button id="voiceSaveBtn" class="primary">GUARDAR MENSAJE</button><button id="voiceCancelEditBtn" style="display:none">CANCELAR EDICIÓN</button></div>
+          <div class="voiceNote">Los avisos son globales. Con “AMBAS”, un mismo tramo queda cubierto en los dos sentidos: TCP desde Puerto y MC hacia Puerto.</div>
           <div id="voiceList" class="voiceList"></div>
         </div>
       </div>
@@ -238,33 +238,33 @@ body.mode-imu #imuMode{display:block}
   <canvas id="overlay"></canvas>
   <div id="shade"></div>
   <div id="active">CONTROL SONORO ACTIVO</div>
-  <div id="hint">Apunta aproximadamente al tablero. La app reduce el brillo cuando el navegador lo permite y lee el objetivo usando solo sus dos dÃ­gitos principales; el .0 final se ignora.</div>
+  <div id="hint">Apunta aproximadamente al tablero. La app reduce el brillo cuando el navegador lo permite y lee el objetivo usando solo sus dos dígitos principales; el .0 final se ignora.</div>
   <div id="tripSetup">
-    <div class="setupField" style="min-width:140px"><label>VIAJE</label><div style="font-size:11px;font-weight:800;opacity:.72;padding:3px 2px 7px">Define el recorrido antes de abrir la cÃ¡mara.</div></div>
-    <div class="setupField"><label>SENTIDO</label><select id="directionSelect"><option value="limache">Puerto â†’ Limache</option><option value="puerto">Limache â†’ Puerto</option></select></div>
+    <div class="setupField" style="min-width:140px"><label>VIAJE</label><div style="font-size:11px;font-weight:800;opacity:.72;padding:3px 2px 7px">Define el recorrido antes de abrir la cámara.</div></div>
+    <div class="setupField"><label>SENTIDO</label><select id="directionSelect"><option value="limache">Puerto → Limache</option><option value="puerto">Limache → Puerto</option></select></div>
     <div class="setupField"><label>INICIO</label><select id="startStationSelect"></select></div>
     <div class="setupField"><label>FINAL</label><select id="endStationSelect"></select></div>
     <button id="armTripBtn" class="primary" disabled>ARMAR VIAJE</button>
   </div>
   <div id="tripBar"><div id="tripState">ARMADO</div><div id="tripRoute">--</div><div id="tripClock">00:00</div><div id="imuInfo">IMU: --</div></div>
-  <div id="ambiguous"><span>DetenciÃ³n prolongada tras ATPtazo</span><button id="stationConfirmBtn">ES ESTACIÃ“N</button></div>
+  <div id="ambiguous"><span>Detención prolongada tras ATPtazo</span><button id="stationConfirmBtn">ES ESTACIÓN</button></div>
   <div id="summaryModal"><div id="summaryCard"><div id="summaryTitle">Viaje finalizado</div><div id="summaryMeta"></div><div id="summaryContent"></div><div id="summaryActions"><button id="exportBtn">EXPORTAR CSV</button><button id="closeSummaryBtn" class="primary">CERRAR</button></div></div></div>
   <div id="hud">
-    <div id="status"><span id="dot"></span><span id="statusText">CÃ¡mara cerrada</span></div>
+    <div id="status"><span id="dot"></span><span id="statusText">Cámara cerrada</span></div>
     <div id="miniReadout">
       <div class="miniChip"><div class="miniLabel">REAL</div><div id="realValue" class="miniValue">--.-</div></div>
       <div class="miniChip"><div class="miniLabel">OBJ</div><div id="targetValue" class="miniValue">--.-</div></div>
     </div>
-    <div id="cameraInfo">CÃMARA: --</div>
+    <div id="cameraInfo">CÁMARA: --</div>
     <div id="controls">
-      <button id="cameraBtn" class="primary">ABRIR CÃMARA</button>
+      <button id="cameraBtn" class="primary">ABRIR CÁMARA</button>
       <button id="lensBtn" style="display:none">CAMBIAR LENTE</button>
       <button id="testBtn">PROBAR SONIDOS</button>
       <button id="startBtn" class="primary" style="display:none" disabled>INICIAR</button>
       <button id="stopBtn" class="danger" style="display:none">FINALIZAR</button>
     </div>
   </div>
-  <div id="rotate">Gira el celular a posiciÃ³n horizontal.</div>
+  <div id="rotate">Gira el celular a posición horizontal.</div>
   <canvas id="scan"></canvas>
   <canvas id="read"></canvas>
 </div>
@@ -402,16 +402,16 @@ const HIGH_TONE=1280;
 const SAVED_CAMERA_KEY='velocidadATP.preferredCameraId.v1';
 const TRIPS_KEY='velocidadATP.completedTrips.v1';
 const ACTIVE_TRIP_KEY='velocidadATP.activeTrip.v1';
-const STATIONS_PUERTO_LIMACHE=['Puerto','Bellavista','Francia','BarÃ³n','Portales','Recreo','Miramar','ViÃ±a del Mar','Hospital','Chorrillos','El Salto','Valencia','QuilpuÃ©','El Sol','El Belloto','Las AmÃ©ricas','La ConcepciÃ³n','Villa Alemana','Sargento Aldea','PeÃ±ablanca','Limache'];
-// Coordenadas de referencia de las estaciones. En modo SOLO IMU, el GPS es la autoridad espacial cuando es vÃ¡lido; el IMU afina los instantes y queda como respaldo sin GPS.
+const STATIONS_PUERTO_LIMACHE=['Puerto','Bellavista','Francia','Barón','Portales','Recreo','Miramar','Viña del Mar','Hospital','Chorrillos','El Salto','Valencia','Quilpué','El Sol','El Belloto','Las Américas','La Concepción','Villa Alemana','Sargento Aldea','Peñablanca','Limache'];
+// Coordenadas de referencia de las estaciones. En modo SOLO IMU, el GPS es la autoridad espacial cuando es válido; el IMU afina los instantes y queda como respaldo sin GPS.
 const STATION_COORDS={
   'Puerto':[-33.0394,-71.6260],'Bellavista':[-33.0431,-71.6204],'Francia':[-33.0438,-71.6131],
-  'BarÃ³n':[-33.0422,-71.6056],'Portales':[-33.0327,-71.5914],'Recreo':[-33.0272,-71.5753],
-  'Miramar':[-33.0249,-71.5615],'ViÃ±a del Mar':[-33.0264,-71.5519],'Hospital':[-33.0285,-71.5429],
+  'Barón':[-33.0422,-71.6056],'Portales':[-33.0327,-71.5914],'Recreo':[-33.0272,-71.5753],
+  'Miramar':[-33.0249,-71.5615],'Viña del Mar':[-33.0264,-71.5519],'Hospital':[-33.0285,-71.5429],
   'Chorrillos':[-33.0333,-71.5328],'El Salto':[-33.0412,-71.5212],'Valencia':[-33.0402,-71.4688],
-  'QuilpuÃ©':[-33.0453,-71.4446],'El Sol':[-33.0396,-71.4288],'El Belloto':[-33.0432,-71.4065],
-  'Las AmÃ©ricas':[-33.0439,-71.3947],'La ConcepciÃ³n':[-33.0417,-71.3820],'Villa Alemana':[-33.0425,-71.3735],
-  'Sargento Aldea':[-33.0421,-71.3660],'PeÃ±ablanca':[-33.0402,-71.3530],'Limache':[-32.9844,-71.2780]
+  'Quilpué':[-33.0453,-71.4446],'El Sol':[-33.0396,-71.4288],'El Belloto':[-33.0432,-71.4065],
+  'Las Américas':[-33.0439,-71.3947],'La Concepción':[-33.0417,-71.3820],'Villa Alemana':[-33.0425,-71.3735],
+  'Sargento Aldea':[-33.0421,-71.3660],'Peñablanca':[-33.0402,-71.3530],'Limache':[-32.9844,-71.2780]
 };
 const STOP_SPEED=.8;
 const MOVE_SPEED=1.2;
@@ -421,13 +421,13 @@ const ATP_ZERO_TIMEOUT_MS=30000;
 const ATP_AMBIGUOUS_MS=20000;
 const IMU_CAL_MS=6000;
 const IMU_AUTO_CAL_MS=4500;
-// Salida: vÃ­a rÃ¡pida por aceleraciÃ³n direccional + respaldo por vibraciÃ³n sostenida.
+// Salida: vía rápida por aceleración direccional + respaldo por vibración sostenida.
 const IMU_FAST_DEPART_CONFIRM_MS=420;
 const IMU_DEPART_CONFIRM_MS=1350;
 const IMU_STOP_CONFIRM_MS=2600;
 const IMU_STATION_MS=12000;
-// Una salida de estaciÃ³n nunca se acepta antes de completar el ciclo fÃ­sico mÃ­nimo
-// de puertas (4 s apertura + 8 s cierre). DespuÃ©s de esos 12 s se exige evidencia
+// Una salida de estación nunca se acepta antes de completar el ciclo físico mínimo
+// de puertas (4 s apertura + 8 s cierre). Después de esos 12 s se exige evidencia
 // sostenida de avance; un golpe corto de cabina no basta.
 const STATION_DEPARTURE_LOCK_MS=12000;
 const STATION_DEPARTURE_GPS_HOLD_MS=650;
@@ -457,9 +457,9 @@ const GPS_STATION_CONTEXT_MIN_M=220;
 const GPS_STATION_CONTEXT_MAX_M=360;
 const FUSION_STOP_CONFIRM_MS=420;
 const IMU_ONLY_STOP_CONFIRM_MS=950;
-// V7.8: clasificaciÃ³n fÃ­sica por ventanas solapadas de acelerometrÃ­a.
+// V7.8: clasificación física por ventanas solapadas de acelerometría.
 // Se comparan ventanas de 1.8 s desplazadas 0.9 s (50% de solapamiento),
-// evitando decidir por una Ãºnica muestra/pico instantÃ¡neo.
+// evitando decidir por una única muestra/pico instantáneo.
 const IMU_STATE_WINDOW_MS=1800;
 const IMU_STATE_SHIFT_MS=900;
 const IMU_STOP_BREAK_HOLD_MS=1600;
@@ -468,10 +468,10 @@ const IMU_DEPART_BREAK_GRACE_MS=550;
 const IMU_STOP_DROP_RATIO=.78;
 const IMU_DEPART_RISE_RATIO=1.28;
 
-// V7.12: detector fÃ­sico simplificado.
-// Volvemos a la estrategia que mejor se acercaba a la realidad: nivel IMU + histÃ©resis,
-// pero usando promedios mÃ³viles y 12 s completos antes de declarar una estaciÃ³n.
-// GPS NO decide DETENCIÃ“N/CIRCULACIÃ“N; solo identifica recorrido/estaciÃ³n.
+// V7.12: detector físico simplificado.
+// Volvemos a la estrategia que mejor se acercaba a la realidad: nivel IMU + histéresis,
+// pero usando promedios móviles y 12 s completos antes de declarar una estación.
+// GPS NO decide DETENCIÓN/CIRCULACIÓN; solo identifica recorrido/estación.
 const PHYS_FAST_WINDOW_MS=450;
 const PHYS_SLOW_WINDOW_MS=900;
 const PHYS_DEPART_HOLD_MS=650;
@@ -480,18 +480,18 @@ const PHYS_STOP_MIN_MS=12000;
 const PHYS_STOP_RELEASE_HOLD_MS=1900;
 const PHYS_MOTION_REF_MS=16000;
 
-// V7.20: detector retrospectivo + adaptaciÃ³n automÃ¡tica al sensor del telÃ©fono.
+// V7.20: detector retrospectivo + adaptación automática al sensor del teléfono.
 // Destino Puerto = MC (coche motor). Cualquier destino desde Puerto = TCP (coche remolque).
-// Ambos usan el mismo detector adaptativo, con sensibilidad distinta segÃºn la firma observada.
-// GPS NUNCA autoriza ni bloquea DETENCIÃ“N/CIRCULACIÃ“N: solo ubica/nombra el tramo o estaciÃ³n.
+// Ambos usan el mismo detector adaptativo, con sensibilidad distinta según la firma observada.
+// GPS NUNCA autoriza ni bloquea DETENCIÓN/CIRCULACIÓN: solo ubica/nombra el tramo o estación.
 const GRAV_DEPART_LEVEL_MS=850;
 const GRAV_DEPART_VECTOR_MS=950;
 const GRAV_STOP_LEVEL_MS=1400;
 const GRAV_MOVE_REF_MS=14000;
 const VEHICLE_DETECTOR_PROFILES={
-  // V7.20: la caÃ­da relativa solo abre una hipÃ³tesis. La confirmaciÃ³n se apoya principalmente en
-  // accelerationIncludingGravity filtrado y luego se reconstruye hacia atrÃ¡s el borde
-  // de la meseta final. El canal nativo nunca puede vetar una detenciÃ³n por un offset del telÃ©fono.
+  // V7.20: la caída relativa solo abre una hipótesis. La confirmación se apoya principalmente en
+  // accelerationIncludingGravity filtrado y luego se reconstruye hacia atrás el borde
+  // de la meseta final. El canal nativo nunca puede vetar una detención por un offset del teléfono.
   MC:{
     departRatio:1.65,departAbsInc:.045,departFloor:.115,cohFirst:.48,cohAxis:.40,alignMin:.20,
     nativeRatio:1.10,nativeAbsInc:.016,departHoldMs:650,
@@ -506,7 +506,7 @@ const VEHICLE_DETECTOR_PROFILES={
     nativeRatio:1.06,nativeAbsInc:.010,departHoldMs:520,
     initialDepartG:.17,initialDepartN:.15,initialCoh:.31,initialHoldMs:1400,initialIgnoreMs:1800,
     stopOnsetG:.89,stopOnsetN:.93,stopSearchMinMs:10000,
-    // TCP puede circular muy suave. AdemÃ¡s del nivel absoluto se exige que el canal rÃ¡pido
+    // TCP puede circular muy suave. Además del nivel absoluto se exige que el canal rápido
     // permanezca bajo durante la candidata completa; esto evita confundir rodadura suave con reposo.
     stopRestGMax:.18,stopRestNMax:.22,stopRestP75Factor:1.32,stopFastP75Max:.22,
     arrivalAmbiguityFactor:.65,arrivalHighGMult:2.00,arrivalHighGAdd:.040,arrivalHighNMult:1.70,arrivalHighNAdd:.030,
@@ -516,7 +516,7 @@ const VEHICLE_DETECTOR_PROFILES={
 const STATION_GPS_KEY='velocidadATP.learnedStationGps.v1';
 const IMU_SESSION_KEY='velocidadATP.imuServiceSession.v1';
 const VOICE_GLOBAL_KEY='velocidadATP.voiceGlobal.v2';
-const VOICE_PRESETS=['PrevenciÃ³n','Nueva prevenciÃ³n','Personas en la vÃ­a','Hombres trabajando','Cruce desprotegido','Barreras en falla','Barrera peatonal en falla','Marcha restringida','Marcha de emergencia','Personalizado'];
+const VOICE_PRESETS=['Prevención','Nueva prevención','Personas en la vía','Hombres trabajando','Cruce desprotegido','Barreras en falla','Barrera peatonal en falla','Marcha restringida','Marcha de emergencia','Personalizado'];
 const COMMON_IMU_DESTINATIONS=['Puerto','El Belloto','Sargento Aldea','Limache'];
 const REPORT_ENDPOINT='PEGAR_AQUI_URL_WEB_APP_APPS_SCRIPT';
 
@@ -532,16 +532,16 @@ let cameraMode='trasera';
 let videoDevices=[],currentVideoDeviceIndex=-1;
 let masterGain=null,masterCompressor=null;
 let imuEnabled=false,imuPermission='--',imuSamples=[],gravityLP={x:0,y:0,z:0},gravityReady=false,imuHandlerInstalled=false;
-// V7.20: accelerationIncludingGravity filtrado es la autoridad fÃ­sica principal.
-// El canal nativo se auto-calibra por dispositivo y solo actÃºa como apoyo cuando demuestra ser confiable.
+// V7.20: accelerationIncludingGravity filtrado es la autoridad física principal.
+// El canal nativo se auto-calibra por dispositivo y solo actúa como apoyo cuando demuestra ser confiable.
 let validationGravityLP={x:0,y:0,z:0},validationGravityReady=false,validationGravityLastT=null;
 const VALIDATION_GRAVITY_TAU_SEC=2.0;
-// V7.20 Â· adaptaciÃ³n al dispositivo. El bias de DeviceMotionEvent.acceleration puede variar mucho
-// entre telÃ©fonos; se aprende solo cuando ya existe evidencia fÃ­sica de reposo.
+// V7.20 · adaptación al dispositivo. El bias de DeviceMotionEvent.acceleration puede variar mucho
+// entre teléfonos; se aprende solo cuando ya existe evidencia física de reposo.
 const NATIVE_DEVICE_MIN_REST_SAMPLES=30;
 const NATIVE_DEVICE_REST_WINDOW_MS=5000;
 const NATIVE_DEVICE_MAX_RESIDUAL_P75=.22;
-const INITIAL_DEPARTURE_MAX_AGE_MS=30000; // mÃ¡s que la latencia habitual de confirmar sentido GPS; evita marcas de minutos antes.
+const INITIAL_DEPARTURE_MAX_AGE_MS=30000; // más que la latencia habitual de confirmar sentido GPS; evita marcas de minutos antes.
 
 let trip=null,tripUiTimer=null,moveCandidateAt=null,stopCandidateAt=null,overspeedCandidate=null,activeAtp=null,atpResumeCandidateAt=null;
 let currentSegmentAtpStoppedMs=0,lastCompletedTrip=null;
@@ -557,7 +557,7 @@ let nativeDeviceCalibration=null;
 let gpsStationOverrides=null,gpsSyncCandidate=null,gpsStationLock=null,gpsDepartureCandidate=null,gpsWaitingSegmentCandidate=null,gpsZeroSince=null,gpsMovingSince=null;
 let imuSession=null;
 let gpsWatchId=null,gpsRequested=false,gpsLast=null,gpsLastError='',gpsPrevPosition=null,gpsPositionHistory=[];
-let voiceEditingId=null,voiceSelectedPreset='PrevenciÃ³n',voiceTimers=new Map(),voiceTimerSeq=0,voiceSettings=null,voiceQuickMode=false;
+let voiceEditingId=null,voiceSelectedPreset='Prevención',voiceTimers=new Map(),voiceTimerSeq=0,voiceSettings=null,voiceQuickMode=false;
 let imuValidationCurrent=null,imuValidationLast=null;
 const VALIDATION_RAW_MIN_INTERVAL_MS=40; // ~25 Hz, suficiente para estudiar las transiciones sin archivos gigantes.
 const VALIDATION_RAW_MAX_SAMPLES=225000;
@@ -594,7 +594,7 @@ function formatReadout(v){return v===null||v===undefined?'--.-':v.toFixed(1);}
 function formatTargetReadout(v){
   if(v===null||v===undefined)return '--';
   if(v===.8)return '0.8';
-  if(v===20)return '20 Â· CL';
+  if(v===20)return '20 · CL';
   return String(Math.round(v));
 }
 function updateMiniReadout(){
@@ -661,8 +661,8 @@ function imuVectorStats(windowMs=IMU_VECTOR_WINDOW_MS){
   return {n:vals.length,mx,my,mz,meanMag,rms,coherence:meanMag/Math.max(.001,rms),projection};
 }
 function imuDirectionalFloor(){
-  // La aceleraciÃ³n direccional se mantiene deliberadamente sensible. La calibraciÃ³n basal
-  // solo ajusta el ruido; no puede elevar por sÃ­ sola este umbral hasta volver ciega una salida.
+  // La aceleración direccional se mantiene deliberadamente sensible. La calibración basal
+  // solo ajusta el ruido; no puede elevar por sí sola este umbral hasta volver ciega una salida.
   const p=imuBaseline;if(!p)return .024;
   return clamp(Math.max(.014,.006+1.55*(p.mad||0),.08*(p.noiseTop||p.p90||p.median||0)),.014,.070);
 }
@@ -688,8 +688,8 @@ function imuMotionPhaseNow(){
   if(v.projection<-floor&&v.coherence>.12)return 'FRENANDO';
   return 'CIRCULANDO';
 }
-// V7.20 Â· perfil del sensor nativo por telÃ©fono. La calibraciÃ³n se reinicia en cada viaje para
-// no depender de un modelo de celular ni de una orientaciÃ³n/montaje anterior.
+// V7.20 · perfil del sensor nativo por teléfono. La calibración se reinicia en cada viaje para
+// no depender de un modelo de celular ni de una orientación/montaje anterior.
 function resetNativeDeviceCalibration(){
   nativeDeviceCalibration={
     calibrated:false,reliable:false,samples:0,biasX:0,biasY:0,biasZ:0,biasMag:null,
@@ -724,7 +724,7 @@ function nativeCalibrateFromRecentRest(force=false){
   if(vals.length<NATIVE_DEVICE_MIN_REST_SAMPLES)return false;
   if(!force){
     const g=gravityFilteredLevel(1700,.50),v=gravityVectorStats(900);
-    // CalibraciÃ³n inicial conservadora: si parece que el tren ya circula, esperamos la primera estaciÃ³n confirmada.
+    // Calibración inicial conservadora: si parece que el tren ya circula, esperamos la primera estación confirmada.
     if(!Number.isFinite(g)||g>.14||(v.available&&v.meanMag>.085&&v.coherence>.58))return false;
   }
   const bx=physPercentile(vals.map(q=>q.nativeRawX),.50),
@@ -756,7 +756,7 @@ function nativeMaybeCalibrateAtRest(){
   return nativeCalibrateFromRecentRest(false);
 }
 
-// Se obtiene el canal accelerationIncludingGravity en paralelo para comparar su resoluciÃ³n
+// Se obtiene el canal accelerationIncludingGravity en paralelo para comparar su resolución
 // con acceleration. El pasa-altos calcula accel = total - gravedad suavizada (tau=2 s).
 // Si el navegador no entrega este canal, exportamos null: nunca inventamos valores.
 function validationGravityChannel(e,now){
@@ -867,7 +867,7 @@ function gpsRouteMatch(trip,now=Date.now()){
   }
   if(!bestSeg)return {valid:true,accuracy:acc,age,nearestStation:bestStation};
   const progress=bestSeg.segmentIndex+bestSeg.t,strong=acc<=Math.max(85,GPS_STRONG_ACCURACY_M)&&bestSeg.offRouteM<=Math.max(150,acc*2.6);
-  // Radio dinÃ¡mico: suficientemente flexible para GPS mÃ³vil, pero mucho mÃ¡s especÃ­fico que una geocerca fija enorme.
+  // Radio dinámico: suficientemente flexible para GPS móvil, pero mucho más específico que una geocerca fija enorme.
   const radius=clamp(55+acc*1.35,85,195);
   const candidate=bestStation&&bestStation.distance<=radius?bestStation:null;
   return {valid:true,accuracy:acc,age,speed:gpsLast.speed,heading:gpsLast.heading,...bestSeg,progress,strong,stationRadius:radius,nearestStation:bestStation,stationCandidate:candidate,stationCandidateIndex:candidate?.index??null,nearStation:!!candidate};
@@ -922,19 +922,19 @@ function configureImuRouteFromMovement(ev,now=Date.now()){
   const origin=route[0],next=route[1],ctx=gpsStationContext(gpsGlobalMatch(now));
   const startedAtStation=!!(imuOnlyTrip.locatedStation===origin&&ctx&&ctx.name===origin&&(towardLimache?ev.t<=.16:ev.t>=.84));
   const partial=!startedAtStation;
-  // A diferencia de versiones previas, no se reutiliza una seÃ±al IMU almacenada minutos antes.
-  // Damos prioridad al INICIO del candidato fÃ­sico VIGENTE; el GPS solo confirma el sentido.
+  // A diferencia de versiones previas, no se reutiliza una señal IMU almacenada minutos antes.
+  // Damos prioridad al INICIO del candidato físico VIGENTE; el GPS solo confirma el sentido.
   const recentHint=Number.isFinite(imuDepartureHintAt)&&imuDepartureHintAt>=now-INITIAL_DEPARTURE_MAX_AGE_MS&&imuDepartureHintAt<=now
     ?imuDepartureHintAt:null;
   const gpsHint=Number.isFinite(ev.startAt)&&ev.startAt>=now-GPS_DIRECTION_WINDOW_MS&&ev.startAt<=now
     ?ev.startAt:now;
   const at=Math.max(imuOnlyTrip.armedAt||0,recentHint??gpsHint);
-  if(imuCalStart!==null)imuCancelCalibration('Movimiento confirmado por GPS; la calibraciÃ³n inicial se detiene y se aprenderÃ¡ reposo en la prÃ³xima estaciÃ³n.');
+  if(imuCalStart!==null)imuCancelCalibration('Movimiento confirmado por GPS; la calibración inicial se detiene y se aprenderá reposo en la próxima estación.');
   imuOnlyTrip.route=route;imuOnlyTrip.pos=0;imuOnlyTrip.startStation=origin;imuOnlyTrip.direction=ev.direction;imuOnlyTrip.via=ev.via;imuOnlyTrip.locationLockedAt=now;imuOnlyTrip.gpsOriginLocked=true;imuOnlyTrip.gpsLastValidAt=now;imuOnlyTrip.actualStartAt=at;imuOnlyTrip.segmentStartAt=at;imuOnlyTrip.partialFirstSegment=partial&&!startedAtStation;imuOnlyTrip.startedInMotion=imuOnlyTrip.partialFirstSegment;
   imuDirection.value=imuOnlyTrip.direction;imuMoveCandidate=null;imuDepartureHintAt=null;imuArrivalHintAt=null;imuStopCandidate=null;imuScoreHistory=[];imuCruiseScore=null;imuLearnLongAxis(850);gravityCommitDepartureAxis();
-  addImuEvent(imuOnlyTrip.partialFirstSegment?'INICIO_PARCIAL':'SALIDA',imuOnlyTrip.partialFirstSegment?'Inicio con tren en trayecto':'Salida',imuOnlyTrip.scheduledAt,at,{delayMs:at-imuOnlyTrip.scheduledAt,source:'GPS sentido + IMU',segment:`${origin} â†’ ${next}`});
+  addImuEvent(imuOnlyTrip.partialFirstSegment?'INICIO_PARCIAL':'SALIDA',imuOnlyTrip.partialFirstSegment?'Inicio con tren en trayecto':'Salida',imuOnlyTrip.scheduledAt,at,{delayMs:at-imuOnlyTrip.scheduledAt,source:'GPS sentido + IMU',segment:`${origin} → ${next}`});
   imuSetEvent('MOVING','TRAYECTO',at);imuMotionPhase='CIRCULANDO';scheduleDepartureVoice(origin,next,at);gpsStationLock=null;gpsDepartureCandidate=null;gpsZeroSince=null;gpsMovingSince=null;
-  showImuCalibrationStatus(`Sentido confirmado: ${ev.via==='via1'?'VÃ­a 1 Â· hacia Limache':'VÃ­a 2 Â· hacia Puerto'} Â· tramo ${origin} â†’ ${next}${imuOnlyTrip.partialFirstSegment?' Â· inicio en trayecto':''}.`,'ok',6500);
+  showImuCalibrationStatus(`Sentido confirmado: ${ev.via==='via1'?'Vía 1 · hacia Limache':'Vía 2 · hacia Puerto'} · tramo ${origin} → ${next}${imuOnlyTrip.partialFirstSegment?' · inicio en trayecto':''}.`,'ok',6500);
   return true;
 }
 function configureImuRouteFromStation(station,now=Date.now()){
@@ -944,22 +944,22 @@ function configureImuRouteFromStation(station,now=Date.now()){
   const towardLimache=destIdx>startIdx;
   const route=towardLimache?STATIONS_PUERTO_LIMACHE.slice(startIdx,destIdx+1):STATIONS_PUERTO_LIMACHE.slice(destIdx,startIdx+1).reverse();
   imuOnlyTrip.route=route;imuOnlyTrip.pos=0;imuOnlyTrip.startStation=station;imuOnlyTrip.direction=towardLimache?'limache':'puerto';imuOnlyTrip.via=towardLimache?'via1':'via2';imuOnlyTrip.locationLockedAt=now;imuOnlyTrip.gpsOriginLocked=true;imuOnlyTrip.gpsLastValidAt=now;imuOnlyTrip.state='WAITING';imuOnlyTrip.eventLabel='ESPERANDO SALIDA';imuOnlyTrip.eventStartAt=imuOnlyTrip.scheduledAt;imuOnlyTrip.segmentStartAt=null;imuDirection.value=imuOnlyTrip.direction;gpsStationLock=null;gpsDepartureCandidate=null;gpsWaitingSegmentCandidate=null;imuMoveCandidate=null;imuStopCandidate=null;
-  // Esperar un nuevo impulso fÃ­sico tras bloquear la estaciÃ³n inicial.
+  // Esperar un nuevo impulso físico tras bloquear la estación inicial.
   physDepartSince=null;physDepartBreakSince=null;imuDepartureHintAt=null;
   validationAutomaticMark('WAITING','ESPERANDO SALIDA',imuOnlyTrip.scheduledAt);
-  imuRouteOnly.textContent=`${station} â†’ ${route[1]}`;
-  imuStateOnly.textContent=`SERVICIO ${imuOnlyTrip.serviceNumber} Â· UBICACIÃ“N CONFIRMADA`;
+  imuRouteOnly.textContent=`${station} → ${route[1]}`;
+  imuStateOnly.textContent=`SERVICIO ${imuOnlyTrip.serviceNumber} · UBICACIÓN CONFIRMADA`;
   imuTimerLabelOnly.textContent='ESPERANDO SALIDA';
   if(imuBaseline===null&&imuCalStart===null)imuBeginCalibration('initial');
-  showImuCalibrationStatus(`GPS âœ“ Â· estaciÃ³n inicial ${station} Â· sentido esperado ${imuOnlyTrip.via==='via1'?'VÃ­a 1':'VÃ­a 2'} hacia ${dest}. El sentido se confirmarÃ¡ al iniciar el movimiento.`,'ok',7000);
+  showImuCalibrationStatus(`GPS ✓ · estación inicial ${station} · sentido esperado ${imuOnlyTrip.via==='via1'?'Vía 1':'Vía 2'} hacia ${dest}. El sentido se confirmará al iniciar el movimiento.`,'ok',7000);
   return true;
 }
 function gpsLockInitialLocation(now=Date.now()){
   if(!imuOnlyTrip||imuOnlyTrip.state!=='LOCATING')return false;
   const g=gpsGlobalMatch(now),ctx=gpsStationContext(g),spd=gpsSpeedEvidence(g,now);
   if(!g?.valid||!ctx){gpsStationLock=null;return false;}
-  if(spd.available&&!spd.stopped){gpsStationLock=null;showImuCalibrationStatus('GPS ubicÃ³ la lÃ­nea, pero el tren aÃºn no estÃ¡ detenido. Esperando detenciÃ³n para fijar estaciÃ³n inicial.','info',2500);return false;}
-  const dest=imuOnlyTrip.finalStation;if(ctx.name===dest){showImuCalibrationStatus(`GPS: estÃ¡s en ${dest}, que es el destino seleccionado. Elige otro destino para iniciar un servicio.`,'bad',6000);return false;}
+  if(spd.available&&!spd.stopped){gpsStationLock=null;showImuCalibrationStatus('GPS ubicó la línea, pero el tren aún no está detenido. Esperando detención para fijar estación inicial.','info',2500);return false;}
+  const dest=imuOnlyTrip.finalStation;if(ctx.name===dest){showImuCalibrationStatus(`GPS: estás en ${dest}, que es el destino seleccionado. Elige otro destino para iniciar un servicio.`,'bad',6000);return false;}
   const fake={...g,stationCandidate:{index:ctx.index,name:ctx.name,distance:ctx.distance},stationCandidateIndex:ctx.index};
   const lock=gpsUpdateStationLock(fake,now);if(!lock||now-lock.since<GPS_SYNC_HOLD_MS)return false;
   return configureImuRouteFromStation(ctx.name,now);
@@ -982,13 +982,13 @@ function startGpsSupport(){
   stopGpsSupport();gpsRequested=true;if(imuGpsSupport)imuGpsSupport.checked=true;
   if(!('geolocation'in navigator)){gpsLastError='GPS no disponible en este navegador';return false;}
   try{
-    gpsRequested=true;gpsLastError='Esperando permiso/seÃ±al GPSâ€¦';
+    gpsRequested=true;gpsLastError='Esperando permiso/señal GPS…';
     gpsWatchId=navigator.geolocation.watchPosition(pos=>{
       const c=pos.coords,ts=Number(pos.timestamp)||Date.now();
       const current={lat:c.latitude,lon:c.longitude,accuracy:Number.isFinite(c.accuracy)?c.accuracy:null,ts,speed:Number.isFinite(c.speed)?Math.max(0,c.speed):null,heading:Number.isFinite(c.heading)?c.heading:null};
       gpsPrevPosition=gpsLast?{...gpsLast}:gpsPrevPosition;gpsLast=current;gpsPositionHistory.push(current);gpsPositionHistory=gpsPositionHistory.filter(p=>p.ts>=ts-180000).slice(-360);gpsLastError='';
     },err=>{
-      gpsLastError=err?.code===1?'Permiso GPS rechazado':err?.code===2?'GPS sin posiciÃ³n disponible':'GPS sin respuesta';
+      gpsLastError=err?.code===1?'Permiso GPS rechazado':err?.code===2?'GPS sin posición disponible':'GPS sin respuesta';
     },{enableHighAccuracy:true,maximumAge:500,timeout:10000});
     return true;
   }catch(e){gpsLastError='No se pudo iniciar GPS';gpsWatchId=null;return false;}
@@ -1037,7 +1037,7 @@ function gpsDepartureReady(g,now=Date.now()){
 }
 function gpsSnapWaitingLocation(g,now=Date.now()){
   if(!imuOnlyTrip||imuOnlyTrip.state!=='WAITING'||!g?.valid)return false;
-  // El GPS puede corregir la estaciÃ³n de origen mientras seguimos esperando, pero nunca inicia el cronÃ³metro por latitud.
+  // El GPS puede corregir la estación de origen mientras seguimos esperando, pero nunca inicia el cronómetro por latitud.
   const ctx=gpsStationContext(g);
   const spd=gpsSpeedEvidence(g,now);
   if(ctx&&ctx.index<imuOnlyTrip.route.length-1&&(!spd.available||spd.stopped)){
@@ -1047,7 +1047,7 @@ function gpsSnapWaitingLocation(g,now=Date.now()){
       const idx=lock.index;
       if(idx!==imuOnlyTrip.pos){
         imuOnlyTrip.pos=idx;imuOnlyTrip.startStation=imuOnlyTrip.route[idx];imuRouteOnly.textContent=imuCurrentRouteText();
-        showImuCalibrationStatus(`GPS âœ“ Â· estaciÃ³n inicial actualizada a ${imuOnlyTrip.startStation}.`,'ok',4500);
+        showImuCalibrationStatus(`GPS ✓ · estación inicial actualizada a ${imuOnlyTrip.startStation}.`,'ok',4500);
       }
       gpsWaitingSegmentCandidate=null;return true;
     }
@@ -1060,7 +1060,7 @@ function gpsMaybeResyncTrip(g,now=Date.now()){
   if(imuOnlyTrip.state!=='MOVING'||!Number.isFinite(g.segmentIndex))return false;
   imuOnlyTrip.gpsSpatialSegment=clamp(g.segmentIndex,0,Math.max(0,imuOnlyTrip.route.length-2));
   imuOnlyTrip.gpsSpatialUpdatedAt=now;
-  // Importante: una coordenada NO reinicia cronÃ³metros ni crea llegadas. Solo mantiene contexto espacial.
+  // Importante: una coordenada NO reinicia cronómetros ni crea llegadas. Solo mantiene contexto espacial.
   return false;
 }
 function gpsSpeedEvidence(g,now=Date.now()){
@@ -1086,7 +1086,7 @@ function imuStopTransitionEvidence(score,now=Date.now()){
   const dropRatio=recent/Math.max(.001,cruise);
   const longitudinalQuiet=!imuLongAxis||Math.abs(v.projection)<Math.max(.028,floor*1.15);
   const netQuiet=v.meanMag<Math.max(.035,floor*1.45)||v.coherence<.28;
-  // No exige volver al valor basal de la cabecera: busca una caÃ­da relativa + ausencia de aceleraciÃ³n neta.
+  // No exige volver al valor basal de la cabecera: busca una caída relativa + ausencia de aceleración neta.
   const relativeDrop=dropRatio<.76;
   const afterBrake=(now-imuLastBrakeAt)<6500;
   const quiet=longitudinalQuiet&&netQuiet;
@@ -1104,37 +1104,37 @@ function gpsStatusText(now=Date.now()){
   if(!gpsRequested)return 'GPS apagado';const g=gpsSpatialEvidence(now);
   if(g.valid){
     let main='GPS';
-    if(Number.isFinite(g.segmentIndex)&&imuOnlyTrip){const a=imuOnlyTrip.route[g.segmentIndex],b=imuOnlyTrip.route[Math.min(g.segmentIndex+1,imuOnlyTrip.route.length-1)];main+=` Â· ${a}â†’${b}`;}
-    if(g.nearestStation)main+=` Â· ${Math.round(g.nearestStation.distance)} m de ${g.nearestStation.name}`;
-    if(g.stationCandidate)main+=` Â· zona ${g.stationCandidate.name}`;
-    if(Number.isFinite(g.speed))main+=` Â· GPS ${g.speed<=GPS_STOP_SPEED_MPS?'â‰ˆ0':'activo'}`;
-    main+=` Â· Â±${Math.round(g.accuracy)} m`;
+    if(Number.isFinite(g.segmentIndex)&&imuOnlyTrip){const a=imuOnlyTrip.route[g.segmentIndex],b=imuOnlyTrip.route[Math.min(g.segmentIndex+1,imuOnlyTrip.route.length-1)];main+=` · ${a}→${b}`;}
+    if(g.nearestStation)main+=` · ${Math.round(g.nearestStation.distance)} m de ${g.nearestStation.name}`;
+    if(g.stationCandidate)main+=` · zona ${g.stationCandidate.name}`;
+    if(Number.isFinite(g.speed))main+=` · GPS ${g.speed<=GPS_STOP_SPEED_MPS?'≈0':'activo'}`;
+    main+=` · ±${Math.round(g.accuracy)} m`;
     return main;
   }
   if(gpsLastError)return gpsLastError;
-  if(gpsLast)return 'GPS sin posiciÃ³n Ãºtil/reciente';
-  return 'GPS buscando ubicaciÃ³nâ€¦';
+  if(gpsLast)return 'GPS sin posición útil/reciente';
+  return 'GPS buscando ubicación…';
 }
 function tripSnapshot(){
   if(!trip)return;try{localStorage.setItem(ACTIVE_TRIP_KEY,JSON.stringify(trip));}catch(e){}
 }
 function tripStatusLabel(){
-  if(!trip)return 'â€”';
-  if(activeAtp?.confirmed)return 'ATPtazo Â· DETENIDO';
-  if(activeAtp)return 'ATPtazo Â· FRENANDO';
-  if(trip.phase==='ARMED')return 'ARMADO Â· esperando salida';
-  if(trip.phase==='STATION')return 'EN ESTACIÃ“N';
+  if(!trip)return '—';
+  if(activeAtp?.confirmed)return 'ATPtazo · DETENIDO';
+  if(activeAtp)return 'ATPtazo · FRENANDO';
+  if(trip.phase==='ARMED')return 'ARMADO · esperando salida';
+  if(trip.phase==='STATION')return 'EN ESTACIÓN';
   if(trip.phase==='MOVING')return 'EN MARCHA';
   return trip.phase;
 }
 function updateTripUI(){
   if(!trip)return;
   tripStateEl.textContent=tripStatusLabel();
-  if(trip.phase==='ARMED')tripRouteEl.textContent=`${trip.route[trip.pos]} â†’ ${trip.route[trip.pos+1]}`;
-  else if(trip.phase==='MOVING')tripRouteEl.textContent=`${trip.route[trip.pos]} â†’ ${trip.route[trip.pos+1]}`;
+  if(trip.phase==='ARMED')tripRouteEl.textContent=`${trip.route[trip.pos]} → ${trip.route[trip.pos+1]}`;
+  else if(trip.phase==='MOVING')tripRouteEl.textContent=`${trip.route[trip.pos]} → ${trip.route[trip.pos+1]}`;
   else if(trip.phase==='STATION')tripRouteEl.textContent=trip.route[trip.pos];
   const elapsed=trip.startAt?((trip.endAt||Date.now())-trip.startAt):0;tripClockEl.textContent=fmtDuration(elapsed);
-  imuInfoEl.textContent=`IMU: ${imuEnabled?'activo':'--'}${imuEnabled?' Â· '+imuLevel().toFixed(2):''}`;
+  imuInfoEl.textContent=`IMU: ${imuEnabled?'activo':'--'}${imuEnabled?' · '+imuLevel().toFixed(2):''}`;
 }
 
 function updateOverlayGeometry(){
@@ -1165,7 +1165,7 @@ async function enumerateCandidateCameras(){
     const nonFront=all.filter(d=>!isExplicitFront(d.label));
     return nonFront.length?nonFront:all;
   }catch(e){
-    console.warn('No se pudieron enumerar cÃ¡maras',e);
+    console.warn('No se pudieron enumerar cámaras',e);
     return [];
   }
 }
@@ -1195,7 +1195,7 @@ async function applyPanelAntiGlare(track){
   try{
     if(!track?.getCapabilities)return false;
     const caps=track.getCapabilities();
-    // Reducir exposiciÃ³n cuando el navegador/cÃ¡mara lo permite. Evita que el halo rojo una segmentos vecinos.
+    // Reducir exposición cuando el navegador/cámara lo permite. Evita que el halo rojo una segmentos vecinos.
     if(caps.focusMode?.includes?.('continuous')){
       try{await track.applyConstraints({advanced:[{focusMode:'continuous'}]});}catch(e){}
     }
@@ -1233,7 +1233,7 @@ function updateLensButton(){
 async function switchLens(){
   if(running||videoDevices.length<2)return;
   try{
-    lensBtn.disabled=true;setStatus('Cambiando lenteâ€¦','');
+    lensBtn.disabled=true;setStatus('Cambiando lente…','');
     let next=(currentVideoDeviceIndex+1)%videoDevices.length;
     const d=videoDevices[next];
     await stopStream();
@@ -1246,16 +1246,16 @@ async function switchLens(){
     localStorage.setItem(SAVED_CAMERA_KEY,d.deviceId);
     await prepareCurrentStream();
     resetVisionAfterCameraChange();
-    cameraMode=`lente ${next+1}/${videoDevices.length}`+(halfApplied?' Â· zoom 0.5Ã—':' Â· guardada')+(antiGlareApplied?' Â· anti-brillo':'');
-    cameraInfoEl.textContent='CÃMARA: '+cameraMode;
-    setStatus('Buscando panelâ€¦','');
+    cameraMode=`lente ${next+1}/${videoDevices.length}`+(halfApplied?' · zoom 0.5×':' · guardada')+(antiGlareApplied?' · anti-brillo':'');
+    cameraInfoEl.textContent='CÁMARA: '+cameraMode;
+    setStatus('Buscando panel…','');
   }catch(e){
     console.error(e);setStatus('No se pudo cambiar la lente','bad');
   }finally{lensBtn.disabled=false;updateLensButton();}
 }
 async function openCamera(){
   try{
-    // 1) Abrir primero la cÃ¡mara trasera predeterminada para obtener permiso y etiquetas.
+    // 1) Abrir primero la cámara trasera predeterminada para obtener permiso y etiquetas.
     stream=await requestCamera(null,true);
     videoDevices=await enumerateCandidateCameras();
 
@@ -1263,7 +1263,7 @@ async function openCamera(){
     const initialId=initialTrack?.getSettings?.().deviceId||'';
     currentVideoDeviceIndex=videoDevices.findIndex(d=>d.deviceId===initialId);
 
-    // 2) Prioridad: lente que el usuario ya eligiÃ³ antes; si no, una ultra gran angular explÃ­cita.
+    // 2) Prioridad: lente que el usuario ya eligió antes; si no, una ultra gran angular explícita.
     const savedId=localStorage.getItem(SAVED_CAMERA_KEY)||'';
     let chosen=null,chosenReason='';
     if(savedId){
@@ -1281,29 +1281,29 @@ async function openCamera(){
       currentVideoDeviceIndex=videoDevices.findIndex(d=>d.deviceId===chosen.deviceId);
     }
 
-    // 3) Si la misma cÃ¡mara expone zoom <1, aplicar 0.5Ã— directamente.
+    // 3) Si la misma cámara expone zoom <1, aplicar 0.5× directamente.
     const track=stream.getVideoTracks()[0];
     const halfApplied=await tryApplyHalfZoom(track);
     const activeId=track?.getSettings?.().deviceId||'';
     if(currentVideoDeviceIndex<0)currentVideoDeviceIndex=videoDevices.findIndex(d=>d.deviceId===activeId);
 
-    if(halfApplied)cameraMode='0.5Ã—';
-    else if(chosenReason==='ultra')cameraMode='0.5Ã— ultra gran angular';
+    if(halfApplied)cameraMode='0.5×';
+    else if(chosenReason==='ultra')cameraMode='0.5× ultra gran angular';
     else if(chosenReason==='guardada')cameraMode=`lente guardada ${currentVideoDeviceIndex+1}/${Math.max(1,videoDevices.length)}`;
-    else if(videoDevices.length>1)cameraMode=`trasera Â· ${videoDevices.length} lentes disponibles`;
-    else cameraMode='trasera Â· navegador expone una sola lente';
-    if(antiGlareApplied)cameraMode+=' Â· anti-brillo';
+    else if(videoDevices.length>1)cameraMode=`trasera · ${videoDevices.length} lentes disponibles`;
+    else cameraMode='trasera · navegador expone una sola lente';
+    if(antiGlareApplied)cameraMode+=' · anti-brillo';
 
     await prepareCurrentStream();
     resetVisionAfterCameraChange();
     document.body.classList.add('camera-open');
     cameraBtn.style.display='none';
-    cameraInfoEl.textContent='CÃMARA: '+cameraMode;
+    cameraInfoEl.textContent='CÁMARA: '+cameraMode;
     updateLensButton();
-    setStatus('Buscando panelâ€¦','');
+    setStatus('Buscando panel…','');
     startLoop();
   }catch(e){
-    console.error(e);setStatus('No se pudo abrir la cÃ¡mara','bad');
+    console.error(e);setStatus('No se pudo abrir la cámara','bad');
   }
 }
 
@@ -1322,7 +1322,7 @@ function buildRedMask(img){
   for(let i=0,p=0;i<data.length;i+=4,p++){
     const r=data[i],g=data[i+1],b=data[i+2],mx=Math.max(g,b);
     const dominance=r-mx,ratio=r/(g+b+12);
-    // NÃºcleo rojo de los LED: umbral mÃ¡s duro para ignorar el halo desenfocado/sobreexpuesto.
+    // Núcleo rojo de los LED: umbral más duro para ignorar el halo desenfocado/sobreexpuesto.
     if(r>105 && dominance>30 && ratio>.92)mask[p]=1;
   }
   return mask;
@@ -1418,7 +1418,7 @@ function mapRect(rect,fromW,fromH,toW,toH){
 
 function digitBoxes(kind,rect){
   const h=rect.h,x=rect.x,y=rect.y;
-  // CalibraciÃ³n geomÃ©trica obtenida del tablero del video enviado.
+  // Calibración geométrica obtenida del tablero del video enviado.
   const ps=kind==='real'
     ? [[.06,.64,.04,.86],[.71,.64,.04,.86],[1.44,.64,.04,.86]]
     : [[.15,.50,.12,.78],[.77,.55,.02,.91],[1.20,.45,.04,.98]];
@@ -1508,8 +1508,8 @@ function patternMse(features,pat){
   return num/den;
 }
 function targetDigitVariants(v){
-  // El display objetivo muestra XX.0. Para cÃ³digos enteros se leen SOLO los dos dÃ­gitos XX;
-  // el .0 final se ignora por completo. 0.8 es la Ãºnica excepciÃ³n decimal.
+  // El display objetivo muestra XX.0. Para códigos enteros se leen SOLO los dos dígitos XX;
+  // el .0 final se ignora por completo. 0.8 es la única excepción decimal.
   if(v===0)return [[0,0],['blank',0]];
   if(v===.8)return [['blank',0,8],[0,0,8]];
   const whole=Math.round(v),tens=Math.floor(whole/10),ones=whole%10;
@@ -1527,7 +1527,7 @@ function recognizeAllowedTarget(img,rect){
         if(!features[2])continue;
         for(let i=0;i<3;i++){total+=patternMse(features[i],digitPatterns[String(digits[i])]);count++;}
       }else{
-        // No usar el tercer dÃ­gito: el .0 es irrelevante y su brillo era una fuente de errores.
+        // No usar el tercer dígito: el .0 es irrelevante y su brillo era una fuente de errores.
         for(let i=0;i<2;i++){total+=patternMse(features[i],digitPatterns[String(digits[i])]);count++;}
       }
       best=Math.min(best,total/Math.max(1,count));
@@ -1581,7 +1581,7 @@ function updateReadings(rr,tr){
       if(acceptedTarget!==null&&sameTenth(v,acceptedTarget)){targetCandidate=null;targetCandidateCount=0;}
       else{
         if(sameTenth(v,targetCandidate))targetCandidateCount++;else{targetCandidate=v;targetCandidateCount=1;}
-        // Dos cuadros coherentes (~140 ms nominales) para evitar avisos falsos de cambio de cÃ³digo.
+        // Dos cuadros coherentes (~140 ms nominales) para evitar avisos falsos de cambio de código.
         if(targetCandidateCount>=2){
           const old=acceptedTarget;acceptedTarget=v;targetCandidate=null;targetCandidateCount=0;onTargetChanged(old,v);
         }
@@ -1614,7 +1614,7 @@ function processFrame(){
   const cands=components(dil,raw,scanCanvas.width,scanCanvas.height),pair=chooseDisplayPair(cands,scanCanvas.width,scanCanvas.height);
   if(!pair){
     lockStreak=Math.max(0,lockStreak-1);armTripBtn.disabled=true;
-    if(!running)setStatus('Buscando panelâ€¦','');
+    if(!running)setStatus('Buscando panel…','');
     overlayCtx.clearRect(0,0,overlay.width,overlay.height);
     updateMiniReadout();
     return;
@@ -1628,7 +1628,7 @@ function processFrame(){
   const readImg=readCtx.getImageData(0,0,readCanvas.width,readCanvas.height);
   const rr=recognizeValue(readImg,'real',smoothRealBox),tr=recognizeAllowedTarget(readImg,smoothTargetBox);
   updateReadings(rr,tr);
-  if(!running&&lockStreak>=3&&!targetReadingValid)setStatus('Objetivo dudoso Â· sonido bloqueado','bad');
+  if(!running&&lockStreak>=3&&!targetReadingValid)setStatus('Objetivo dudoso · sonido bloqueado','bad');
   feedback();
 }
 
@@ -1659,7 +1659,7 @@ function atpTick(now){
     if(now-atpResumeCandidateAt>=need){
       activeAtp.resumeAt=atpResumeCandidateAt;
       activeAtp.stoppedMs=Math.max(0,activeAtp.resumeAt-activeAtp.zeroAt);
-      activeAtp.segment=`${trip.route[trip.pos]} â†’ ${trip.route[trip.pos+1]}`;
+      activeAtp.segment=`${trip.route[trip.pos]} → ${trip.route[trip.pos+1]}`;
       trip.atpEvents.push(activeAtp);currentSegmentAtpStoppedMs+=activeAtp.stoppedMs;
       activeAtp=null;atpResumeCandidateAt=null;ambiguousEl.classList.remove('show');tripSnapshot();updateTripUI();
     }
@@ -1718,7 +1718,7 @@ async function armTrip(){
 }
 function forceStationAfterAtp(){
   if(!trip||!activeAtp?.confirmed)return;
-  const arrivalAt=activeAtp.zeroAt;activeAtp.resumeAt=null;activeAtp.stoppedMs=0;activeAtp.segment=`${trip.route[trip.pos]} â†’ ${trip.route[trip.pos+1]}`;trip.atpEvents.push(activeAtp);
+  const arrivalAt=activeAtp.zeroAt;activeAtp.resumeAt=null;activeAtp.stoppedMs=0;activeAtp.segment=`${trip.route[trip.pos]} → ${trip.route[trip.pos+1]}`;trip.atpEvents.push(activeAtp);
   activeAtp=null;ambiguousEl.classList.remove('show');confirmArrival(arrivalAt);
 }
 function saveCompletedTrip(t){
@@ -1733,14 +1733,14 @@ function finalizeTrip(manual=false){
 }
 function manualFinishTrip(){
   if(!trip){stopControl();return;}
-  if(confirm('Â¿Finalizar el viaje ahora?'))finalizeTrip(true);
+  if(confirm('¿Finalizar el viaje ahora?'))finalizeTrip(true);
 }
 function showSummary(t){
   const total=(t.endAt||Date.now())-(t.startAt||t.createdAt);
   const dwell=t.stationStops.reduce((a,s)=>a+s.dwellMs,0),consent=t.stationStops.reduce((a,s)=>a+s.consentMs,0),atpStop=t.atpEvents.reduce((a,e)=>a+(e.stoppedMs||0),0),moving=t.segments.reduce((a,s)=>a+s.movingMs,0);
-  summaryMeta.textContent=`${t.startStation} â†’ ${t.finalStation} Â· ${new Date(t.createdAt).toLocaleDateString('es-CL')} Â· ATPtazos ${t.atpEvents.length} Â· detenido ATP ${fmtDuration(atpStop)}`;
+  summaryMeta.textContent=`${t.startStation} → ${t.finalStation} · ${new Date(t.createdAt).toLocaleDateString('es-CL')} · ATPtazos ${t.atpEvents.length} · detenido ATP ${fmtDuration(atpStop)}`;
   let html=`<div class="summaryGrid"><div class="sumBox"><div class="sumLabel">TOTAL</div><div class="sumValue">${fmtDuration(total)}</div></div><div class="sumBox"><div class="sumLabel">MOVIMIENTO</div><div class="sumValue">${fmtDuration(moving)}</div></div><div class="sumBox"><div class="sumLabel">DET. EST.</div><div class="sumValue">${fmtDuration(dwell)}</div></div><div class="sumBox"><div class="sumLabel">CONSENT.</div><div class="sumValue">${fmtDuration(consent)}</div></div></div>`;
-  html+=`<div class="summarySection">TRAMOS</div>`+t.segments.map(s=>`<div class="summaryRow"><strong>${s.origin} â†’ ${s.destination}</strong><span>${fmtDuration(s.totalMs)}</span><span>${s.atpStoppedMs?('ATP '+fmtDuration(s.atpStoppedMs)):''}</span></div>`).join('');
+  html+=`<div class="summarySection">TRAMOS</div>`+t.segments.map(s=>`<div class="summaryRow"><strong>${s.origin} → ${s.destination}</strong><span>${fmtDuration(s.totalMs)}</span><span>${s.atpStoppedMs?('ATP '+fmtDuration(s.atpStoppedMs)):''}</span></div>`).join('');
   if(t.stationStops.length)html+=`<div class="summarySection">ESTACIONES</div>`+t.stationStops.map(s=>`<div class="summaryRow"><strong>${s.station}</strong><span>Det. ${fmtDuration(s.dwellMs)}</span><span>Cons. ${fmtDuration(s.consentMs)}</span></div>`).join('');
   if(t.atpEvents.length)html+=`<div class="summarySection">ATPtazos</div>`+t.atpEvents.map(e=>`<div class="summaryRow"><strong>${e.segment||'Tramo'}</strong><span>+${(e.maxExcess||0).toFixed(1)} km/h</span><span>Vmax ${(e.maxReal||0).toFixed(1)}</span></div>`).join('');
   summaryContent.innerHTML=html;summaryModal.classList.add('show');
@@ -1764,7 +1764,7 @@ function saveVoiceSettings(){try{localStorage.setItem(VOICE_GLOBAL_KEY,JSON.stri
 function voiceAlerts(){if(!voiceSettings)loadVoiceSettings();return voiceSettings.alerts;}
 function voiceCanEdit(){return true;}
 function directionToVia(direction){return direction==='limache'?'via1':'via2';}
-function voiceDirectionLabel(d){return d==='via1'?'VÃ­a 1 Â· TCP':d==='via2'?'VÃ­a 2 Â· MC':'Ambas vÃ­as';}
+function voiceDirectionLabel(d){return d==='via1'?'Vía 1 · TCP':d==='via2'?'Vía 2 · MC':'Ambas vías';}
 function voiceBaseRoute(via){return via==='via2'?[...STATIONS_PUERTO_LIMACHE].reverse():[...STATIONS_PUERTO_LIMACHE];}
 function canonicalVoiceSegmentKey(a,b){
   const ia=STATIONS_PUERTO_LIMACHE.indexOf(a),ib=STATIONS_PUERTO_LIMACHE.indexOf(b);
@@ -1775,7 +1775,7 @@ function voiceSegmentFromKey(key){
   const p=String(key||'').split('||');if(p.length!==2)return null;
   const a=p[0],b=p[1],ia=STATIONS_PUERTO_LIMACHE.indexOf(a),ib=STATIONS_PUERTO_LIMACHE.indexOf(b);
   if(ia<0||ib!==ia+1)return null;
-  return {key:`${a}||${b}`,via1:a,via2:b,label:`${a} â†” ${b}`};
+  return {key:`${a}||${b}`,via1:a,via2:b,label:`${a} ↔ ${b}`};
 }
 function voiceLegacySegmentKey(location){
   const i=STATIONS_PUERTO_LIMACHE.indexOf(location);return i>=0&&i<STATIONS_PUERTO_LIMACHE.length-1?canonicalVoiceSegmentKey(STATIONS_PUERTO_LIMACHE[i],STATIONS_PUERTO_LIMACHE[i+1]):'';
@@ -1799,26 +1799,26 @@ function voicePopulateLocations(){
       for(let i=0;i<STATIONS_PUERTO_LIMACHE.length-1;i++)segments.push(voiceSegmentFromKey(canonicalVoiceSegmentKey(STATIONS_PUERTO_LIMACHE[i],STATIONS_PUERTO_LIMACHE[i+1])));
     }
     voiceLocation.innerHTML=segments.filter(Boolean).map(s=>`<option value="${s.key}">${s.label}</option>`).join('');
-    voiceLocationLabel.textContent='TRAMO';voiceRouteHint.textContent='En ambas vÃ­as se avisa al entrar al mismo tramo desde cualquiera de sus extremos.';
+    voiceLocationLabel.textContent='TRAMO';voiceRouteHint.textContent='En ambas vías se avisa al entrar al mismo tramo desde cualquiera de sus extremos.';
   }else{
     let r=voiceBaseRoute(via);
     if(voiceQuickMode&&imuOnlyTrip&&via===imuOnlyTrip.via){
       const start=Math.min(imuOnlyTrip.route.length-2,imuOnlyTrip.pos+(imuOnlyTrip.state==='MOVING'?1:0)),upcoming=imuOnlyTrip.route.slice(Math.max(0,start),-1);if(upcoming.length)r=upcoming.concat(imuOnlyTrip.finalStation);
     }
     voiceLocation.innerHTML=r.slice(0,-1).map(s=>`<option value="${s}">${s}</option>`).join('');
-    voiceLocationLabel.textContent='REPRODUCIR AL SALIR DE';voiceRouteHint.textContent=via==='via1'?'TCP Â· sentido desde Puerto.':'MC Â· sentido hacia Puerto.';
+    voiceLocationLabel.textContent='REPRODUCIR AL SALIR DE';voiceRouteHint.textContent=via==='via1'?'TCP · sentido desde Puerto.':'MC · sentido hacia Puerto.';
   }
   if(old&&[...voiceLocation.options].some(o=>o.value===old))voiceLocation.value=old;
 }
 function normalizePk(v){
-  let s=String(v||'').trim().replace(/[.,/]/g,'-').replace(/[â€“â€”]/g,'-').replace(/\s*\-\s*/g,'-').replace(/\s+/g,'');
+  let s=String(v||'').trim().replace(/[.,/]/g,'-').replace(/[–—]/g,'-').replace(/\s*\-\s*/g,'-').replace(/\s+/g,'');
   s=s.replace(/-+/g,'-').replace(/^-|-$/g,'');return s;
 }
 function validPk(v){return /^\d{1,3}(?:-\d{1,3})?$/.test(normalizePk(v));}
 function pkSpeech(v){
   const p=normalizePk(v).split('-'),km=String(parseInt(p[0]||'0',10));
-  if(p.length<2)return `kilÃ³metro ${km}`;
-  return `kilÃ³metro ${km}, poste ${String(parseInt(p[1]||'0',10))}`;
+  if(p.length<2)return `kilómetro ${km}`;
+  return `kilómetro ${km}, poste ${String(parseInt(p[1]||'0',10))}`;
 }
 function composeVoiceText(a=null){
   const preset=a?.preset??voiceSelectedPreset;
@@ -1840,8 +1840,8 @@ function syncVoiceOptionalUi(){
 }
 function renderVoiceBar(){
   if(!voiceSettings)loadVoiceSettings();voiceBar.classList.add('show');const n=voiceAlerts().filter(a=>a.enabled!==false).length;
-  const opts=[voiceSettings.announceStations?'estaciones':'',voiceSettings.remindLights?'luces':'',voiceSettings.remindDoors?'puertas':''].filter(Boolean).join(' Â· ');
-  voiceBarSub.textContent=`${n} mensaje${n===1?'':'s'} activo${n===1?'':'s'}${opts?' Â· '+opts:''}`;
+  const opts=[voiceSettings.announceStations?'estaciones':'',voiceSettings.remindLights?'luces':'',voiceSettings.remindDoors?'puertas':''].filter(Boolean).join(' · ');
+  voiceBarSub.textContent=`${n} mensaje${n===1?'':'s'} activo${n===1?'':'s'}${opts?' · '+opts:''}`;
 }
 function voiceAlertWhereLabel(a){
   if(a.via==='both'&&a.segmentKey){const seg=voiceSegmentFromKey(a.segmentKey);if(seg)return `tramo ${seg.label}`;}
@@ -1850,7 +1850,7 @@ function voiceAlertWhereLabel(a){
 function renderVoiceList(){
   const arr=voiceAlerts();if(!arr.length){voiceList.innerHTML='<div style="font-size:11px;opacity:.48;padding:10px 1px">Sin mensajes configurados.</div>';return;}
   const locked=!voiceCanEdit();
-  voiceList.innerHTML=arr.map(a=>`<div class="voiceItem"><div style="display:flex;justify-content:space-between;gap:8px;align-items:flex-start"><div class="voiceItemText">${escHtml(composeVoiceText(a))}</div><label class="voiceEnabled"><input type="checkbox" data-v-enable="${a.id}" ${a.enabled===false?'':'checked'} ${locked?'disabled':''}> ON</label></div><div class="voiceItemMeta">${voiceDirectionLabel(a.via)} Â· ${escHtml(voiceAlertWhereLabel(a))} Â· +${Math.round((a.delayMs||0)/1000)} s Â· ${a.repeatCount||1} vez${(a.repeatCount||1)===1?'':'es'}</div><div class="voiceItemBtns"><button data-v-edit="${a.id}" ${locked?'disabled':''}>EDITAR</button><button data-v-del="${a.id}" ${locked?'disabled':''}>BORRAR</button></div></div>`).join('');
+  voiceList.innerHTML=arr.map(a=>`<div class="voiceItem"><div style="display:flex;justify-content:space-between;gap:8px;align-items:flex-start"><div class="voiceItemText">${escHtml(composeVoiceText(a))}</div><label class="voiceEnabled"><input type="checkbox" data-v-enable="${a.id}" ${a.enabled===false?'':'checked'} ${locked?'disabled':''}> ON</label></div><div class="voiceItemMeta">${voiceDirectionLabel(a.via)} · ${escHtml(voiceAlertWhereLabel(a))} · +${Math.round((a.delayMs||0)/1000)} s · ${a.repeatCount||1} vez${(a.repeatCount||1)===1?'':'es'}</div><div class="voiceItemBtns"><button data-v-edit="${a.id}" ${locked?'disabled':''}>EDITAR</button><button data-v-del="${a.id}" ${locked?'disabled':''}>BORRAR</button></div></div>`).join('');
   voiceList.querySelectorAll('[data-v-edit]').forEach(b=>b.addEventListener('click',()=>voiceEdit(b.dataset.vEdit)));
   voiceList.querySelectorAll('[data-v-del]').forEach(b=>b.addEventListener('click',()=>voiceDelete(b.dataset.vDel)));
   voiceList.querySelectorAll('[data-v-enable]').forEach(b=>b.addEventListener('change',()=>{const a=voiceAlerts().find(x=>x.id===b.dataset.vEnable);if(a){a.enabled=b.checked;saveVoiceSettings();renderVoiceBar();}}));
@@ -1863,16 +1863,16 @@ function updateVoiceEditLock(){
 function openVoiceModal(quick=false){
   if(!voiceSettings)loadVoiceSettings();voiceQuickMode=!!quick;
   if(quick){
-    voiceResetForm();voiceSelectedPreset='Nueva prevenciÃ³n';renderVoicePresets();voicePopulateLocations();const suggested=voiceQuickSuggestedLocation();if(suggested&&[...voiceLocation.options].some(o=>o.value===suggested))voiceLocation.value=suggested;syncVoiceOptionalUi();
+    voiceResetForm();voiceSelectedPreset='Nueva prevención';renderVoicePresets();voicePopulateLocations();const suggested=voiceQuickSuggestedLocation();if(suggested&&[...voiceLocation.options].some(o=>o.value===suggested))voiceLocation.value=suggested;syncVoiceOptionalUi();
   }
   voiceModal.classList.add('show');voiceAnnounceStations.checked=!!voiceSettings.announceStations;voiceRemindLights.checked=!!voiceSettings.remindLights;voiceRemindDoors.checked=!!voiceSettings.remindDoors;renderVoicePresets();voicePopulateLocations();
-  if(quick){const suggested=voiceQuickSuggestedLocation();if(suggested&&[...voiceLocation.options].some(o=>o.value===suggested))voiceLocation.value=suggested;updateVoicePreview();voiceLock.textContent='Aviso nuevo Â· selecciona el tramo y guarda.';}
+  if(quick){const suggested=voiceQuickSuggestedLocation();if(suggested&&[...voiceLocation.options].some(o=>o.value===suggested))voiceLocation.value=suggested;updateVoicePreview();voiceLock.textContent='Aviso nuevo · selecciona el tramo y guarda.';}
   syncVoiceOptionalUi();updateVoiceEditLock();renderVoiceList();
 }
 function closeVoiceModal(){voiceModal.classList.remove('show');voiceQuickMode=false;}
 function openQuickVoiceModal(){openVoiceModal(true);}
 function voiceResetForm(){
-  voiceEditingId=null;voiceSelectedPreset='PrevenciÃ³n';voiceText.value='';voiceDirection.value='both';voiceSpeed.value='';voicePkStart.value='';voicePkEnd.value='';voiceDelay.value='0';voiceTimes.value='1';voiceSaveBtn.textContent='GUARDAR MENSAJE';voiceCancelEditBtn.style.display='none';renderVoicePresets();voiceCustomField.style.display='none';voicePopulateLocations();syncVoiceOptionalUi();voiceLock.textContent='';
+  voiceEditingId=null;voiceSelectedPreset='Prevención';voiceText.value='';voiceDirection.value='both';voiceSpeed.value='';voicePkStart.value='';voicePkEnd.value='';voiceDelay.value='0';voiceTimes.value='1';voiceSaveBtn.textContent='GUARDAR MENSAJE';voiceCancelEditBtn.style.display='none';renderVoicePresets();voiceCustomField.style.display='none';voicePopulateLocations();syncVoiceOptionalUi();voiceLock.textContent='';
 }
 function voiceEdit(id){
   if(!voiceCanEdit())return;const a=voiceAlerts().find(x=>x.id===id);if(!a)return;voiceEditingId=id;voiceSelectedPreset=a.preset||'Personalizado';voiceText.value=a.customText||'';voiceDirection.value=a.via||'both';voicePopulateLocations();
@@ -1884,15 +1884,15 @@ function voiceSave(){
   if(!voiceCanEdit())return;
   const custom=(voiceText.value||'').trim(),delaySec=Number(voiceDelay.value||0),repeatCount=parseInt(voiceTimes.value||'1',10),speed=String(voiceSpeed.value||'').trim(),pkStart=normalizePk(voicePkStart.value),pkEnd=normalizePk(voicePkEnd.value),via=voiceDirection.value;
   if(voiceSelectedPreset==='Personalizado'&&!custom){voiceLock.textContent='Escribe el mensaje personalizado.';return;}
-  if(speed&&!Number.isFinite(Number(speed.replace(',','.')))){voiceLock.textContent='Ingresa una velocidad vÃ¡lida.';return;}
-  if(pkStart&&!validPk(pkStart)){voiceLock.textContent='Usa el PK como 07-13: kilÃ³metro 7, poste 13.';return;}
+  if(speed&&!Number.isFinite(Number(speed.replace(',','.')))){voiceLock.textContent='Ingresa una velocidad válida.';return;}
+  if(pkStart&&!validPk(pkStart)){voiceLock.textContent='Usa el PK como 07-13: kilómetro 7, poste 13.';return;}
   if(pkEnd&&!pkStart){voiceLock.textContent='Ingresa primero el PK de inicio.';return;}
   if(pkEnd&&!validPk(pkEnd)){voiceLock.textContent='Usa el PK final como 07-19.';return;}
   if(!Number.isFinite(delaySec)||delaySec<0||delaySec>1800){voiceLock.textContent='El retraso debe estar entre 0 y 1800 segundos.';return;}
-  if(!Number.isInteger(repeatCount)||repeatCount<1||repeatCount>10){voiceLock.textContent='La repeticiÃ³n debe estar entre 1 y 10 veces.';return;}
+  if(!Number.isInteger(repeatCount)||repeatCount<1||repeatCount>10){voiceLock.textContent='La repetición debe estar entre 1 y 10 veces.';return;}
   let location=voiceLocation.value,segmentKey='',locationVia1='',locationVia2='';
   if(via==='both'){
-    const seg=voiceSegmentFromKey(location);if(!seg){voiceLock.textContent='Selecciona un tramo vÃ¡lido.';return;}segmentKey=seg.key;locationVia1=seg.via1;locationVia2=seg.via2;location=seg.via1;
+    const seg=voiceSegmentFromKey(location);if(!seg){voiceLock.textContent='Selecciona un tramo válido.';return;}segmentKey=seg.key;locationVia1=seg.via1;locationVia2=seg.via2;location=seg.via1;
   }
   const old=voiceAlerts().find(x=>x.id===voiceEditingId);const a={id:old?.id||('V'+Date.now()+Math.random().toString(36).slice(2,6)),preset:voiceSelectedPreset,customText:voiceSelectedPreset==='Personalizado'?custom:'',via,location,segmentKey,locationVia1,locationVia2,useSpeed:!!speed,speed,usePk:!!pkStart,pkStart,pkEnd,delayMs:Math.round(delaySec*1000),repeatCount,enabled:old?.enabled!==false};
   if(old)Object.assign(old,a);else voiceAlerts().push(a);saveVoiceSettings();voiceResetForm();voiceLock.textContent='Mensaje guardado.';renderVoiceBar();renderVoiceList();
@@ -1915,24 +1915,24 @@ function scheduleVoiceEvent(location,eventAt=Date.now()){
 }
 function clearVoiceTimers(cancelSpeech=false){for(const t of voiceTimers.values())clearTimeout(t);voiceTimers.clear();if(cancelSpeech&&'speechSynthesis'in window)window.speechSynthesis.cancel();}
 function updateBellotoCutUi(msg=''){
-  if(!imuBellotoCutBtn)return;const armed=!!imuOnlyTrip?.doubleCutBellotoArmed;imuBellotoCutBtn.classList.toggle('armed',armed);imuBellotoCutBtn.textContent=armed?'CORTE DOBLE ARMADO âœ“':'CORTE DOBLE Â· BELLOTO';if(imuQuickMsg&&msg)imuQuickMsg.textContent=msg;
+  if(!imuBellotoCutBtn)return;const armed=!!imuOnlyTrip?.doubleCutBellotoArmed;imuBellotoCutBtn.classList.toggle('armed',armed);imuBellotoCutBtn.textContent=armed?'CORTE DOBLE ARMADO ✓':'CORTE DOBLE · BELLOTO';if(imuQuickMsg&&msg)imuQuickMsg.textContent=msg;
 }
 function armBellotoDoubleCut(){
   if(!imuOnlyTrip){updateBellotoCutUi('No hay un servicio activo.');return;}
   const r=imuOnlyTrip.route,iSol=r.indexOf('El Sol'),iBell=r.indexOf('El Belloto');
-  if(iSol<0||iBell!==iSol+1){updateBellotoCutUi('Este servicio no pasa por El Sol â†’ El Belloto.');return;}
+  if(iSol<0||iBell!==iSol+1){updateBellotoCutUi('Este servicio no pasa por El Sol → El Belloto.');return;}
   const origin=r[imuOnlyTrip.pos],next=r[imuOnlyTrip.pos+1];
-  if(imuOnlyTrip.state==='MOVING'&&origin==='El Sol'&&next==='El Belloto'){imuOnlyTrip.doubleCutBellotoArmed=false;imuOnlyTrip.doubleCutBellotoDone=true;speakVoice('Recuerda: corte doble en estaciÃ³n El Belloto.');updateBellotoCutUi('Aviso reproducido ahora para este servicio.');return;}
-  if(imuOnlyTrip.pos>iSol||(imuOnlyTrip.pos===iSol&&imuOnlyTrip.state!=='STATION'&&imuOnlyTrip.state!=='WAITING')){updateBellotoCutUi('El tramo El Sol â†’ El Belloto ya pasÃ³ o estÃ¡ cerrÃ¡ndose.');return;}
-  imuOnlyTrip.doubleCutBellotoArmed=true;imuOnlyTrip.doubleCutBellotoDone=false;updateBellotoCutUi('Armado: se dirÃ¡ al iniciar El Sol â†’ El Belloto.');
+  if(imuOnlyTrip.state==='MOVING'&&origin==='El Sol'&&next==='El Belloto'){imuOnlyTrip.doubleCutBellotoArmed=false;imuOnlyTrip.doubleCutBellotoDone=true;speakVoice('Recuerda: corte doble en estación El Belloto.');updateBellotoCutUi('Aviso reproducido ahora para este servicio.');return;}
+  if(imuOnlyTrip.pos>iSol||(imuOnlyTrip.pos===iSol&&imuOnlyTrip.state!=='STATION'&&imuOnlyTrip.state!=='WAITING')){updateBellotoCutUi('El tramo El Sol → El Belloto ya pasó o está cerrándose.');return;}
+  imuOnlyTrip.doubleCutBellotoArmed=true;imuOnlyTrip.doubleCutBellotoDone=false;updateBellotoCutUi('Armado: se dirá al iniciar El Sol → El Belloto.');
 }
 function scheduleDepartureVoice(station,nextStation,at){
-  if(!voiceSettings)loadVoiceSettings();if(voiceSettings.announceStations&&nextStation)speakVoice(`PrÃ³xima estaciÃ³n ${nextStation}.`);if(voiceSettings.remindLights)speakVoice('Recuerda mantener luces encendidas.');
-  if(imuOnlyTrip?.doubleCutBellotoArmed&&station==='El Sol'&&nextStation==='El Belloto'){imuOnlyTrip.doubleCutBellotoArmed=false;imuOnlyTrip.doubleCutBellotoDone=true;speakVoice('Recuerda: corte doble en estaciÃ³n El Belloto.');updateBellotoCutUi('Aviso de corte doble reproducido.');}
+  if(!voiceSettings)loadVoiceSettings();if(voiceSettings.announceStations&&nextStation)speakVoice(`Próxima estación ${nextStation}.`);if(voiceSettings.remindLights)speakVoice('Recuerda mantener luces encendidas.');
+  if(imuOnlyTrip?.doubleCutBellotoArmed&&station==='El Sol'&&nextStation==='El Belloto'){imuOnlyTrip.doubleCutBellotoArmed=false;imuOnlyTrip.doubleCutBellotoDone=true;speakVoice('Recuerda: corte doble en estación El Belloto.');updateBellotoCutUi('Aviso de corte doble reproducido.');}
   scheduleVoiceEvent(station,at);
 }
 function scheduleArrivalVoice(station,at){
-  if(!voiceSettings)loadVoiceSettings();if(voiceSettings.announceStations)speakVoice(`EstaciÃ³n ${station}.`);if(voiceSettings.remindDoors)speakVoice('Recuerda abrir puertas.');
+  if(!voiceSettings)loadVoiceSettings();if(voiceSettings.announceStations)speakVoice(`Estación ${station}.`);if(voiceSettings.remindDoors)speakVoice('Recuerda abrir puertas.');
 }
 function selectedImuDestination(){
   if(!imuDestination)return null;return imuDestination.value==='__other__'?(imuDestinationOther?.value||null):imuDestination.value;
@@ -2071,7 +2071,7 @@ function startValidationRun(){
     exportedAt:null
   };
   validationPanel?.classList.add('show');
-  if(validationStatus)validationStatus.textContent='Modo prueba activo Â· marca la realidad con los dos botones.';
+  if(validationStatus)validationStatus.textContent='Modo prueba activo · marca la realidad con los dos botones.';
 }
 function validationCaptureRaw(perfNow,x,y,z,m,extra=null,source='unknown',sensorInterval=null,nativeMeta=null){
   const v=imuValidationCurrent;
@@ -2132,7 +2132,7 @@ function validationManualMark(kind){
   v.manual.push({kind,at:now,elapsedMs:Math.round(now-v.startedAt),snapshot:s});
   if(navigator.vibrate)try{navigator.vibrate(35);}catch(e){}
   if(validationStatus){
-    validationStatus.textContent=`${kind==='DETENCION_REAL'?'DetenciÃ³n real':'Inicio real de movimiento'} Â· ${fmtClock(now)} Â· IMU ${Number.isFinite(s?.slow)?s.slow.toFixed(3):'--'}`;
+    validationStatus.textContent=`${kind==='DETENCION_REAL'?'Detención real':'Inicio real de movimiento'} · ${fmtClock(now)} · IMU ${Number.isFinite(s?.slow)?s.slow.toFixed(3):'--'}`;
   }
 }
 function validationBuildComparison(v){
@@ -2173,7 +2173,7 @@ function finishValidationRun(endAt=Date.now()){
   v.durationMs=Math.max(0,endAt-v.startedAt);
   v.comparison=validationBuildComparison(v);
   imuValidationLast=v;
-  if(validationStatus)validationStatus.textContent=`Prueba finalizada Â· ${v.manual.length} marcas manuales Â· lista para exportar.`;
+  if(validationStatus)validationStatus.textContent=`Prueba finalizada · ${v.manual.length} marcas manuales · lista para exportar.`;
 }
 function updateValidationReportExport(){
   const v=(imuValidationCurrent?.enabled?imuValidationCurrent:imuValidationLast);
@@ -2184,7 +2184,7 @@ function updateValidationReportExport(){
   }
   validationReportCard.classList.add('show');
   const marks=(v.manual||[]).length, raw=(v.rawImu||[]).length;
-  validationReportText.textContent=`${marks} marcas manuales Â· ${raw} muestras IMU Â· ${v.gravitySamples||0} con gravedad Â· ${v.vehicleProfile||vehicleProfileFromDestination(v.destination)} Â· servicio ${v.serviceNumber||'--'}. DescÃ¡rgalo antes de iniciar una nueva sesiÃ³n.`;
+  validationReportText.textContent=`${marks} marcas manuales · ${raw} muestras IMU · ${v.gravitySamples||0} con gravedad · ${v.vehicleProfile||vehicleProfileFromDestination(v.destination)} · servicio ${v.serviceNumber||'--'}. Descárgalo antes de iniciar una nueva sesión.`;
 }
 function exportValidationRun(){
   const v=(imuValidationCurrent?.enabled?imuValidationCurrent:imuValidationLast);
@@ -2198,9 +2198,9 @@ function exportValidationRun(){
       startedAt:v.startedAt,startedAtIso:new Date(v.startedAt).toISOString(),
       endedAt:v.endedAt,endedAtIso:v.endedAt?new Date(v.endedAt).toISOString():null,
       durationMs:v.endedAt?Math.max(0,v.endedAt-v.startedAt):Date.now()-v.startedAt,
-      note:'Las marcas MANUAL representan la realidad indicada por el usuario. Las transiciones AUTOMATICAS son lo que decidiÃ³ la app. GPS es contexto espacial, no una marca manual.',
+      note:'Las marcas MANUAL representan la realidad indicada por el usuario. Las transiciones AUTOMATICAS son lo que decidió la app. GPS es contexto espacial, no una marca manual.',
       accelerationInfo:{units:'m/s2',gravityFilter:'pasa-altos independiente: accelerationIncludingGravity menos media exponencial (tau=2 segundos)',
-        note:'V7.24 conserva el detector de salidas de V7.23 y mejora solo la detecciÃ³n de detenciones: aprende el reposo inicial confirmado por la primera salida, conserva candidatas que todavÃ­a convergen al reposo, congela el aprendizaje de movimiento tras rechazos ambiguos y permite reconstruir retrospectivamente la llegada antes del inicio de la candidata.',
+        note:'V7.24 conserva el detector de salidas de V7.23 y mejora solo la detección de detenciones: aprende el reposo inicial confirmado por la primera salida, conserva candidatas que todavía convergen al reposo, congela el aprendizaje de movimiento tras rechazos ambiguos y permite reconstruir retrospectivamente la llegada antes del inicio de la candidata.',
         nativeRawRows:v.nativeSamples,gravityAvailableRows:v.gravitySamples,rawSamplingMinIntervalMs:VALIDATION_RAW_MIN_INTERVAL_MS},
       sensorProfile:{...nativeDeviceProfileNow()}
     },
@@ -2216,40 +2216,40 @@ function exportValidationRun(){
   a.href=url;a.download=`validacion_IMU_servicio_${v.serviceNumber||'sin-numero'}_${stamp}.json`;
   document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),1200);
   v.exportedAt=Date.now();
-  if(validationStatus)validationStatus.textContent=`Prueba exportada Â· ${v.manual.length} marcas manuales Â· ${v.rawImu.length} muestras IMU.`;
+  if(validationStatus)validationStatus.textContent=`Prueba exportada · ${v.manual.length} marcas manuales · ${v.rawImu.length} muestras IMU.`;
 }
 
 function addImuEvent(type,label,startAt,endAt,extra={}){
   if(!imuOnlyTrip)return;imuOnlyTrip.events.push({type,label,startAt,endAt,durationMs:Math.max(0,endAt-startAt),...extra});renderImuEvents();
 }
 function renderImuEvents(){
-  if(!imuOnlyTrip||!imuOnlyTrip.events.length){imuEventsEl.innerHTML='<div style="font-size:13px;opacity:.45">Sin eventos todavÃ­a.</div>';renderImuStopTable();return;}
+  if(!imuOnlyTrip||!imuOnlyTrip.events.length){imuEventsEl.innerHTML='<div style="font-size:13px;opacity:.45">Sin eventos todavía.</div>';renderImuStopTable();return;}
   imuEventsEl.innerHTML=imuOnlyTrip.events.slice(-10).reverse().map(e=>{
     let meta='';
-    if(e.type==='ESTACION')meta=`Detenido ${fmtDuration(e.durationMs)} Â· Consentimiento ${fmtDuration(e.consentMs||0)}`;
-    else if(e.type==='BREVE')meta='DetenciÃ³n breve Â· no cambia de estaciÃ³n';
+    if(e.type==='ESTACION')meta=`Detenido ${fmtDuration(e.durationMs)} · Consentimiento ${fmtDuration(e.consentMs||0)}`;
+    else if(e.type==='BREVE')meta='Detención breve · no cambia de estación';
     else if(e.type==='SALIDA'&&Number.isFinite(e.delayMs))meta=`${e.delayMs>=0?'Atraso':'Adelanto'} ${fmtDuration(Math.abs(e.delayMs))}`;
-    else if(e.type==='SYNC')meta=`${e.from||''}${e.from&&e.to?' â†’ ':''}${e.to||''} Â· sin inventar tiempos de estaciones omitidas`;
+    else if(e.type==='SYNC')meta=`${e.from||''}${e.from&&e.to?' → ':''}${e.to||''} · sin inventar tiempos de estaciones omitidas`;
     return `<div class="imuEventRow"><div><strong>${e.label}</strong>${meta?`<div class="imuEventMeta">${meta}</div>`:''}</div><span class="imuEventTime">${fmtDuration(e.durationMs)}</span></div>`;
   }).join('');
   renderImuStopTable();
 }
 function renderImuStopTable(now=Date.now()){
   if(!imuStopRows)return;
-  if(!imuOnlyTrip){imuStopRows.innerHTML='<div class="imuStopEmpty">AÃºn no hay detenciones registradas.</div>';return;}
-  // MÃ¡s reciente arriba: las detenciones confirmadas se muestran en orden inverso.
+  if(!imuOnlyTrip){imuStopRows.innerHTML='<div class="imuStopEmpty">Aún no hay detenciones registradas.</div>';return;}
+  // Más reciente arriba: las detenciones confirmadas se muestran en orden inverso.
   const rows=(imuOnlyTrip.events||[])
     .filter(e=>e.type==='ESTACION')
     .slice()
     .reverse()
     .map(e=>({station:e.label,dwell:e.durationMs,consent:e.consentMs||0,live:false}));
   if(imuOnlyTrip.state==='LOCATING'){
-    imuMotionPhase='REPOSO';imuStateOnly.textContent=`SERVICIO ${imuOnlyTrip.serviceNumber} Â· ${imuOnlyTrip.vehicleProfile||'--'} Â· ESPERANDO MOVIMIENTO`;imuTimerLabelOnly.textContent='IMU ACTIVO';imuExtraLabel.textContent='DESTINO';imuExtra.textContent=imuOnlyTrip.finalStation;imuRouteOnly.textContent=`Destino: ${imuOnlyTrip.finalStation} Â· GPS solo ubicaciÃ³n`;
+    imuMotionPhase='REPOSO';imuStateOnly.textContent=`SERVICIO ${imuOnlyTrip.serviceNumber} · ${imuOnlyTrip.vehicleProfile||'--'} · ESPERANDO MOVIMIENTO`;imuTimerLabelOnly.textContent='IMU ACTIVO';imuExtraLabel.textContent='DESTINO';imuExtra.textContent=imuOnlyTrip.finalStation;imuRouteOnly.textContent=`Destino: ${imuOnlyTrip.finalStation} · GPS solo ubicación`;
   }else if(imuOnlyTrip.state==='STATION'){
-    const station=imuOnlyTrip.currentStationLabel||imuOnlyTrip.route[imuOnlyTrip.pos]||'EstaciÃ³n sin GPS',dwell=Math.max(0,now-imuOnlyTrip.eventStartAt);rows.unshift({station,dwell,consent:dwell<STATION_DEPARTURE_LOCK_MS?null:Math.max(0,dwell-12000),live:true});
+    const station=imuOnlyTrip.currentStationLabel||imuOnlyTrip.route[imuOnlyTrip.pos]||'Estación sin GPS',dwell=Math.max(0,now-imuOnlyTrip.eventStartAt);rows.unshift({station,dwell,consent:dwell<STATION_DEPARTURE_LOCK_MS?null:Math.max(0,dwell-12000),live:true});
   }
-  if(!rows.length){imuStopRows.innerHTML='<div class="imuStopEmpty">AÃºn no hay detenciones registradas.</div>';return;}
-  imuStopRows.innerHTML=rows.map(r=>`<div class="imuStopRow${r.live?' live':''}"><strong>${escHtml(r.station)}${r.live?' Â· ahora':''}</strong><span class="time">${fmtTenths(r.dwell)}</span><span class="time">${r.consent===null?'â€”':fmtTenths(r.consent)}</span></div>`).join('');
+  if(!rows.length){imuStopRows.innerHTML='<div class="imuStopEmpty">Aún no hay detenciones registradas.</div>';return;}
+  imuStopRows.innerHTML=rows.map(r=>`<div class="imuStopRow${r.live?' live':''}"><strong>${escHtml(r.station)}${r.live?' · ahora':''}</strong><span class="time">${fmtTenths(r.dwell)}</span><span class="time">${r.consent===null?'—':fmtTenths(r.consent)}</span></div>`).join('');
 }
 function imuPercentile(sorted,q){
   if(!sorted.length)return 0;const p=(sorted.length-1)*q,i=Math.floor(p),f=p-i;return sorted[i]+(sorted[Math.min(i+1,sorted.length-1)]-sorted[i])*f;
@@ -2257,8 +2257,8 @@ function imuPercentile(sorted,q){
 function imuThresholdsFromProfile(p){
   const med=Math.max(0,p.median||0),mad=Math.max(0,p.mad||0),p90=Math.max(0,p.p90||0);
   const noiseTop=Math.max(.002,p90,med+3*mad);
-  // Umbrales RELATIVOS al reposo activo. No dependen de un telÃ©fono o tren concreto.
-  // Los mÃ¡rgenes absolutos son solo pisos muy pequeÃ±os para evitar que el ruido numÃ©rico domine.
+  // Umbrales RELATIVOS al reposo activo. No dependen de un teléfono o tren concreto.
+  // Los márgenes absolutos son solo pisos muy pequeños para evitar que el ruido numérico domine.
   const stop=noiseTop+Math.max(.006,1.35*mad,.16*noiseTop);
   const move=noiseTop+Math.max(.020,3.25*mad,.58*noiseTop);
   return {noiseTop,stop:clamp(stop,.008,2.5),move:clamp(Math.max(move,stop+Math.max(.012,.20*stop)),.020,4.0)};
@@ -2275,8 +2275,8 @@ function imuRobustProfile(profiles){
 }
 function imuAutoProfileSafe(p){
   const ref=imuBaselineAnchor||imuBaseline;if(!ref)return true;
-  // Una estaciÃ³n con pasajeros puede vibrar bastante mÃ¡s que el origen. Se acepta como envolvente de reposo,
-  // salvo que parezca claramente un tren todavÃ­a en movimiento.
+  // Una estación con pasajeros puede vibrar bastante más que el origen. Se acepta como envolvente de reposo,
+  // salvo que parezca claramente un tren todavía en movimiento.
   const absurdMedian=p.median>Math.max(.45,ref.median*5+.08),absurdNoise=p.noiseTop>Math.max(.70,ref.noiseTop*6+.12);return !(absurdMedian||absurdNoise);
 }
 function imuBlendProfiles(oldP,newP){
@@ -2284,7 +2284,7 @@ function imuBlendProfiles(oldP,newP){
   imuBaselineHistory.push(newP);if(imuBaselineHistory.length>9)imuBaselineHistory.shift();
   const robust=imuRobustProfile(imuBaselineHistory)||newP,anchor=imuBaselineAnchor||oldP;
   // El reposo inicial/manual sigue siendo la referencia de PARTIDA. Las estaciones intermedias
-  // solo enseÃ±an una envolvente de "reposo con pÃºblico" para reconocer llegadas sin elevar
+  // solo enseñan una envolvente de "reposo con público" para reconocer llegadas sin elevar
   // progresivamente el umbral que dispara una salida.
   return {...oldP,stationMedian:robust.median,stationP90:robust.p90,stationP95:robust.p95,stationMad:robust.mad,stationUpdatedAt:Date.now(),stop:anchor.stop,move:anchor.move};
 }
@@ -2297,8 +2297,8 @@ function imuStationaryEvidence(score,gps){
   const anchorNoise=Math.max(.008,base.noiseTop||base.p90||base.median||.03);
   const stationNoise=Math.max(anchorNoise,base.stationP90||0);
   const cruise=Math.max(th.move,imuCruiseScore||0);
-  // La llegada se reconoce por CAÃDA RELATIVA del movimiento y ausencia de aceleraciÃ³n longitudinal coherente,
-  // no por volver exactamente al valor mÃ­nimo que existÃ­a en la estaciÃ³n de origen.
+  // La llegada se reconoce por CAÍDA RELATIVA del movimiento y ausencia de aceleración longitudinal coherente,
+  // no por volver exactamente al valor mínimo que existía en la estación de origen.
   const relativeCap=clamp(Math.max(th.stop*1.08,stationNoise*1.22,cruise*.50),th.stop,Math.max(.24,th.move*1.9));
   const gpsCap=clamp(Math.max(relativeCap,stationNoise*1.55,cruise*.68),relativeCap,Math.max(.38,th.move*2.8));
   const longitudinalQuiet=!imuLongAxis||Math.abs(v.projection)<Math.max(.035,floor*1.35);
@@ -2316,11 +2316,11 @@ function imuUpdateCruiseReference(score,stationLike){
 function imuCurrentRouteText(){
   if(!imuOnlyTrip)return '--';const r=imuOnlyTrip.route,p=imuOnlyTrip.pos;
   if(imuOnlyTrip.locationPending){
-    if(imuOnlyTrip.state==='STATION')return imuOnlyTrip.currentStationLabel||'EstaciÃ³n sin GPS';
-    return `UbicaciÃ³n pendiente Â· ${imuOnlyTrip.direction==='puerto'?'hacia Puerto':'hacia '+imuOnlyTrip.finalStation}`;
+    if(imuOnlyTrip.state==='STATION')return imuOnlyTrip.currentStationLabel||'Estación sin GPS';
+    return `Ubicación pendiente · ${imuOnlyTrip.direction==='puerto'?'hacia Puerto':'hacia '+imuOnlyTrip.finalStation}`;
   }
   if(imuOnlyTrip.state==='STATION'||imuOnlyTrip.state==='FINISHED')return imuOnlyTrip.currentStationLabel||r[p]||r[r.length-1];
-  return `${r[p]} â†’ ${r[Math.min(p+1,r.length-1)]}`;
+  return `${r[p]} → ${r[Math.min(p+1,r.length-1)]}`;
 }
 function imuSetEvent(state,label,at=Date.now()){
   imuOnlyTrip.state=state;imuOnlyTrip.eventLabel=label;imuOnlyTrip.eventStartAt=at;imuLastEventAt=at;imuStateOnly.textContent=label;imuRouteOnly.textContent=imuCurrentRouteText();
@@ -2340,9 +2340,9 @@ function imuBeginCalibration(mode='manual'){
   imuCalMode=mode;imuCalStart=performance.now();imuCalValues=[];imuCalPrevious=imuBaseline?{...imuBaseline}:null;
   if(mode==='initial')imuBaseline=null;
   imuRecalBtn.disabled=true;
-  if(mode==='auto')setImuCalibrationMessage('AJUSTE AUTOMÃTICO PROTEGIDO Â· comprobando el reposo de esta estaciÃ³n sin elevar los umbrales por perturbacionesâ€¦','info');
-  else if(mode==='manual')setImuCalibrationMessage('RECALIBRACIÃ“N MANUAL INICIADA Â· mantÃ©n el telÃ©fono fijo con el tren detenido. La vibraciÃ³n del tren encendido es vÃ¡lida.','info');
-  else setImuCalibrationMessage('CALIBRACIÃ“N INICIAL Â· tren detenido y telÃ©fono fijo. Aprendiendo el reposo activo de este telÃ©fono y este trenâ€¦','info');
+  if(mode==='auto')setImuCalibrationMessage('AJUSTE AUTOMÁTICO PROTEGIDO · comprobando el reposo de esta estación sin elevar los umbrales por perturbaciones…','info');
+  else if(mode==='manual')setImuCalibrationMessage('RECALIBRACIÓN MANUAL INICIADA · mantén el teléfono fijo con el tren detenido. La vibración del tren encendido es válida.','info');
+  else setImuCalibrationMessage('CALIBRACIÓN INICIAL · tren detenido y teléfono fijo. Aprendiendo el reposo activo de este teléfono y este tren…','info');
 }
 function imuCancelCalibration(msg){
   if(imuCalMode==='initial')imuBaseline=imuCalPrevious;
@@ -2354,32 +2354,32 @@ function imuProcessCalibration(){
   const mode=imuCalMode||'manual',elapsed=performance.now()-imuCalStart,score=imuLevel(1000);if(Number.isFinite(score))imuCalValues.push(score);
   const need=mode==='auto'?IMU_AUTO_CAL_MS:IMU_CAL_MS,remaining=Math.max(0,Math.ceil((need-elapsed)/1000));
   if(elapsed<need){
-    const name=mode==='manual'?'RECALIBRACIÃ“N MANUAL':mode==='auto'?'AJUSTE AUTOMÃTICO':'CALIBRACIÃ“N INICIAL';
-    showImuCalibrationStatus(`${name} Â· ${remaining} s Â· mantÃ©n el telÃ©fono fijo; la vibraciÃ³n basal del tren se estÃ¡ aprendiendo.`,'info');return;
+    const name=mode==='manual'?'RECALIBRACIÓN MANUAL':mode==='auto'?'AJUSTE AUTOMÁTICO':'CALIBRACIÓN INICIAL';
+    showImuCalibrationStatus(`${name} · ${remaining} s · mantén el teléfono fijo; la vibración basal del tren se está aprendiendo.`,'info');return;
   }
   const vals=imuCalValues.filter(Number.isFinite),half=Math.floor(vals.length/2);
   const a=vals.slice(0,half).sort((x,y)=>x-y),b=vals.slice(half).sort((x,y)=>x-y),profile=imuCalibrationProfile(vals,mode);
-  if(!profile){imuCancelCalibration('CALIBRACIÃ“N NO APLICADA Â· no hubo suficientes datos. Se conserva la calibraciÃ³n anterior.');return;}
+  if(!profile){imuCancelCalibration('CALIBRACIÓN NO APLICADA · no hubo suficientes datos. Se conserva la calibración anterior.');return;}
   const m1=a.length?imuPercentile(a,.5):profile.median,m2=b.length?imuPercentile(b,.5):profile.median,shift=Math.abs(m2-m1);
-  // La estabilidad se evalÃºa en relaciÃ³n con el propio reposo aprendido; sirve para distintos telÃ©fonos y trenes.
+  // La estabilidad se evalúa en relación con el propio reposo aprendido; sirve para distintos teléfonos y trenes.
   const scale=Math.max(.010,profile.noiseTop||profile.p90||profile.median);
   const unstable=shift>Math.max(.030,scale*.85)||profile.mad>Math.max(.035,scale*.70)||profile.p95>Math.max(.30,scale*5.5);
   if(unstable){
     if(mode==='initial'){
-      setImuCalibrationMessage('CALIBRACIÃ“N INICIAL Â· la seÃ±al cambiÃ³ demasiado. Esperando un reposo mÃ¡s estable para intentarlo de nuevoâ€¦','bad');
+      setImuCalibrationMessage('CALIBRACIÓN INICIAL · la señal cambió demasiado. Esperando un reposo más estable para intentarlo de nuevo…','bad');
       imuCalStart=performance.now();imuCalValues=[];return;
     }
-    imuCancelCalibration('RECALIBRACIÃ“N CANCELADA Â· la seÃ±al cambiÃ³ demasiado; se conserva el reposo anterior.');return;
+    imuCancelCalibration('RECALIBRACIÓN CANCELADA · la señal cambió demasiado; se conserva el reposo anterior.');return;
   }
   if(mode==='auto'&&!imuAutoProfileSafe(profile)){
-    imuCancelCalibration('AJUSTE AUTOMÃTICO OMITIDO Â· esta estaciÃ³n tuvo mÃ¡s vibraciÃ³n/movimiento de lo habitual. Se conserva la calibraciÃ³n anterior.');return;
+    imuCancelCalibration('AJUSTE AUTOMÁTICO OMITIDO · esta estación tuvo más vibración/movimiento de lo habitual. Se conserva la calibración anterior.');return;
   }
   if(mode==='auto')imuBaseline=imuBlendProfiles(imuCalPrevious,profile);
   else{imuBaseline=profile;imuBaselineAnchor={...profile};imuBaselineHistory=[{...profile}];}
   if(imuOnlyTrip)imuOnlyTrip.imuCalibration={...imuBaseline};
-  const th=imuMotionThresholds(),kind=mode==='manual'?'RECALIBRACIÃ“N MANUAL COMPLETA âœ“':mode==='auto'?'REPOSO DE ESTACIÃ“N APRENDIDO âœ“':'REPOSO INICIAL APRENDIDO âœ“';
+  const th=imuMotionThresholds(),kind=mode==='manual'?'RECALIBRACIÓN MANUAL COMPLETA ✓':mode==='auto'?'REPOSO DE ESTACIÓN APRENDIDO ✓':'REPOSO INICIAL APRENDIDO ✓';
   imuCalStart=null;imuCalValues=[];imuCalMode=null;imuCalPrevious=null;imuRecalBtn.disabled=false;
-  setImuCalibrationMessage(`${kind} Â· basal ${imuBaseline.median.toFixed(3)}${imuBaseline.stationP90?` Â· envolvente estaciÃ³n ${imuBaseline.stationP90.toFixed(3)}`:''} Â· salida > ${th.move.toFixed(3)}`,'ok',10000);
+  setImuCalibrationMessage(`${kind} · basal ${imuBaseline.median.toFixed(3)}${imuBaseline.stationP90?` · envolvente estación ${imuBaseline.stationP90.toFixed(3)}`:''} · salida > ${th.move.toFixed(3)}`,'ok',10000);
 }
 function imuStartAutoCalibration(station){
   const key=`${imuOnlyTrip?.id||''}|${station}|${imuOnlyTrip?.pos??''}`;if(!imuOnlyTrip||imuAutoCalStationKey===key)return;
@@ -2395,7 +2395,7 @@ function imuWindowStatsOffset(windowMs=IMU_STATE_WINDOW_MS,endAgoMs=0){
   const stdMag=Math.sqrt(Math.max(0,sm2/n-mean*mean));
   const projection=imuLongAxis?mx*imuLongAxis.x+my*imuLongAxis.y+mz*imuLongAxis.z:0;
   const coherence=meanMag/Math.max(.001,rms);
-  // RMS mide vibraciÃ³n; meanMag/coherencia conservan la aceleraciÃ³n direccional sostenida.
+  // RMS mide vibración; meanMag/coherencia conservan la aceleración direccional sostenida.
   const activity=.72*rms+.28*(meanMag+stdMag);
   return {n,mx,my,mz,rms,meanMag,stdMag,coherence,projection,activity};
 }
@@ -2427,7 +2427,7 @@ function imuWindowStopEvidence(now=Date.now()){
   const belowCruise=c.activity<Math.max(stationNoise*1.70,cruise*.66);
   const afterBrake=(now-imuLastBrakeAt)<5500;
   const ready=c.n>=6&&p.n>=6&&dirQuiet&&netQuiet&&(strongDrop||(afterBrake&&belowCruise));
-  // La primera estimaciÃ³n se retrotrae al centro de la transiciÃ³n entre ventanas.
+  // La primera estimación se retrotrae al centro de la transición entre ventanas.
   const estimatedAt=now-Math.round(IMU_STATE_SHIFT_MS*.65);
   return {...w,ready,strongDrop,belowCruise,dropRatio,dirQuiet,netQuiet,estimatedAt};
 }
@@ -2436,8 +2436,8 @@ function imuWindowDepartureEvidence(){
   const learned=Number.isFinite(imuStationWindowBaseline)?imuStationWindowBaseline:null;
   const ref=learned??Math.max(.008,base.stationP90||base.noiseTop||base.p90||base.median||.02);
   const dirFloor=Math.max(.012,imuDirectionalFloor()*.62,ref*.10);
-  // Para salir de estaciÃ³n interesa aceleraciÃ³n coherente EN EL SENTIDO aprendido del tren.
-  // En la primera salida, sin eje aprendido, se exige coherencia vectorial mÃ¡s alta.
+  // Para salir de estación interesa aceleración coherente EN EL SENTIDO aprendido del tren.
+  // En la primera salida, sin eje aprendido, se exige coherencia vectorial más alta.
   const directionOK=imuLongAxis?(c.projection>dirFloor):(c.meanMag>dirFloor&&c.coherence>.28);
   const riseAgainstBase=c.activity>Math.max(ref*1.40,ref+.012);
   const riseAgainstPrevious=c.activity>Math.max(p.activity*IMU_DEPART_RISE_RATIO,p.activity+.006);
@@ -2448,7 +2448,7 @@ function imuWindowDepartureEvidence(){
 function imuStationBaselineFromSamples(samples){
   const vals=(samples||[]).filter(Number.isFinite).sort((a,b)=>a-b);
   if(!vals.length)return null;
-  // Percentil bajo-medio: pasajeros/golpes no pueden inflar el reposo aprendido de la estaciÃ³n.
+  // Percentil bajo-medio: pasajeros/golpes no pueden inflar el reposo aprendido de la estación.
   return imuPercentile(vals,.35);
 }
 function imuResetWindowCandidates(){
@@ -2552,9 +2552,9 @@ function gravityLearnLongAxis(windowMs=1100){
   let nx=v.mx/v.meanMag,ny=v.my/v.meanMag,nz=v.mz/v.meanMag;
   if(gravityLongAxis){
     let dot=nx*gravityLongAxis.x+ny*gravityLongAxis.y+nz*gravityLongAxis.z;
-    // El pasa-altos puede invertir el signo entre aceleraciÃ³n y rebote. Nos interesa el EJE fÃ­sico, no el signo.
+    // El pasa-altos puede invertir el signo entre aceleración y rebote. Nos interesa el EJE físico, no el signo.
     if(dot<0){nx=-nx;ny=-ny;nz=-nz;dot=-dot;}
-    if(dot<.15)return false; // una vibraciÃ³n transversal/puerta no redefine el eje del tren.
+    if(dot<.15)return false; // una vibración transversal/puerta no redefine el eje del tren.
     const w=.26;
     nx=(1-w)*gravityLongAxis.x+w*nx;ny=(1-w)*gravityLongAxis.y+w*ny;nz=(1-w)*gravityLongAxis.z+w*nz;
     const norm=Math.hypot(nx,ny,nz)||1;nx/=norm;ny/=norm;nz/=norm;
@@ -2602,7 +2602,7 @@ function gravityStopContext(gps,now=Date.now()){
   let mode='imu',targetIndex=Math.min(pos+1,Math.max(0,route.length-1)),target=route[targetIndex]||null,distance=null,radius=null;
   if(gps?.valid&&gpsLast&&route.length>1){
     const spatialNext=Number.isInteger(gps.segmentIndex)?gps.segmentIndex+1:null;
-    // La posiciÃ³n GPS solo propone quÃ© estaciÃ³n podrÃ­a ser; jamÃ¡s desarma el detector fÃ­sico.
+    // La posición GPS solo propone qué estación podría ser; jamás desarma el detector físico.
     if(!imuOnlyTrip.locationPending&&Number.isInteger(spatialNext))targetIndex=clamp(Math.max(pos+1,spatialNext),0,route.length-1);
     target=route[targetIndex]||target;
     const point=target?gpsStationPoint(target):null;
@@ -2763,8 +2763,8 @@ function gravityInferArrivalFromStableRest(now,candidateProfile,finalPlateau){
 }
 function gravityLearnedRestLimits(trustedG){
   if(!Number.isFinite(trustedG))return {available:false,median:null,tail:null,fast:null};
-  // El piso evita sobreajustar telÃ©fonos extremadamente silenciosos: una estaciÃ³n puede vibrar
-  // mÃ¡s que otra, pero una meseta claramente por encima de estos lÃ­mites no debe convertirse en reposo.
+  // El piso evita sobreajustar teléfonos extremadamente silenciosos: una estación puede vibrar
+  // más que otra, pero una meseta claramente por encima de estos límites no debe convertirse en reposo.
   return {
     available:true,
     median:Math.max(.09,trustedG*2.25+.020),
@@ -2798,7 +2798,7 @@ function gravityCommitTrustedRest(plateau){
   if(!imuOnlyTrip||!plateau)return;
   const w=.30;
   imuOnlyTrip.trustedRestG=Number.isFinite(imuOnlyTrip.trustedRestG)?(1-w)*imuOnlyTrip.trustedRestG+w*plateau.g:plateau.g;
-  // V7.20: nunca guardamos como verdad un nivel nativo sin corregir. Si el telÃ©fono ya fue
+  // V7.20: nunca guardamos como verdad un nivel nativo sin corregir. Si el teléfono ya fue
   // calibrado usamos el ruido residual corregido; si no, simplemente no dejamos que ese canal vete nada.
   const dev=nativeDeviceProfileNow(),n=dev.calibrated&&Number.isFinite(dev.noiseMedian)?dev.noiseMedian:null;
   if(Number.isFinite(n))imuOnlyTrip.trustedRestN=Number.isFinite(imuOnlyTrip.trustedRestN)?(1-w)*imuOnlyTrip.trustedRestN+w*n:n;
@@ -2806,9 +2806,9 @@ function gravityCommitTrustedRest(plateau){
 
 function physThresholds(){
   const p=physRestProfileNow();
-  // Umbral de salida sensible: se adapta al telÃ©fono/tren, pero conserva una separaciÃ³n
-  // real respecto del reposo. En los registros reales suele quedar cerca de 0.08â€“0.10,
-  // sin fijarlo de forma rÃ­gida para todos los dispositivos.
+  // Umbral de salida sensible: se adapta al teléfono/tren, pero conserva una separación
+  // real respecto del reposo. En los registros reales suele quedar cerca de 0.08–0.10,
+  // sin fijarlo de forma rígida para todos los dispositivos.
   const stop=p.median+Math.max(.008,1.25*p.mad,.12*p.median);
   const moveA=p.p75+Math.max(.010,1.7*p.mad,.14*p.p75);
   const moveB=p.median+Math.max(.018,2.2*p.mad,.24*p.median);
@@ -2830,7 +2830,7 @@ function physMovingReference(){
 function physStopThreshold(){
   const th=physThresholds(),motionRef=physMovingReference();
   if(!Number.isFinite(motionRef))return th.stop;
-  // Si la marcha vibra mucho, permitimos una estaciÃ³n mÃ¡s ruidosa; si la marcha es suave,
+  // Si la marcha vibra mucho, permitimos una estación más ruidosa; si la marcha es suave,
   // el umbral nunca sube artificialmente.
   return Math.max(th.stop,motionRef*.55);
 }
@@ -2843,21 +2843,21 @@ function physDepartureReady(now,fastScore,slowScore){
   const vp=vehicleDetectorParams();
   const locating=imuOnlyTrip?.state==='LOCATING';
   const locatingAge=locating?now-(imuOnlyTrip?.armedAt||now):Infinity;
-  // V7.24: la ventana inicial sÃ­ es un periodo de estabilizaciÃ³n real. Durante ella no abrimos
+  // V7.24: la ventana inicial sí es un periodo de estabilización real. Durante ella no abrimos
   // candidatas de movimiento con el transitorio de encendido del sensor.
   if(locating&&locatingAge<vp.initialIgnoreMs){
     physDepartSince=null;physDepartBreakSince=null;
     return {ready:false,at:null,threshold:null,sensitive:null,source:'startup-settle'};
   }
   const startup=locating&&locatingAge>=vp.initialIgnoreMs;
-  // En el primer arranque miramos un percentil mÃ¡s alto para no perder una salida inmediata
-  // por haber empezado a aprender "reposo" cuando el tren ya comenzÃ³ a moverse.
+  // En el primer arranque miramos un percentil más alto para no perder una salida inmediata
+  // por haber empezado a aprender "reposo" cuando el tren ya comenzó a moverse.
   const gLevel=gravityFilteredLevel(GRAV_DEPART_LEVEL_MS,startup ? .70 : .50),v=gravityVectorStats(GRAV_DEPART_VECTOR_MS);
   if(Number.isFinite(gLevel)&&v.available){
     const rp=gravityRestProfileNow(),restG=Math.max(.025,rp.gBase||rp.gMedian||.07),restN=Math.max(.025,rp.nBase||rp.nMedian||.06);
     const threshold=Math.max(restG*vp.departRatio,restG+vp.departAbsInc,vp.departFloor);
     const coherenceMin=gravityLongAxis?vp.cohAxis:vp.cohFirst;
-    // El signo puede invertirse por el rebote del pasa-altos: exigimos alineaciÃ³n con el eje, no un signo concreto.
+    // El signo puede invertirse por el rebote del pasa-altos: exigimos alineación con el eje, no un signo concreto.
     const axisOK=!gravityLongAxis||Number.isFinite(v.alignment)&&Math.abs(v.alignment)>=vp.alignMin;
     const nativeThreshold=Math.max(restN*vp.nativeRatio,restN+vp.nativeAbsInc);
     const nativeSupport=nativeAuxReliable()&&slowScore>=nativeThreshold;
@@ -2910,14 +2910,14 @@ function physUpdateStationProfile(score){
 }
 function syncTripLocationFromGps(gps,stationCtx,now=Date.now()){
   if(!imuOnlyTrip||!gps?.valid||!Number.isInteger(gps.segmentIndex)||!Array.isArray(imuOnlyTrip.route)||imuOnlyTrip.route.length<2)return false;
-  // gpsSpatialEvidence/gpsRouteMatch ya entrega el Ã­ndice relativo a la ruta actual (tambiÃ©n si estÃ¡ invertida hacia Puerto).
+  // gpsSpatialEvidence/gpsRouteMatch ya entrega el índice relativo a la ruta actual (también si está invertida hacia Puerto).
   const idx=clamp(gps.segmentIndex,0,imuOnlyTrip.route.length-2);
   const wasPending=!!imuOnlyTrip.locationPending,oldPos=Number.isInteger(imuOnlyTrip.pos)?imuOnlyTrip.pos:null,state=imuOnlyTrip.state;
   imuOnlyTrip.locationPending=false;imuOnlyTrip.gpsSpatialSegment=idx;imuOnlyTrip.gpsLastValidAt=now;
 
   // V7.20: mientras CIRCULA, el GPS solo mueve el cursor espacial. No avanza `pos`,
-  // porque `pos` representa la Ãºltima estaciÃ³n fÃ­sicamente confirmada por IMU.
-  // Solo inicializamos `pos` cuando todavÃ­a no tenÃ­amos ubicaciÃ³n.
+  // porque `pos` representa la última estación físicamente confirmada por IMU.
+  // Solo inicializamos `pos` cuando todavía no teníamos ubicación.
   if(state==='LOCATING'||wasPending||oldPos===null)imuOnlyTrip.pos=idx;
 
   if(state==='STATION'&&stationCtx&&imuOnlyTrip.route.includes(stationCtx.name)){
@@ -2926,8 +2926,8 @@ function syncTripLocationFromGps(gps,stationCtx,now=Date.now()){
   }
 
   if(wasPending||oldPos===null||(state==='STATION'&&Number.isInteger(oldPos)&&Math.abs(oldPos-imuOnlyTrip.pos)>1)){
-    const label=state==='STATION'?(imuOnlyTrip.currentStationLabel||imuOnlyTrip.route[imuOnlyTrip.pos]):`${imuOnlyTrip.route[imuOnlyTrip.gpsSpatialSegment]} â†’ ${imuOnlyTrip.route[Math.min(imuOnlyTrip.gpsSpatialSegment+1,imuOnlyTrip.route.length-1)]}`;
-    showImuCalibrationStatus(`GPS recuperado Â· ubicaciÃ³n resincronizada: ${label}. El estado fÃ­sico siguiÃ³ siendo determinado por IMU.`,'ok',5000);
+    const label=state==='STATION'?(imuOnlyTrip.currentStationLabel||imuOnlyTrip.route[imuOnlyTrip.pos]):`${imuOnlyTrip.route[imuOnlyTrip.gpsSpatialSegment]} → ${imuOnlyTrip.route[Math.min(imuOnlyTrip.gpsSpatialSegment+1,imuOnlyTrip.route.length-1)]}`;
+    showImuCalibrationStatus(`GPS recuperado · ubicación resincronizada: ${label}. El estado físico siguió siendo determinado por IMU.`,'ok',5000);
   }
   return true;
 }
@@ -2938,8 +2938,8 @@ function physStationNameFromGps(gps,stationCtx,expectedNext){
     const route=imuOnlyTrip.route,acc=Number.isFinite(gps.accuracy)?gps.accuracy:45;
     const radius=clamp(220+acc*2.0,240,430);
     let best=null;
-    // El GPS puede resincronizar varias estaciones hacia adelante si una detecciÃ³n previa se perdiÃ³.
-    // Nunca crea la detenciÃ³n: solo nombra la parada fÃ­sica que el IMU ya confirmÃ³.
+    // El GPS puede resincronizar varias estaciones hacia adelante si una detección previa se perdió.
+    // Nunca crea la detención: solo nombra la parada física que el IMU ya confirmó.
     for(let i=Math.max(0,expectedNext);i<route.length;i++){
       const p=gpsStationPoint(route[i]);if(!p)continue;
       const d=gpsHaversineMeters({lat:gpsLast.lat,lon:gpsLast.lon},p);
@@ -2990,54 +2990,54 @@ function imuOnlyTick(){
   renderImuStopTable(now);
 
   if(state==='STATION'){
-    imuStateOnly.textContent='DETENCIÃ“N EN ESTACIÃ“N';
+    imuStateOnly.textContent='DETENCIÓN EN ESTACIÓN';
     imuTimerLabelOnly.textContent='TIEMPO DETENIDO REAL';
-    imuExtraLabel.textContent='CONSENTIMIENTO (âˆ’12 s)';
-    imuExtra.textContent=mainElapsed<12000?'â€”':fmtTenths(Math.max(0,mainElapsed-12000));
+    imuExtraLabel.textContent='CONSENTIMIENTO (−12 s)';
+    imuExtra.textContent=mainElapsed<12000?'—':fmtTenths(Math.max(0,mainElapsed-12000));
   }else if(state==='WAITING'){
-    imuStateOnly.textContent=`SERVICIO ${imuOnlyTrip.serviceNumber} Â· ESPERANDO SALIDA`;
+    imuStateOnly.textContent=`SERVICIO ${imuOnlyTrip.serviceNumber} · ESPERANDO SALIDA`;
     imuTimerLabelOnly.textContent='ESPERANDO SALIDA';
     imuExtraLabel.textContent='SALIDA PROG.';
     const delta=now-imuOnlyTrip.scheduledAt;
-    imuExtra.textContent=(delta>=0?'+':'âˆ’')+fmtDuration(Math.abs(delta));
+    imuExtra.textContent=(delta>=0?'+':'−')+fmtDuration(Math.abs(delta));
   }else if(state==='LOCATING'){
-    imuStateOnly.textContent=`SERVICIO ${imuOnlyTrip.serviceNumber} Â· ${imuOnlyTrip.vehicleProfile} Â· ESPERANDO MOVIMIENTO`;
-    imuTimerLabelOnly.textContent='IMU ACTIVO Â· GPS SOLO UBICACIÃ“N';
+    imuStateOnly.textContent=`SERVICIO ${imuOnlyTrip.serviceNumber} · ${imuOnlyTrip.vehicleProfile} · ESPERANDO MOVIMIENTO`;
+    imuTimerLabelOnly.textContent='IMU ACTIVO · GPS SOLO UBICACIÓN';
     imuExtraLabel.textContent='DESTINO';imuExtra.textContent=imuOnlyTrip.finalStation;
     const gg=gpsGlobalMatch(now),gctx=gpsStationContext(gg);
     if(gg?.valid&&Number.isFinite(gg.segmentIndex)){
       const a=STATIONS_PUERTO_LIMACHE[gg.segmentIndex],b=STATIONS_PUERTO_LIMACHE[gg.segmentIndex+1];
-      imuRouteOnly.textContent=gctx?`${gctx.name} Â· esperando movimiento`:`${a} â†” ${b} Â· ${imuOnlyTrip.direction==='puerto'?'hacia Puerto':'hacia Limache'}`;
-    }else imuRouteOnly.textContent=`Destino: ${imuOnlyTrip.finalStation} Â· perfil ${imuOnlyTrip.vehicleProfile}`;
+      imuRouteOnly.textContent=gctx?`${gctx.name} · esperando movimiento`:`${a} ↔ ${b} · ${imuOnlyTrip.direction==='puerto'?'hacia Puerto':'hacia Limache'}`;
+    }else imuRouteOnly.textContent=`Destino: ${imuOnlyTrip.finalStation} · perfil ${imuOnlyTrip.vehicleProfile}`;
   }else if(state==='MOVING'){
     imuStateOnly.textContent='CIRCULANDO';
     imuTimerLabelOnly.textContent='TIEMPO DE TRAYECTO';
     if(gps.valid&&Number.isFinite(gps.segmentIndex)){
       const gi=clamp(gps.segmentIndex,0,imuOnlyTrip.route.length-2);
       imuOnlyTrip.gpsSpatialSegment=gi;
-      imuRouteOnly.textContent=`${imuOnlyTrip.route[gi]} â†’ ${imuOnlyTrip.route[gi+1]}`;
+      imuRouteOnly.textContent=`${imuOnlyTrip.route[gi]} → ${imuOnlyTrip.route[gi+1]}`;
     }
     imuExtraLabel.textContent=gps.valid?'REFERENCIA GPS':'RESPALDO IMU';
-    imuExtra.textContent=stationCtx?`${stationCtx.name} Â· ${Math.round(stationCtx.distance)} m`:gps.valid?(gps.nearestStation?.name||'GPS activo'):'Sin GPS';
+    imuExtra.textContent=stationCtx?`${stationCtx.name} · ${Math.round(stationCtx.distance)} m`:gps.valid?(gps.nearestStation?.name||'GPS activo'):'Sin GPS';
   }
 
   const th=physThresholds(),stopTh=physStopThreshold(),gRest=gravityRestProfileNow(),gMoveRef=gravityMovingReference();
   const gText=Number.isFinite(gravityMeasuredLevel)?gravityMeasuredLevel.toFixed(3):'NAT';
-  const dev=nativeDeviceProfileNow(),devText=dev.calibrated?(dev.reliable?' Â· sensor adaptado':' Â· G principal'):'';
-  imuSignalOnly.textContent=`${imuOnlyTrip.vehicleProfile||'--'} Â· IMU ${slowScore.toFixed(3)} Â· G ${gText}${gravityVector.available?` Â· coh ${gravityVector.coherence.toFixed(2)}`:''}${devText}${gps.valid?' Â· GPS ubicaciÃ³n':''}`;
+  const dev=nativeDeviceProfileNow(),devText=dev.calibrated?(dev.reliable?' · sensor adaptado':' · G principal'):'';
+  imuSignalOnly.textContent=`${imuOnlyTrip.vehicleProfile||'--'} · IMU ${slowScore.toFixed(3)} · G ${gText}${gravityVector.available?` · coh ${gravityVector.coherence.toFixed(2)}`:''}${devText}${gps.valid?' · GPS ubicación':''}`;
 
-  // Guardamos diagnÃ³sticos DESPUÃ‰S de calcular las referencias que usa realmente el detector.
+  // Guardamos diagnósticos DESPUÉS de calcular las referencias que usa realmente el detector.
   gravityLastStopContext=state==='MOVING'?gravityStopContext(gps,now):null;
   validationCaptureSample(now,fastScore,slowScore,gps,stationCtx);
 
-  // 1) INICIO: el destino ya define direcciÃ³n y perfil MC/TCP.
-  // El IMU puede comenzar a seguir el estado fÃ­sico aun sin GPS (por ejemplo dentro de tÃºnel).
+  // 1) INICIO: el destino ya define dirección y perfil MC/TCP.
+  // El IMU puede comenzar a seguir el estado físico aun sin GPS (por ejemplo dentro de túnel).
   if(state==='LOCATING'){
     const ctx=stationCtx;
     if(gps?.valid&&ctx)imuOnlyTrip.locatedStation=ctx.name;
 
     // Primero buscamos salida. Si aparece una candidata, congelamos el aprendizaje de reposo
-    // para no convertir los primeros segundos de movimiento en la nueva "lÃ­nea base".
+    // para no convertir los primeros segundos de movimiento en la nueva "línea base".
     const dep=physDepartureReady(now,fastScore,slowScore);
     if(!dep.ready){
       if(dep.source!=='startup-settle'&&Number.isFinite(gravityLevel)&&physDepartSince===null){
@@ -3049,7 +3049,7 @@ function imuOnlyTick(){
     const at=Math.max(imuOnlyTrip.armedAt||0,dep.at||now);
     imuOnlyTrip.actualStartAt=at;imuOnlyTrip.segmentStartAt=at;imuOnlyTrip.partialFirstSegment=true;imuOnlyTrip.startedInMotion=true;
 
-    // Si ya existe una posiciÃ³n GPS, solo la usamos para ubicar el tramo. Si no existe, seguimos en modo provisional IMU.
+    // Si ya existe una posición GPS, solo la usamos para ubicar el tramo. Si no existe, seguimos en modo provisional IMU.
     if(gps?.valid&&Number.isInteger(gps.segmentIndex)){
       syncTripLocationFromGps(gps,ctx,now);
       imuOnlyTrip.partialFirstSegment=true;
@@ -3057,10 +3057,10 @@ function imuOnlyTick(){
       imuOnlyTrip.locationPending=true;
     }
     imuLearnLongAxis(1000);gravityCommitDepartureAxis();
-    addImuEvent('INICIO_PARCIAL',imuOnlyTrip.locationPending?'Inicio Â· ubicaciÃ³n pendiente':'Inicio de registro',imuOnlyTrip.scheduledAt,at,{delayMs:at-imuOnlyTrip.scheduledAt,source:`IMU ${imuOnlyTrip.vehicleProfile} Â· direcciÃ³n inferida por destino`,partial:true});
+    addImuEvent('INICIO_PARCIAL',imuOnlyTrip.locationPending?'Inicio · ubicación pendiente':'Inicio de registro',imuOnlyTrip.scheduledAt,at,{delayMs:at-imuOnlyTrip.scheduledAt,source:`IMU ${imuOnlyTrip.vehicleProfile} · dirección inferida por destino`,partial:true});
     physResetCandidates();imuScoreHistory=[];physMoveHistory=[];gravityMoveHistory=[];gravityMotionTrace=[];imuStationWindowSamples=[];gravityResetRest();
     imuSetEvent('MOVING','TRAYECTO',at);
-    showImuCalibrationStatus(imuOnlyTrip.locationPending?`IMU activo con perfil ${imuOnlyTrip.vehicleProfile} Â· sin GPS. La ubicaciÃ³n se resincronizarÃ¡ cuando vuelva la seÃ±al.`:`Perfil ${imuOnlyTrip.vehicleProfile} Â· ubicaciÃ³n GPS disponible. El estado fÃ­sico lo decide el IMU.`,'ok',6500);
+    showImuCalibrationStatus(imuOnlyTrip.locationPending?`IMU activo con perfil ${imuOnlyTrip.vehicleProfile} · sin GPS. La ubicación se resincronizará cuando vuelva la señal.`:`Perfil ${imuOnlyTrip.vehicleProfile} · ubicación GPS disponible. El estado físico lo decide el IMU.`,'ok',6500);
     return;
   }
 
@@ -3071,11 +3071,11 @@ function imuOnlyTick(){
     const dep=physDepartureReady(now,fastScore,slowScore);
     if(!dep.ready)return;
 
-    if(imuCalStart!==null)imuCancelCalibration('Salida fÃ­sica detectada; se conserva la referencia aprendida.');
+    if(imuCalStart!==null)imuCancelCalibration('Salida física detectada; se conserva la referencia aprendida.');
     gravityCommitPreDepartureRest();
     const at=Math.max(imuOnlyTrip.armedAt||0,dep.at||now);
     imuLearnLongAxis(1000);gravityCommitDepartureAxis();
-    addImuEvent('SALIDA','Salida',imuOnlyTrip.scheduledAt,at,{delayMs:at-imuOnlyTrip.scheduledAt,source:dep.source||'IMU hÃ­brido'});
+    addImuEvent('SALIDA','Salida',imuOnlyTrip.scheduledAt,at,{delayMs:at-imuOnlyTrip.scheduledAt,source:dep.source||'IMU híbrido'});
     imuOnlyTrip.actualStartAt=at;imuOnlyTrip.segmentStartAt=at;
     physResetCandidates();imuScoreHistory=[];physMoveHistory=[];gravityMoveHistory=[];gravityMotionTrace=[];imuStationWindowSamples=[];gravityResetRest();
     const origin=imuOnlyTrip.route[imuOnlyTrip.pos],next=imuOnlyTrip.route[imuOnlyTrip.pos+1];
@@ -3083,9 +3083,9 @@ function imuOnlyTick(){
     return;
   }
 
-  // 3) CIRCULANDO: GPS es Ãºnicamente contexto espacial.
-  // V7.20 no transforma la PRIMERA caÃ­da de vibraciÃ³n en hora de llegada. Primero exige
-  // una meseta final de reposo durante 12 s y, solo despuÃ©s, reconstruye retrospectivamente
+  // 3) CIRCULANDO: GPS es únicamente contexto espacial.
+  // V7.20 no transforma la PRIMERA caída de vibración en hora de llegada. Primero exige
+  // una meseta final de reposo durante 12 s y, solo después, reconstruye retrospectivamente
   // el borde de esa meseta. Las aproximaciones suaves rechazadas pasan a ser referencia de MOVIMIENTO.
   if(state==='MOVING'){
     gravityPushMotionTrace(now,gravityLevel,slowScore,gravityFastLevel,gravityVector.coherence);
@@ -3107,7 +3107,7 @@ function imuOnlyTick(){
     if(ref&&Number.isFinite(gravityLevel)){
       const vp=vehicleDetectorParams(),gRatio=gravityLevel/Math.max(.025,ref.g),nRatio=Number.isFinite(ref.n)?slowScore/Math.max(.025,ref.n):null;
       const nativeSupport=nativeAuxReliable()&&Number.isFinite(nRatio)&&nRatio<vp.stopOnsetN;
-      // V7.20: la caÃ­da del canal de gravedad abre la candidata. El nativo solo puede reforzarla.
+      // V7.20: la caída del canal de gravedad abre la candidata. El nativo solo puede reforzarla.
       const onset=gRatio<vp.stopOnsetG||(nativeSupport&&gRatio<1.02);
 
       if(physStopSince===null&&onset){
@@ -3120,8 +3120,8 @@ function imuOnlyTick(){
         if(gravityStopSamples.length>420)gravityStopSamples.shift();
 
         const frozen=gravityStopFrozenRef||ref;
-        // Un rebote claro en cualquiera de los dos canales invalida la hipÃ³tesis de reposo.
-        // La V7.18 exigÃ­a que AMBOS volvieran casi al nivel de marcha y conservaba candidatas de frenado demasiado tiempo.
+        // Un rebote claro en cualquiera de los dos canales invalida la hipótesis de reposo.
+        // La V7.18 exigía que AMBOS volvieran casi al nivel de marcha y conservaba candidatas de frenado demasiado tiempo.
         const movingAgain=gravityLevel>frozen.g*.96||(nativeAuxReliable()&&Number.isFinite(frozen.n)&&slowScore>frozen.n*.98&&gravityLevel>frozen.g*.82);
         if(movingAgain){
           if(physStopBreakSince===null)physStopBreakSince=now;
@@ -3139,15 +3139,15 @@ function imuOnlyTick(){
               Number.isFinite(trustedG)?trustedG*2.15+.025:0,
               relativeBase
             ));
-            // Confirmamos la MESETA FINAL, no el promedio de toda la frenada. AsÃ­ el patrÃ³n de conducciÃ³n
-            // puede cambiar sin afectar la decisiÃ³n: lo Ãºnico obligatorio es acabar en reposo estable.
+            // Confirmamos la MESETA FINAL, no el promedio de toda la frenada. Así el patrón de conducción
+            // puede cambiar sin afectar la decisión: lo único obligatorio es acabar en reposo estable.
             const finalMedianOK=finalPlateau.g<=adaptiveGMax&&finalPlateau.g<=frozen.g*.72;
             const finalTailOK=finalPlateau.gP75<=Math.max(adaptiveGMax*1.30,frozen.g*.82);
             const finalFastOK=finalPlateau.fP75<=Math.max(adaptiveGMax*1.55,frozen.g*.88);
             const finalStableOK=finalPlateau.gMad<=Math.max(.060,finalPlateau.g*.85);
 
-            // V7.24: en algunos telÃ©fonos una seÃ±al casi nula queda matemÃ¡ticamente muy "coherente".
-            // Si la energÃ­a real es Ã­nfima y estable, esa coherencia no puede vetar una detenciÃ³n.
+            // V7.24: en algunos teléfonos una señal casi nula queda matemáticamente muy "coherente".
+            // Si la energía real es ínfima y estable, esa coherencia no puede vetar una detención.
             const ultraQuietStable=
               gravityChannelAvailable &&
               finalPlateau.g<=.040 &&
@@ -3159,9 +3159,9 @@ function imuOnlyTick(){
               !Number.isFinite(finalPlateau.cP75) ||
               finalPlateau.cP75<=.52;
 
-            // Una vez que conocemos el reposo real del telÃ©fono/tren, lo usamos como ancla adicional.
-            // Conservamos un piso suficientemente amplio para permitir estaciones mÃ¡s ruidosas sin
-            // convertir una circulaciÃ³n suave claramente energÃ©tica en "detenido".
+            // Una vez que conocemos el reposo real del teléfono/tren, lo usamos como ancla adicional.
+            // Conservamos un piso suficientemente amplio para permitir estaciones más ruidosas sin
+            // convertir una circulación suave claramente energética en "detenido".
             const learned=gravityLearnedRestLimits(trustedG);
             const learnedRestOK=
               !learned.available ||
@@ -3186,22 +3186,22 @@ function imuOnlyTick(){
               physStopQualifiedAt=now;
             }
 
-            // Si al reconstruir descubrimos que el borde final de reposo fue posterior a la primera caÃ­da,
-            // exigimos 12 s completos desde ESE borde. AsÃ­ una frenada larga no puede adelantar la estaciÃ³n.
+            // Si al reconstruir descubrimos que el borde final de reposo fue posterior a la primera caída,
+            // exigimos 12 s completos desde ESE borde. Así una frenada larga no puede adelantar la estación.
             const arrival=Number.isFinite(physStopInferredArrival)?physStopInferredArrival:physStopSince;
             if(now-arrival<PHYS_STOP_MIN_MS)return;
 
             const expectedNext=Math.min((Number.isInteger(imuOnlyTrip.pos)?imuOnlyTrip.pos:0)+1,imuOnlyTrip.route.length-1);
             const haveSpatial=!!gps.valid&&!imuOnlyTrip.locationPending;
             const idx=haveSpatial?physStationNameFromGps(gps,stationCtx,expectedNext):null;
-            const origin=imuOnlyTrip.locationPending?'UbicaciÃ³n pendiente':imuOnlyTrip.route[imuOnlyTrip.pos];
-            const dest=idx===null?'EstaciÃ³n sin GPS':imuOnlyTrip.route[idx];
+            const origin=imuOnlyTrip.locationPending?'Ubicación pendiente':imuOnlyTrip.route[imuOnlyTrip.pos];
+            const dest=idx===null?'Estación sin GPS':imuOnlyTrip.route[idx];
             const skipped=idx!==null&&idx>expectedNext;
 
             if(imuOnlyTrip.segmentStartAt){
               const firstPartial=!!imuOnlyTrip.partialFirstSegment||imuOnlyTrip.locationPending;
-              addImuEvent((firstPartial||skipped)?'TRAMO_PARCIAL':'TRAMO',`${origin} â†’ ${dest}`,imuOnlyTrip.segmentStartAt,arrival,{
-                source:`IMU ${imuOnlyTrip.vehicleProfile} Â· reposo final confirmado + reconstrucciÃ³n retrospectiva`,partial:firstPartial||skipped,resynced:skipped,locationPending:imuOnlyTrip.locationPending
+              addImuEvent((firstPartial||skipped)?'TRAMO_PARCIAL':'TRAMO',`${origin} → ${dest}`,imuOnlyTrip.segmentStartAt,arrival,{
+                source:`IMU ${imuOnlyTrip.vehicleProfile} · reposo final confirmado + reconstrucción retrospectiva`,partial:firstPartial||skipped,resynced:skipped,locationPending:imuOnlyTrip.locationPending
               });
               imuOnlyTrip.partialFirstSegment=false;
             }
@@ -3222,8 +3222,8 @@ function imuOnlyTick(){
               clearVoiceTimers(false);scheduleArrivalVoice(dest,arrival);finishImuTrip(true,arrival,true);return;
             }
             if(idx!==null)scheduleArrivalVoice(dest,arrival);
-            imuSetEvent('STATION','DETENCIÃ“N EN ESTACIÃ“N',arrival);
-            if(skipped)showImuCalibrationStatus(`GPS resincronizÃ³ la ubicaciÃ³n en ${dest}; los tiempos de estaciones omitidas no se inventan.`,'info',6500);
+            imuSetEvent('STATION','DETENCIÓN EN ESTACIÓN',arrival);
+            if(skipped)showImuCalibrationStatus(`GPS resincronizó la ubicación en ${dest}; los tiempos de estaciones omitidas no se inventan.`,'info',6500);
             return;
           }
 
@@ -3241,8 +3241,8 @@ function imuOnlyTick(){
     return;
   }
 
-  // 4) ESTACIÃ“N: 12 s ya fueron confirmados. La salida exige energÃ­a + coherencia vectorial,
-  // y, desde la segunda salida, direcciÃ³n compatible con el eje aprendido del tren.
+  // 4) ESTACIÓN: 12 s ya fueron confirmados. La salida exige energía + coherencia vectorial,
+  // y, desde la segunda salida, dirección compatible con el eje aprendido del tren.
   if(state==='STATION'){
     const arrival=imuOnlyTrip.eventStartAt||now,dwell=now-arrival;
     if(Number.isFinite(gravityLevel)&&physDepartSince===null){gravityUpdateRest(gravityLevel,slowScore);nativeMaybeCalibrateAtRest();}
@@ -3254,11 +3254,11 @@ function imuOnlyTick(){
     if(!dep.ready)return;
 
     const at=Math.max(arrival+12000,dep.at||now);
-    const station=imuOnlyTrip.currentStationLabel||imuOnlyTrip.route[imuOnlyTrip.pos]||'EstaciÃ³n sin GPS',realDwell=Math.max(0,at-arrival);
-    if(imuCalMode==='auto'&&imuCalStart!==null)imuCancelCalibration('Salida fÃ­sica confirmada; se conserva la referencia anterior.');
+    const station=imuOnlyTrip.currentStationLabel||imuOnlyTrip.route[imuOnlyTrip.pos]||'Estación sin GPS',realDwell=Math.max(0,at-arrival);
+    if(imuCalMode==='auto'&&imuCalStart!==null)imuCancelCalibration('Salida física confirmada; se conserva la referencia anterior.');
     imuLearnLongAxis(1000);gravityCommitDepartureAxis();
     addImuEvent('ESTACION',station,arrival,at,{
-      consentMs:Math.max(0,realDwell-12000),source:dep.source||'IMU hÃ­brido gravedad+aceleraciÃ³n'
+      consentMs:Math.max(0,realDwell-12000),source:dep.source||'IMU híbrido gravedad+aceleración'
     });
 
     physResetCandidates();physMoveHistory=[];gravityMoveHistory=[];gravityMotionTrace=[];imuScoreHistory=[];imuStationWindowSamples=[];gravityResetRest();
@@ -3271,22 +3271,22 @@ function imuOnlyTick(){
 
   if(state==='STOPPED'){
     if(now-(imuOnlyTrip.eventStartAt||now)<12000)return;
-    imuSetEvent('STATION','DETENCIÃ“N EN ESTACIÃ“N',imuOnlyTrip.eventStartAt||now);
+    imuSetEvent('STATION','DETENCIÓN EN ESTACIÓN',imuOnlyTrip.eventStartAt||now);
   }
 }
 
 async function armImuTrip(){
-  if(!imuSession){imuCalText.textContent='Primero inicia la sesiÃ³n de servicios.';return;}
+  if(!imuSession){imuCalText.textContent='Primero inicia la sesión de servicios.';return;}
   const service=(imuServiceNumber.value||'').trim();
-  if(!/^\d{3}$/.test(service)){imuCalText.textContent='Ingresa un nÃºmero de servicio de 3 dÃ­gitos, por ejemplo 605.';return;}
-  if(imuSession.services.some(t=>t.serviceNumber===service)){imuCalText.textContent='Ese nÃºmero de servicio ya fue registrado en esta sesiÃ³n.';return;}
+  if(!/^\d{3}$/.test(service)){imuCalText.textContent='Ingresa un número de servicio de 3 dígitos, por ejemplo 605.';return;}
+  if(imuSession.services.some(t=>t.serviceNumber===service)){imuCalText.textContent='Ese número de servicio ya fue registrado en esta sesión.';return;}
   const destination=selectedImuDestination();
   if(!destination||!STATIONS_PUERTO_LIMACHE.includes(destination)){imuCalText.textContent='Selecciona el destino.';return;}
-  const ok=await enableIMU();if(!ok){imuCalText.textContent='No se pudo acceder al IMU del telÃ©fono.';return;}
-  const gpsStarted=startGpsSupport(); // GPS es opcional para el estado fÃ­sico; si falla, IMU continÃºa.
+  const ok=await enableIMU();if(!ok){imuCalText.textContent='No se pudo acceder al IMU del teléfono.';return;}
+  const gpsStarted=startGpsSupport(); // GPS es opcional para el estado físico; si falla, IMU continúa.
   clearVoiceTimers(false);if('speechSynthesis'in window)window.speechSynthesis.resume();const now=Date.now();
   const vehicleProfile=vehicleProfileFromDestination(destination),inferredDirection=inferredDirectionFromDestination(destination),inferredVia=inferredViaFromDestination(destination),provisionalRoute=inferredRouteFromDestination(destination);
-  imuOnlyTrip={id:'IMU'+now,serviceNumber:service,direction:inferredDirection,via:inferredVia,vehicleProfile,armedAt:now,scheduledAt:imuScheduledTimestamp(),actualStartAt:null,endAt:null,route:provisionalRoute,pos:0,startStation:null,finalStation:destination,state:'LOCATING',eventLabel:'ESPERANDO MOVIMIENTO Â· IMU',eventStartAt:now,segmentStartAt:null,events:[],gpsSupport:gpsStarted,gpsOriginLocked:false,gpsLastValidAt:null,locationPending:true,currentStationLabel:null,trustedRestG:null,trustedRestN:null,initialRestCommitted:false,doubleCutBellotoArmed:false,doubleCutBellotoDone:false};
+  imuOnlyTrip={id:'IMU'+now,serviceNumber:service,direction:inferredDirection,via:inferredVia,vehicleProfile,armedAt:now,scheduledAt:imuScheduledTimestamp(),actualStartAt:null,endAt:null,route:provisionalRoute,pos:0,startStation:null,finalStation:destination,state:'LOCATING',eventLabel:'ESPERANDO MOVIMIENTO · IMU',eventStartAt:now,segmentStartAt:null,events:[],gpsSupport:gpsStarted,gpsOriginLocked:false,gpsLastValidAt:null,locationPending:true,currentStationLabel:null,trustedRestG:null,trustedRestN:null,initialRestCommitted:false,doubleCutBellotoArmed:false,doubleCutBellotoDone:false};
   imuDirection.value=inferredDirection;
   resetNativeDeviceCalibration();
   // Cada viaje parte con buffers/sesgos propios del dispositivo actual; no arrastramos muestras del viaje anterior.
@@ -3295,12 +3295,12 @@ async function armImuTrip(){
   startValidationRun();
   physResetCandidates(); // no heredar candidatos del viaje/prueba anterior.
   gravityResetRest();gravityMoveHistory=[];gravityMotionTrace=[];gravityLongAxis=null;gravityDepartureAxisCandidate=null;gravityStopSamples=[];gravityStopFrozenRef=null;gravityLastStopContext=null;
-  imuOnlyLastCompleted=null;imuMoveCandidate=null;imuStopCandidate=null;imuDepartureHintAt=null;imuArrivalHintAt=null;imuClassifiedStation=false;imuScoreHistory=[];imuAutoCalStationKey=null;imuLongAxis=null;imuDepartureHintAt=null;imuArrivalHintAt=null;imuMotionPhase='REPOSO';imuLastBrakeAt=0;imuCruiseScore=null;imuStationWindowBaseline=null;imuStationWindowSamples=[];imuWindowMoveBreakAt=null;gpsSyncCandidate=null;gpsStationLock=null;gpsDepartureCandidate=null;gpsWaitingSegmentCandidate=null;imuSetupEl.style.display='none';imuLiveEl.classList.add('show');imuQuickMsg.textContent='';updateBellotoCutUi();imuNextServiceBtn.style.display='none';imuStateOnly.textContent=`SERVICIO ${service} Â· ${vehicleProfile} Â· ESPERANDO MOVIMIENTO`;imuRouteOnly.textContent=`Destino: ${destination} Â· ${inferredDirection==='puerto'?'hacia Puerto':'desde Puerto'} Â· perfil ${vehicleProfile}`;imuTimerOnly.textContent='00:00.0';imuTimerLabelOnly.textContent='IMU ACTIVO';renderImuEvents();imuRecalBtn.disabled=true;setImuCalibrationMessage(gpsStarted?`Perfil ${vehicleProfile}. Sensor del telÃ©fono se auto-calibrarÃ¡; GPS solo ubicarÃ¡ el recorrido.`:`Perfil ${vehicleProfile}. Sensor auto-adaptativo activo; sin GPS el estado fÃ­sico sigue por IMU.`,'info');
+  imuOnlyLastCompleted=null;imuMoveCandidate=null;imuStopCandidate=null;imuDepartureHintAt=null;imuArrivalHintAt=null;imuClassifiedStation=false;imuScoreHistory=[];imuAutoCalStationKey=null;imuLongAxis=null;imuDepartureHintAt=null;imuArrivalHintAt=null;imuMotionPhase='REPOSO';imuLastBrakeAt=0;imuCruiseScore=null;imuStationWindowBaseline=null;imuStationWindowSamples=[];imuWindowMoveBreakAt=null;gpsSyncCandidate=null;gpsStationLock=null;gpsDepartureCandidate=null;gpsWaitingSegmentCandidate=null;imuSetupEl.style.display='none';imuLiveEl.classList.add('show');imuQuickMsg.textContent='';updateBellotoCutUi();imuNextServiceBtn.style.display='none';imuStateOnly.textContent=`SERVICIO ${service} · ${vehicleProfile} · ESPERANDO MOVIMIENTO`;imuRouteOnly.textContent=`Destino: ${destination} · ${inferredDirection==='puerto'?'hacia Puerto':'desde Puerto'} · perfil ${vehicleProfile}`;imuTimerOnly.textContent='00:00.0';imuTimerLabelOnly.textContent='IMU ACTIVO';renderImuEvents();imuRecalBtn.disabled=true;setImuCalibrationMessage(gpsStarted?`Perfil ${vehicleProfile}. Sensor del teléfono se auto-calibrará; GPS solo ubicará el recorrido.`:`Perfil ${vehicleProfile}. Sensor auto-adaptativo activo; sin GPS el estado físico sigue por IMU.`,'info');
   clearInterval(imuOnlyLoop);imuOnlyLoop=setInterval(imuOnlyTick,100);try{if('wakeLock'in navigator)wakeLock=await navigator.wakeLock.request('screen');}catch(e){}
 }
 function recalibrateImu(){
   if(!imuOnlyTrip){showImuCalibrationStatus('No hay un servicio activo para recalibrar.','bad',7000);return;}
-  if(imuOnlyTrip.state==='MOVING'){setImuCalibrationMessage('RECALIBRACIÃ“N NO INICIADA Â· primero detÃ©n el tren. Se conserva la calibraciÃ³n actual.','bad',8000);return;}
+  if(imuOnlyTrip.state==='MOVING'){setImuCalibrationMessage('RECALIBRACIÓN NO INICIADA · primero detén el tren. Se conserva la calibración actual.','bad',8000);return;}
   imuBeginCalibration('manual');
 }
 function saveImuSession(){
@@ -3308,10 +3308,10 @@ function saveImuSession(){
 }
 function startImuSession(){
   const email=(imuEmail.value||'').trim(),count=parseInt(imuServiceCount.value,10);
-  if(!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)){imuSessionMsg.textContent='Ingresa un correo vÃ¡lido para recibir el informe.';return;}
-  if(!Number.isInteger(count)||count<1||count>20){imuSessionMsg.textContent='La sesiÃ³n debe tener entre 1 y 20 servicios.';return;}
+  if(!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)){imuSessionMsg.textContent='Ingresa un correo válido para recibir el informe.';return;}
+  if(!Number.isInteger(count)||count<1||count>20){imuSessionMsg.textContent='La sesión debe tener entre 1 y 20 servicios.';return;}
   imuSession={id:'SES'+Date.now(),createdAt:Date.now(),email,plannedCount:count,services:[],sentAt:null};saveImuSession();
-  imuSessionSetup.style.display='none';imuSessionStatus.classList.add('show');imuSetupEl.style.display='block';imuSessionReport.classList.remove('show');imuSessionMsg.textContent='SesiÃ³n iniciada.';renderImuSessionStatus();renderVoiceBar();voiceResetForm();setDefaultSchedule();fillImuDestination();
+  imuSessionSetup.style.display='none';imuSessionStatus.classList.add('show');imuSetupEl.style.display='block';imuSessionReport.classList.remove('show');imuSessionMsg.textContent='Sesión iniciada.';renderImuSessionStatus();renderVoiceBar();voiceResetForm();setDefaultSchedule();fillImuDestination();
 }
 function renderImuSessionStatus(){
   if(!imuSession){imuSessionStatus.classList.remove('show');return;}
@@ -3329,7 +3329,7 @@ function serviceMetrics(t){
   return {totalMs,movingMs,dwellMs,consentMs,avgSegmentMs:mean(tramos.map(e=>e.durationMs)),avgStationDwellMs:mean(stations.map(e=>e.durationMs)),avgStationConsentMs:mean(stations.map(e=>e.consentMs||0)),briefMs:brief.reduce((a,e)=>a+e.durationMs,0),briefCount:brief.length,delayMs:t.actualStartAt&&t.scheduledAt?t.actualStartAt-t.scheduledAt:0,segmentCount:tramos.length,stationCount:stations.length};
 }
 function escHtml(v){return String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));}
-function signedDuration(ms){return (ms>=0?'+':'âˆ’')+fmtDuration(Math.abs(ms));}
+function signedDuration(ms){return (ms>=0?'+':'−')+fmtDuration(Math.abs(ms));}
 function aggregateEvents(type){
   const map=new Map();
   for(const t of imuSession?.services||[])for(const e of t.events||[])if(e.type===type){const k=e.label;if(!map.has(k))map.set(k,[]);map.get(k).push(e.durationMs);}
@@ -3349,43 +3349,43 @@ function buildSessionReport(){
   const fastest=rows.reduce((a,b)=>a.m.totalMs<=b.m.totalMs?a:b),slowest=rows.reduce((a,b)=>a.m.totalMs>=b.m.totalMs?a:b);
   const stats={count:rows.length,avgTotal:mean(totals),medianTotal:median(totals),sdTotal:sd(totals),minTotal:Math.min(...totals),maxTotal:Math.max(...totals),avgDelay:mean(delays),avgMoving:mean(moving),avgDwellTotal:mean(dwell),avgConsentTotal:mean(consent),avgSegment:mean(allSegments),avgStationDwell:mean(allStations.map(e=>e.durationMs)),avgStationConsent:mean(allStations.map(e=>e.consentMs||0)),fastest:fastest.t.serviceNumber,slowest:slowest.t.serviceNumber};
   const avgRows=[
-    ['Tiempo total de viaje',stats.avgTotal],['Tiempo en movimiento por viaje',stats.avgMoving],['Tiempo de viaje entre estaciones',stats.avgSegment],['DetenciÃ³n total en estaciones por viaje',stats.avgDwellTotal],['DetenciÃ³n promedio por estaciÃ³n',stats.avgStationDwell],['Consentimiento total estimado por viaje',stats.avgConsentTotal],['Consentimiento promedio por estaciÃ³n',stats.avgStationConsent]
+    ['Tiempo total de viaje',stats.avgTotal],['Tiempo en movimiento por viaje',stats.avgMoving],['Tiempo de viaje entre estaciones',stats.avgSegment],['Detención total en estaciones por viaje',stats.avgDwellTotal],['Detención promedio por estación',stats.avgStationDwell],['Consentimiento total estimado por viaje',stats.avgConsentTotal],['Consentimiento promedio por estación',stats.avgStationConsent]
   ];
-  let body=`<div style="font-size:17px;font-weight:950;margin:4px 0 8px">VIAJE PROMEDIO</div><table class="reportTable"><thead><tr><th>VARIABLE</th><th>PROMEDIO</th></tr></thead><tbody>${avgRows.map(([k,v])=>`<tr><td><strong>${k}</strong></td><td>${fmtDuration(v)}</td></tr>`).join('')}<tr><td><strong>Desfase promedio de salida</strong></td><td>${signedDuration(stats.avgDelay)}</td></tr><tr><td>Mediana tiempo total</td><td>${fmtDuration(stats.medianTotal)}</td></tr><tr><td>Desv. estÃ¡ndar tiempo total</td><td>${fmtDuration(stats.sdTotal)}</td></tr></tbody></table>`;
+  let body=`<div style="font-size:17px;font-weight:950;margin:4px 0 8px">VIAJE PROMEDIO</div><table class="reportTable"><thead><tr><th>VARIABLE</th><th>PROMEDIO</th></tr></thead><tbody>${avgRows.map(([k,v])=>`<tr><td><strong>${k}</strong></td><td>${fmtDuration(v)}</td></tr>`).join('')}<tr><td><strong>Desfase promedio de salida</strong></td><td>${signedDuration(stats.avgDelay)}</td></tr><tr><td>Mediana tiempo total</td><td>${fmtDuration(stats.medianTotal)}</td></tr><tr><td>Desv. estándar tiempo total</td><td>${fmtDuration(stats.sdTotal)}</td></tr></tbody></table>`;
   const segAgg=aggregateEvents('TRAMO'),stAgg=aggregateStations();
-  if(segAgg.length)body+=`<div style="font-size:17px;font-weight:950;margin:18px 0 4px">PROMEDIO POR TRAMO</div><table class="reportTable"><thead><tr><th>TRAMO</th><th>n</th><th>PROM.</th><th>MÃN.</th><th>MÃX.</th></tr></thead><tbody>${segAgg.map(x=>`<tr><td>${escHtml(x.label)}</td><td>${x.n}</td><td>${fmtDuration(x.avg)}</td><td>${fmtDuration(x.min)}</td><td>${fmtDuration(x.max)}</td></tr>`).join('')}</tbody></table>`;
-  if(stAgg.length)body+=`<div style="font-size:17px;font-weight:950;margin:18px 0 4px">PROMEDIO POR ESTACIÃ“N</div><table class="reportTable"><thead><tr><th>ESTACIÃ“N</th><th>n</th><th>DET.</th><th>CONSENT.</th></tr></thead><tbody>${stAgg.map(x=>`<tr><td>${escHtml(x.label)}</td><td>${x.n}</td><td>${fmtDuration(x.avgDwell)}</td><td>${fmtDuration(x.avgConsent)}</td></tr>`).join('')}</tbody></table>`;
-  body+=`<div style="font-size:17px;font-weight:950;margin:18px 0 4px">DETALLE DE CADA VIAJE</div><table class="reportTable"><thead><tr><th>SERVICIO</th><th>RECORRIDO</th><th>TOTAL</th><th>SALIDA</th><th>DET. EST.</th><th>CONSENT.</th></tr></thead><tbody>${rows.map(({t,m})=>`<tr><td><strong>${escHtml(t.serviceNumber)}</strong></td><td>${escHtml(t.startStation)} â†’ ${escHtml(t.finalStation)}${t.via?` Â· ${t.via==='via1'?'VÃ­a 1':'VÃ­a 2'}`:''}${t.gpsSupport?' Â· GPS ubicaciÃ³n':''}</td><td>${fmtDuration(m.totalMs)}</td><td>${signedDuration(m.delayMs)}</td><td>${fmtDuration(m.dwellMs)}</td><td>${fmtDuration(m.consentMs)}</td></tr>`).join('')}</tbody></table>`;
+  if(segAgg.length)body+=`<div style="font-size:17px;font-weight:950;margin:18px 0 4px">PROMEDIO POR TRAMO</div><table class="reportTable"><thead><tr><th>TRAMO</th><th>n</th><th>PROM.</th><th>MÍN.</th><th>MÁX.</th></tr></thead><tbody>${segAgg.map(x=>`<tr><td>${escHtml(x.label)}</td><td>${x.n}</td><td>${fmtDuration(x.avg)}</td><td>${fmtDuration(x.min)}</td><td>${fmtDuration(x.max)}</td></tr>`).join('')}</tbody></table>`;
+  if(stAgg.length)body+=`<div style="font-size:17px;font-weight:950;margin:18px 0 4px">PROMEDIO POR ESTACIÓN</div><table class="reportTable"><thead><tr><th>ESTACIÓN</th><th>n</th><th>DET.</th><th>CONSENT.</th></tr></thead><tbody>${stAgg.map(x=>`<tr><td>${escHtml(x.label)}</td><td>${x.n}</td><td>${fmtDuration(x.avgDwell)}</td><td>${fmtDuration(x.avgConsent)}</td></tr>`).join('')}</tbody></table>`;
+  body+=`<div style="font-size:17px;font-weight:950;margin:18px 0 4px">DETALLE DE CADA VIAJE</div><table class="reportTable"><thead><tr><th>SERVICIO</th><th>RECORRIDO</th><th>TOTAL</th><th>SALIDA</th><th>DET. EST.</th><th>CONSENT.</th></tr></thead><tbody>${rows.map(({t,m})=>`<tr><td><strong>${escHtml(t.serviceNumber)}</strong></td><td>${escHtml(t.startStation)} → ${escHtml(t.finalStation)}${t.via?` · ${t.via==='via1'?'Vía 1':'Vía 2'}`:''}${t.gpsSupport?' · GPS ubicación':''}</td><td>${fmtDuration(m.totalMs)}</td><td>${signedDuration(m.delayMs)}</td><td>${fmtDuration(m.dwellMs)}</td><td>${fmtDuration(m.consentMs)}</td></tr>`).join('')}</tbody></table>`;
   return {rows,stats,segAgg,stAgg,body};
 }
 function renderSessionReport(){
   const r=buildSessionReport();if(!r)return;
   imuLiveEl.classList.remove('show');imuSetupEl.style.display='none';imuSessionReport.classList.add('show');
-  imuReportSub.textContent=`${r.stats.count} servicios Â· informe para ${imuSession.email}`;imuReportContent.innerHTML=r.body;imuSendState.textContent=imuSession.sentAt?`Informe enviado automÃ¡ticamente a ${imuSession.email}.`:`El informe se enviarÃ¡ automÃ¡ticamente a ${imuSession.email}.`;imuSendState.className=imuSession.sentAt?'sendState ok':'sendState';
+  imuReportSub.textContent=`${r.stats.count} servicios · informe para ${imuSession.email}`;imuReportContent.innerHTML=r.body;imuSendState.textContent=imuSession.sentAt?`Informe enviado automáticamente a ${imuSession.email}.`:`El informe se enviará automáticamente a ${imuSession.email}.`;imuSendState.className=imuSession.sentAt?'sendState ok':'sendState';
   updateValidationReportExport();
 }
 function buildEmailPayload(){
   const r=buildSessionReport();if(!r)return null;const sessionDate=new Date(imuSession.createdAt).toLocaleString('es-CL');
   const tableStyle='border-collapse:collapse;width:100%;font-size:13px',th='padding:7px;border-bottom:2px solid #333;text-align:left',td='padding:7px;border-bottom:1px solid #ddd;vertical-align:top';
-  const avgRows=[['Tiempo total de viaje',r.stats.avgTotal],['Tiempo en movimiento por viaje',r.stats.avgMoving],['Tiempo de viaje entre estaciones',r.stats.avgSegment],['DetenciÃ³n total en estaciones por viaje',r.stats.avgDwellTotal],['DetenciÃ³n promedio por estaciÃ³n',r.stats.avgStationDwell],['Consentimiento total estimado por viaje',r.stats.avgConsentTotal],['Consentimiento promedio por estaciÃ³n',r.stats.avgStationConsent]];
-  const averageTable=`<h2>Viaje promedio</h2><table style="${tableStyle}"><tr><th style="${th}">Variable</th><th style="${th}">Promedio</th></tr>${avgRows.map(([k,v])=>`<tr><td style="${td}">${escHtml(k)}</td><td style="${td}"><b>${fmtDuration(v)}</b></td></tr>`).join('')}<tr><td style="${td}">Desfase promedio de salida</td><td style="${td}"><b>${signedDuration(r.stats.avgDelay)}</b></td></tr><tr><td style="${td}">Mediana tiempo total</td><td style="${td}">${fmtDuration(r.stats.medianTotal)}</td></tr><tr><td style="${td}">Desv. estÃ¡ndar tiempo total</td><td style="${td}">${fmtDuration(r.stats.sdTotal)}</td></tr><tr><td style="${td}">MÃ­nimo / mÃ¡ximo total</td><td style="${td}">${fmtDuration(r.stats.minTotal)} (serv. ${escHtml(r.stats.fastest)}) / ${fmtDuration(r.stats.maxTotal)} (serv. ${escHtml(r.stats.slowest)})</td></tr></table>`;
-  const segTable=r.segAgg.length?`<h2>Promedio de tiempo entre estaciones</h2><table style="${tableStyle}"><tr><th style="${th}">Tramo</th><th style="${th}">n</th><th style="${th}">Promedio</th><th style="${th}">MÃ­n.</th><th style="${th}">MÃ¡x.</th></tr>${r.segAgg.map(x=>`<tr><td style="${td}">${escHtml(x.label)}</td><td style="${td}">${x.n}</td><td style="${td}"><b>${fmtDuration(x.avg)}</b></td><td style="${td}">${fmtDuration(x.min)}</td><td style="${td}">${fmtDuration(x.max)}</td></tr>`).join('')}</table>`:'';
-  const stTable=r.stAgg.length?`<h2>Promedio de detenciÃ³n y consentimiento por estaciÃ³n</h2><table style="${tableStyle}"><tr><th style="${th}">EstaciÃ³n</th><th style="${th}">n</th><th style="${th}">DetenciÃ³n promedio</th><th style="${th}">Consentimiento promedio</th></tr>${r.stAgg.map(x=>`<tr><td style="${td}">${escHtml(x.label)}</td><td style="${td}">${x.n}</td><td style="${td}"><b>${fmtDuration(x.avgDwell)}</b></td><td style="${td}"><b>${fmtDuration(x.avgConsent)}</b></td></tr>`).join('')}</table>`:'';
-  const serviceRows=r.rows.map(({t,m})=>`<tr><td style="${td}"><b>${escHtml(t.serviceNumber)}</b></td><td style="${td}">${escHtml(t.startStation)} â†’ ${escHtml(t.finalStation)}${t.via?` Â· ${t.via==='via1'?'VÃ­a 1':'VÃ­a 2'}`:''}${t.gpsSupport?' Â· GPS ubicaciÃ³n':''}</td><td style="${td}">${fmtDuration(m.totalMs)}</td><td style="${td}">${signedDuration(m.delayMs)}</td><td style="${td}">${fmtDuration(m.dwellMs)}</td><td style="${td}">${fmtDuration(m.consentMs)}</td></tr>`).join('');
+  const avgRows=[['Tiempo total de viaje',r.stats.avgTotal],['Tiempo en movimiento por viaje',r.stats.avgMoving],['Tiempo de viaje entre estaciones',r.stats.avgSegment],['Detención total en estaciones por viaje',r.stats.avgDwellTotal],['Detención promedio por estación',r.stats.avgStationDwell],['Consentimiento total estimado por viaje',r.stats.avgConsentTotal],['Consentimiento promedio por estación',r.stats.avgStationConsent]];
+  const averageTable=`<h2>Viaje promedio</h2><table style="${tableStyle}"><tr><th style="${th}">Variable</th><th style="${th}">Promedio</th></tr>${avgRows.map(([k,v])=>`<tr><td style="${td}">${escHtml(k)}</td><td style="${td}"><b>${fmtDuration(v)}</b></td></tr>`).join('')}<tr><td style="${td}">Desfase promedio de salida</td><td style="${td}"><b>${signedDuration(r.stats.avgDelay)}</b></td></tr><tr><td style="${td}">Mediana tiempo total</td><td style="${td}">${fmtDuration(r.stats.medianTotal)}</td></tr><tr><td style="${td}">Desv. estándar tiempo total</td><td style="${td}">${fmtDuration(r.stats.sdTotal)}</td></tr><tr><td style="${td}">Mínimo / máximo total</td><td style="${td}">${fmtDuration(r.stats.minTotal)} (serv. ${escHtml(r.stats.fastest)}) / ${fmtDuration(r.stats.maxTotal)} (serv. ${escHtml(r.stats.slowest)})</td></tr></table>`;
+  const segTable=r.segAgg.length?`<h2>Promedio de tiempo entre estaciones</h2><table style="${tableStyle}"><tr><th style="${th}">Tramo</th><th style="${th}">n</th><th style="${th}">Promedio</th><th style="${th}">Mín.</th><th style="${th}">Máx.</th></tr>${r.segAgg.map(x=>`<tr><td style="${td}">${escHtml(x.label)}</td><td style="${td}">${x.n}</td><td style="${td}"><b>${fmtDuration(x.avg)}</b></td><td style="${td}">${fmtDuration(x.min)}</td><td style="${td}">${fmtDuration(x.max)}</td></tr>`).join('')}</table>`:'';
+  const stTable=r.stAgg.length?`<h2>Promedio de detención y consentimiento por estación</h2><table style="${tableStyle}"><tr><th style="${th}">Estación</th><th style="${th}">n</th><th style="${th}">Detención promedio</th><th style="${th}">Consentimiento promedio</th></tr>${r.stAgg.map(x=>`<tr><td style="${td}">${escHtml(x.label)}</td><td style="${td}">${x.n}</td><td style="${td}"><b>${fmtDuration(x.avgDwell)}</b></td><td style="${td}"><b>${fmtDuration(x.avgConsent)}</b></td></tr>`).join('')}</table>`:'';
+  const serviceRows=r.rows.map(({t,m})=>`<tr><td style="${td}"><b>${escHtml(t.serviceNumber)}</b></td><td style="${td}">${escHtml(t.startStation)} → ${escHtml(t.finalStation)}${t.via?` · ${t.via==='via1'?'Vía 1':'Vía 2'}`:''}${t.gpsSupport?' · GPS ubicación':''}</td><td style="${td}">${fmtDuration(m.totalMs)}</td><td style="${td}">${signedDuration(m.delayMs)}</td><td style="${td}">${fmtDuration(m.dwellMs)}</td><td style="${td}">${fmtDuration(m.consentMs)}</td></tr>`).join('');
   const serviceSummary=`<h2>Detalle de cada viaje</h2><table style="${tableStyle}"><tr><th style="${th}">Servicio</th><th style="${th}">Recorrido</th><th style="${th}">Total</th><th style="${th}">Salida</th><th style="${th}">Det. estaciones</th><th style="${th}">Consent.</th></tr>${serviceRows}</table>`;
-  const detail=(imuSession.services||[]).map(t=>{const m=serviceMetrics(t),stops=(t.events||[]).filter(e=>e.type==='ESTACION');const stopTable=stops.length?`<h4>Tiempos de detenciÃ³n por estaciÃ³n</h4><table style="${tableStyle}"><tr><th style="${th}">EstaciÃ³n</th><th style="${th}">DetenciÃ³n</th><th style="${th}">Consentimiento</th></tr>${stops.map(e=>`<tr><td style="${td}">${escHtml(e.label)}</td><td style="${td}"><b>${fmtDuration(e.durationMs)}</b></td><td style="${td}">${fmtDuration(e.consentMs||0)}</td></tr>`).join('')}</table>`:'';const ev=(t.events||[]).map(e=>{let extra='';if(e.type==='ESTACION')extra=`<br><span style="color:#666">Consentimiento: ${fmtDuration(e.consentMs||0)}</span>`;if(e.type==='SALIDA'&&Number.isFinite(e.delayMs))extra=`<br><span style="color:#666">${e.delayMs>=0?'Atraso':'Adelanto'}: ${fmtDuration(Math.abs(e.delayMs))}</span>`;return `<tr><td style="${td}">${escHtml(e.type)}</td><td style="${td}">${escHtml(e.label)}</td><td style="${td}">${fmtDuration(e.durationMs)}${extra}</td></tr>`;}).join('');return `<h3>Servicio ${escHtml(t.serviceNumber)} Â· ${escHtml(t.startStation)} â†’ ${escHtml(t.finalStation)}</h3><p><b>Total:</b> ${fmtDuration(m.totalMs)} Â· <b>salida:</b> ${signedDuration(m.delayMs)} Â· <b>detenciÃ³n:</b> ${fmtDuration(m.dwellMs)} Â· <b>consentimiento:</b> ${fmtDuration(m.consentMs)}</p>${stopTable}<h4>Detalle cronolÃ³gico</h4><table style="${tableStyle}"><tr><th style="${th}">Tipo</th><th style="${th}">Evento</th><th style="${th}">DuraciÃ³n</th></tr>${ev}</table>`;}).join('');
-  const html=`<div style="font-family:Arial,sans-serif;color:#111;max-width:920px;margin:auto"><h1>Informe de sesiÃ³n Â· Registro IMU</h1><p>${escHtml(sessionDate)} Â· ${r.stats.count} servicios</p>${averageTable}${segTable}${stTable}${serviceSummary}${detail}<p style="color:#666;font-size:12px;margin-top:24px">Consentimiento estimado = tiempo detenido real âˆ’ 12 s. Los estados fÃ­sicos se infieren con ventanas solapadas de acelerometrÃ­a; GPS se usa solo como referencia de ubicaciÃ³n.</p></div>`;
-  const text=`Informe de sesiÃ³n IMU\nServicios: ${r.stats.count}\n\nVIAJE PROMEDIO\nTiempo total: ${fmtDuration(r.stats.avgTotal)}\nMovimiento: ${fmtDuration(r.stats.avgMoving)}\nEntre estaciones: ${fmtDuration(r.stats.avgSegment)}\nDetenciÃ³n total por viaje: ${fmtDuration(r.stats.avgDwellTotal)}\nDetenciÃ³n promedio por estaciÃ³n: ${fmtDuration(r.stats.avgStationDwell)}\nConsentimiento total por viaje: ${fmtDuration(r.stats.avgConsentTotal)}\nConsentimiento promedio por estaciÃ³n: ${fmtDuration(r.stats.avgStationConsent)}\nDesfase promedio salida: ${signedDuration(r.stats.avgDelay)}\nMediana total: ${fmtDuration(r.stats.medianTotal)}\nDesv. estÃ¡ndar: ${fmtDuration(r.stats.sdTotal)}`;
-  return {email:imuSession.email,subject:`Informe sesiÃ³n IMU Â· ${r.stats.count} servicios Â· ${new Date(imuSession.createdAt).toLocaleDateString('es-CL')}`,html,text,sessionId:imuSession.id};
+  const detail=(imuSession.services||[]).map(t=>{const m=serviceMetrics(t),stops=(t.events||[]).filter(e=>e.type==='ESTACION');const stopTable=stops.length?`<h4>Tiempos de detención por estación</h4><table style="${tableStyle}"><tr><th style="${th}">Estación</th><th style="${th}">Detención</th><th style="${th}">Consentimiento</th></tr>${stops.map(e=>`<tr><td style="${td}">${escHtml(e.label)}</td><td style="${td}"><b>${fmtDuration(e.durationMs)}</b></td><td style="${td}">${fmtDuration(e.consentMs||0)}</td></tr>`).join('')}</table>`:'';const ev=(t.events||[]).map(e=>{let extra='';if(e.type==='ESTACION')extra=`<br><span style="color:#666">Consentimiento: ${fmtDuration(e.consentMs||0)}</span>`;if(e.type==='SALIDA'&&Number.isFinite(e.delayMs))extra=`<br><span style="color:#666">${e.delayMs>=0?'Atraso':'Adelanto'}: ${fmtDuration(Math.abs(e.delayMs))}</span>`;return `<tr><td style="${td}">${escHtml(e.type)}</td><td style="${td}">${escHtml(e.label)}</td><td style="${td}">${fmtDuration(e.durationMs)}${extra}</td></tr>`;}).join('');return `<h3>Servicio ${escHtml(t.serviceNumber)} · ${escHtml(t.startStation)} → ${escHtml(t.finalStation)}</h3><p><b>Total:</b> ${fmtDuration(m.totalMs)} · <b>salida:</b> ${signedDuration(m.delayMs)} · <b>detención:</b> ${fmtDuration(m.dwellMs)} · <b>consentimiento:</b> ${fmtDuration(m.consentMs)}</p>${stopTable}<h4>Detalle cronológico</h4><table style="${tableStyle}"><tr><th style="${th}">Tipo</th><th style="${th}">Evento</th><th style="${th}">Duración</th></tr>${ev}</table>`;}).join('');
+  const html=`<div style="font-family:Arial,sans-serif;color:#111;max-width:920px;margin:auto"><h1>Informe de sesión · Registro IMU</h1><p>${escHtml(sessionDate)} · ${r.stats.count} servicios</p>${averageTable}${segTable}${stTable}${serviceSummary}${detail}<p style="color:#666;font-size:12px;margin-top:24px">Consentimiento estimado = tiempo detenido real − 12 s. Los estados físicos se infieren con ventanas solapadas de acelerometría; GPS se usa solo como referencia de ubicación.</p></div>`;
+  const text=`Informe de sesión IMU\nServicios: ${r.stats.count}\n\nVIAJE PROMEDIO\nTiempo total: ${fmtDuration(r.stats.avgTotal)}\nMovimiento: ${fmtDuration(r.stats.avgMoving)}\nEntre estaciones: ${fmtDuration(r.stats.avgSegment)}\nDetención total por viaje: ${fmtDuration(r.stats.avgDwellTotal)}\nDetención promedio por estación: ${fmtDuration(r.stats.avgStationDwell)}\nConsentimiento total por viaje: ${fmtDuration(r.stats.avgConsentTotal)}\nConsentimiento promedio por estación: ${fmtDuration(r.stats.avgStationConsent)}\nDesfase promedio salida: ${signedDuration(r.stats.avgDelay)}\nMediana total: ${fmtDuration(r.stats.medianTotal)}\nDesv. estándar: ${fmtDuration(r.stats.sdTotal)}`;
+  return {email:imuSession.email,subject:`Informe sesión IMU · ${r.stats.count} servicios · ${new Date(imuSession.createdAt).toLocaleDateString('es-CL')}`,html,text,sessionId:imuSession.id};
 }
 function sendSessionReport(){
   if(!imuSession||imuSession.services.length<imuSession.plannedCount)return;
-  if(!REPORT_ENDPOINT||REPORT_ENDPOINT.includes('PEGAR_AQUI')){imuSendState.textContent='Falta configurar la URL del Apps Script de envÃ­o.';imuSendState.className='sendState bad';return;}
+  if(!REPORT_ENDPOINT||REPORT_ENDPOINT.includes('PEGAR_AQUI')){imuSendState.textContent='Falta configurar la URL del Apps Script de envío.';imuSendState.className='sendState bad';return;}
   const payload=buildEmailPayload();if(!payload)return;
-  imuSendState.textContent='Enviando informe automÃ¡ticamenteâ€¦';imuSendState.className='sendState';
+  imuSendState.textContent='Enviando informe automáticamente…';imuSendState.className='sendState';
   const form=document.createElement('form');form.method='POST';form.action=REPORT_ENDPOINT;form.target='reportFrame';form.style.display='none';
   const input=document.createElement('input');input.type='hidden';input.name='payload';input.value=JSON.stringify(payload);form.appendChild(input);document.body.appendChild(form);form.submit();form.remove();
-  imuSession.sentAt=Date.now();saveImuSession();setTimeout(()=>{imuSendState.textContent=`Informe enviado automÃ¡ticamente a ${imuSession.email}.`;imuSendState.className='sendState ok';},800);
+  imuSession.sentAt=Date.now();saveImuSession();setTimeout(()=>{imuSendState.textContent=`Informe enviado automáticamente a ${imuSession.email}.`;imuSendState.className='sendState ok';},800);
 }
 function finishImuTrip(auto=false,endAtOverride=null,preserveVoiceTimers=false){
   if(!imuOnlyTrip)return;const now=Date.now(),endAt=Number.isFinite(endAtOverride)?endAtOverride:now;
@@ -3399,8 +3399,8 @@ function finishImuTrip(auto=false,endAtOverride=null,preserveVoiceTimers=false){
   imuStateOnly.textContent=`SERVICIO ${imuOnlyTrip.serviceNumber} COMPLETADO`;imuRouteOnly.textContent=imuOnlyTrip.finalStation;imuTimerOnly.textContent=fmtTenths(0);imuTimerLabelOnly.textContent='VIAJE CERRADO EN LA LLEGADA';imuFinishBtn.style.display='none';imuRecalBtn.style.display='none';
   if(imuValidationCurrent?.enabled)validationPanel.classList.add('show');
   updateValidationReportExport();
-  if(Number.isFinite(endAtOverride))showImuCalibrationStatus(`LLEGADA FINAL CONFIRMADA âœ“ Â· viaje cerrado a las ${fmtClock(endAt)} Â· sin detenciÃ³n ni consentimiento en la estaciÃ³n final.`,'ok',12000);
-  if(imuSession.services.length>=imuSession.plannedCount){imuNextServiceBtn.style.display='none';imuCalText.textContent='SesiÃ³n completa. El informe se enviarÃ¡ automÃ¡ticamenteâ€¦';renderSessionReport();setTimeout(sendSessionReport,600);}else{imuNextServiceBtn.style.display='inline-block';imuCalText.textContent=`Servicio ${imuSession.services.length} de ${imuSession.plannedCount} guardado. ContinÃºa con el siguiente.`;}
+  if(Number.isFinite(endAtOverride))showImuCalibrationStatus(`LLEGADA FINAL CONFIRMADA ✓ · viaje cerrado a las ${fmtClock(endAt)} · sin detención ni consentimiento en la estación final.`,'ok',12000);
+  if(imuSession.services.length>=imuSession.plannedCount){imuNextServiceBtn.style.display='none';imuCalText.textContent='Sesión completa. El informe se enviará automáticamente…';renderSessionReport();setTimeout(sendSessionReport,600);}else{imuNextServiceBtn.style.display='inline-block';imuCalText.textContent=`Servicio ${imuSession.services.length} de ${imuSession.plannedCount} guardado. Continúa con el siguiente.`;}
 }
 function nextImuService(){
   validationPanel?.classList.remove('show');
@@ -3408,14 +3408,14 @@ function nextImuService(){
 }
 function resetImuSession(){
   validationPanel?.classList.remove('show');validationReportCard?.classList.remove('show');
-  stopGpsSupport();clearVoiceTimers(true);voiceModal.classList.remove('show');clearInterval(imuOnlyLoop);imuOnlyLoop=null;imuOnlyTrip=null;imuOnlyLastCompleted=null;imuBaseline=null;imuCalStart=null;imuDepartureHintAt=null;imuArrivalHintAt=null;imuCalValues=[];imuCalMode=null;imuScoreHistory=[];imuAutoCalStationKey=null;clearTimeout(imuCalUiTimer);imuCalLive.className='imuCalLive';imuRecalBtn.disabled=false;imuSession=null;saveImuSession();imuLiveEl.classList.remove('show');imuSessionReport.classList.remove('show');imuSetupEl.style.display='none';imuSessionStatus.classList.remove('show');imuSessionSetup.style.display='block';imuFinishBtn.style.display='inline-block';imuFinishBtn.textContent='FINALIZAR';imuRecalBtn.style.display='inline-block';imuEmail.value='';imuServiceCount.value='1';imuServiceNumber.value='';imuSessionMsg.textContent='Los servicios se guardan localmente hasta completar la sesiÃ³n.';renderVoiceBar();
+  stopGpsSupport();clearVoiceTimers(true);voiceModal.classList.remove('show');clearInterval(imuOnlyLoop);imuOnlyLoop=null;imuOnlyTrip=null;imuOnlyLastCompleted=null;imuBaseline=null;imuCalStart=null;imuDepartureHintAt=null;imuArrivalHintAt=null;imuCalValues=[];imuCalMode=null;imuScoreHistory=[];imuAutoCalStationKey=null;clearTimeout(imuCalUiTimer);imuCalLive.className='imuCalLive';imuRecalBtn.disabled=false;imuSession=null;saveImuSession();imuLiveEl.classList.remove('show');imuSessionReport.classList.remove('show');imuSetupEl.style.display='none';imuSessionStatus.classList.remove('show');imuSessionSetup.style.display='block';imuFinishBtn.style.display='inline-block';imuFinishBtn.textContent='FINALIZAR';imuRecalBtn.style.display='inline-block';imuEmail.value='';imuServiceCount.value='1';imuServiceNumber.value='';imuSessionMsg.textContent='Los servicios se guardan localmente hasta completar la sesión.';renderVoiceBar();
 }
 function restoreImuSession(){
   try{
     const saved=JSON.parse(localStorage.getItem(IMU_SESSION_KEY)||'null');
     if(!saved||!saved.email||!Array.isArray(saved.services)||!saved.plannedCount)return;
     imuSession=saved;imuEmail.value=saved.email;imuServiceCount.value=saved.plannedCount;imuSessionSetup.style.display='none';imuSessionStatus.classList.add('show');renderImuSessionStatus();renderVoiceBar();voiceResetForm();
-    if(saved.services.length>=saved.plannedCount){imuSetupEl.style.display='none';renderSessionReport();if(saved.sentAt){imuSendState.textContent=`Informe enviado automÃ¡ticamente a ${saved.email}.`;imuSendState.className='sendState ok';}else setTimeout(sendSessionReport,700);}
+    if(saved.services.length>=saved.plannedCount){imuSetupEl.style.display='none';renderSessionReport();if(saved.sentAt){imuSendState.textContent=`Informe enviado automáticamente a ${saved.email}.`;imuSendState.className='sendState ok';}else setTimeout(sendSessionReport,700);}
     else imuSetupEl.style.display='block';
   }catch(e){}
 }
@@ -3442,11 +3442,11 @@ function baseTone(freq,dur=.09,when=0){
 function low(when=0,dur=.085){baseTone(LOW_TONE,dur,when);}
 function high(when=0,dur=.085){baseTone(HIGH_TONE,dur,when);}
 
-// Dos sonidos base Ãºnicamente:
-//  â€¢ grave solo repetido = la velocidad real estÃ¡ por debajo y hay que subir.
-//  â€¢ graveâ†’agudo = el cÃ³digo objetivo SUBIÃ“.
-//  â€¢ agudoâ†’grave = el cÃ³digo objetivo BAJÃ“.
-//  â€¢ agudoâ†’graveâ†’agudoâ†’grave = objetivo 0.
+// Dos sonidos base únicamente:
+//  • grave solo repetido = la velocidad real está por debajo y hay que subir.
+//  • grave→agudo = el código objetivo SUBIÓ.
+//  • agudo→grave = el código objetivo BAJÓ.
+//  • agudo→grave→agudo→grave = objetivo 0.
 function targetUpCue(delta=0){
   low(0,.10);high(.13,.10);
   if(Math.abs(delta)>=20){low(.34,.085);high(.46,.085);}
@@ -3473,11 +3473,11 @@ function onTargetChanged(oldV,newV){
 function updateMotionState(now){
   if(lastReal===null||acceptedTarget===null)return;
   const trend=realTrend(),gap=acceptedTarget-lastReal;
-  // Parado en estaciÃ³n/maniobra con un cÃ³digo >0: no pedir acelerar hasta que el tren realmente empiece a moverse.
+  // Parado en estación/maniobra con un código >0: no pedir acelerar hasta que el tren realmente empiece a moverse.
   if(acceptedTarget>=20&&lastReal<=1.2&&now-lastTargetChangeAt>700){intentionalStopMode=true;lastMotionState='PARADO';return;}
-  // Una caÃ­da sostenida y claramente alejada del objetivo se interpreta como frenado/detenciÃ³n deliberada.
+  // Una caída sostenida y claramente alejada del objetivo se interpreta como frenado/detención deliberada.
   if(acceptedTarget>=20&&gap>4.5&&trend<-1.0&&now-lastTargetChangeAt>900){intentionalStopMode=true;lastMotionState='FRENANDO';return;}
-  // Salir del modo detenciÃ³n cuando vuelve a acelerar de manera clara o cambia el cÃ³digo (esto Ãºltimo se maneja arriba).
+  // Salir del modo detención cuando vuelve a acelerar de manera clara o cambia el código (esto último se maneja arriba).
   if(intentionalStopMode&&((lastReal>1.5&&trend>.55)||(gap<2.0&&trend>=-.2))){intentionalStopMode=false;lastMotionState='REANUDA';}
 }
 
@@ -3490,15 +3490,15 @@ function feedback(){
   updateMotionState(now);
   const diff=lastReal-acceptedTarget;
 
-  // Regla pedida: la app NO emite correcciones cuando la velocidad real estÃ¡ sobre el objetivo.
+  // Regla pedida: la app NO emite correcciones cuando la velocidad real está sobre el objetivo.
   // El propio ATP ya entrega el aviso de sobrevelocidad. Incluso sobre +2,7 km/h permanecemos en silencio.
   if(diff>=-DEAD_BAND){nextFeedbackAt=now+100;return;}
 
-  // Frenado/detenciÃ³n deliberada con cÃ³digo aÃºn >0: silencio para no "pelear" contra la maniobra.
+  // Frenado/detención deliberada con código aún >0: silencio para no "pelear" contra la maniobra.
   if(intentionalStopMode){nextFeedbackAt=now+120;return;}
 
   const deficit=-diff,trend=realTrend();
-  // Un Ãºnico sonido grave pide subir velocidad. La frecuencia de repeticiÃ³n codifica cuÃ¡nto falta.
+  // Un único sonido grave pide subir velocidad. La frecuencia de repetición codifica cuánto falta.
   speedUpPulse();
   let interval;
   if(deficit<=.8)interval=760;
@@ -3507,7 +3507,7 @@ function feedback(){
   else if(deficit<=6)interval=255;
   else interval=225;
 
-  // Si ya estÃ¡ acelerando hacia el objetivo, molestar algo menos; si sigue cayendo, avisar antes salvo que se active modo frenado.
+  // Si ya está acelerando hacia el objetivo, molestar algo menos; si sigue cayendo, avisar antes salvo que se active modo frenado.
   if(trend>.7)interval*=1.22;
   else if(trend<-.45)interval*=.82;
   nextFeedbackAt=now+clamp(interval,190,900);
@@ -3522,17 +3522,17 @@ async function startControl(){
 async function stopControl(){
   running=false;document.body.classList.remove('running');
   stopBtn.style.display='none';startBtn.style.display='none';testBtn.style.display='inline-block';updateLensButton();
-  setStatus(lockStreak>=3?'Panel detectado':'Buscando panelâ€¦',lockStreak>=3?'ok':'');
+  setStatus(lockStreak>=3?'Panel detectado':'Buscando panel…',lockStreak>=3?'ok':'');
   try{if(wakeLock){await wakeLock.release();wakeLock=null;}}catch(e){}
 }
 function testSounds(){
   ensureAudio();
   const original=statusText.textContent;
   const seq=[
-    [0,'Prueba: objetivo SUBE Â· graveâ†’agudo',()=>targetUpCue(10)],
-    [900,'Prueba: objetivo BAJA Â· agudoâ†’grave',()=>targetDownCue(10)],
-    [1800,'Prueba: objetivo 0 Â· patrÃ³n doble',()=>zeroCue()],
-    [2800,'Prueba: SUBIR velocidad Â· grave repetido',()=>{low();low(.36);low(.72);}]
+    [0,'Prueba: objetivo SUBE · grave→agudo',()=>targetUpCue(10)],
+    [900,'Prueba: objetivo BAJA · agudo→grave',()=>targetDownCue(10)],
+    [1800,'Prueba: objetivo 0 · patrón doble',()=>zeroCue()],
+    [2800,'Prueba: SUBIR velocidad · grave repetido',()=>{low();low(.36);low(.72);}]
   ];
   for(const [ms,label,fn] of seq)setTimeout(()=>{setStatus(label,'ok');fn();},ms);
   setTimeout(()=>setStatus(original,lockStreak>=3?'ok':''),4100);
