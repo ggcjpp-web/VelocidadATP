@@ -4,7 +4,7 @@
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no" />
 <meta name="theme-color" content="#050708" />
-<title>Velocidad Sonora V7.28</title>
+<title>Velocidad Sonora V7.29</title>
 <style>
 :root{color-scheme:dark;font-family:system-ui,-apple-system,Segoe UI,Roboto,sans-serif}
 *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
@@ -124,7 +124,7 @@ body.mode-imu #imuMode{display:block}
   </div>
   <section id="imuMode">
     <div class="imuShell">
-      <div class="imuTop"><div class="imuBrand">REGISTRO IMU · V7.28</div><button id="imuBackBtn" class="ghostBtn">CAMBIAR MODO</button></div>
+      <div class="imuTop"><div class="imuBrand">REGISTRO IMU · V7.29</div><button id="imuBackBtn" class="ghostBtn">CAMBIAR MODO</button></div>
       <div id="imuSessionSetup" class="imuSessionCard">
         <div style="font-size:20px;font-weight:950;margin-bottom:10px">SESIÓN DE SERVICIOS</div>
         <div class="imuSessionGrid">
@@ -141,7 +141,7 @@ body.mode-imu #imuMode{display:block}
         <div class="imuSetupGrid">
           <div class="imuField wide"><label>NÚMERO DE SERVICIO</label><input id="imuServiceNumber" type="text" inputmode="numeric" maxlength="3" pattern="[0-9]{3}" placeholder="Ej. 605"></div>
           <div class="imuField wide"><label>DESTINO</label><select id="imuDestination"></select><div id="imuOtherDestinationWrap" style="display:none;margin-top:8px"><select id="imuDestinationOther"></select></div><div class="serviceRouteNote">El destino establece el sentido. Puedes fijar la estación inicial o usar GPS para ubicar el origen. El IMU detecta la detención y el GPS verifica su correspondencia con la estación esperada.</div></div>
-          <div class="imuField wide"><label>ESTACIÓN INICIAL (OPCIONAL)</label><select id="imuOrigin"><option value="">Automática · GPS solo para ubicar el origen</option></select><div class="serviceRouteNote">Puedes indicar el origen manualmente. El GPS seguirá ayudando a validar las llegadas; sin señal GPS, solo se admitirá el respaldo contextual de una aproximación ya identificada.</div></div>
+          <div class="imuField wide"><label>ESTACIÓN INICIAL (OPCIONAL)</label><select id="imuOrigin"><option value="">Automática · GPS solo para ubicar el origen</option></select><div class="serviceRouteNote">Si partes sin cobertura GPS, selecciona la estación inicial. Dentro del túnel, las llegadas se detectan por IMU y en orden aunque se pierda la señal; fuera del túnel sigue la verificación GPS.</div></div>
           <div class="imuField wide"><label>SALIDA PROGRAMADA</label><input id="imuSchedule" type="time" step="60"></div>
           <div class="validationSetup">
             <label class="validationToggle"><span>MODO PRUEBA DE DETECCIÓN</span><input id="imuValidationMode" type="checkbox"></label>
@@ -153,7 +153,7 @@ body.mode-imu #imuMode{display:block}
           <select id="imuRoutePreset" style="display:none"><option value="auto">Automático</option></select>
           <div id="imuCustomRouteFields" style="display:none"><select id="imuStart"></select><select id="imuEnd"></select></div>
         </div>
-        <div id="imuCalText" class="imuCal">IMU para salida y detención física; GPS para verificar la estación esperada y evitar falsas llegadas. El GPS no inicia ni detiene el tren.</div>
+        <div id="imuCalText" class="imuCal">IMU detecta las detenciones. El GPS verifica las estaciones al aire libre; en Miramar, Viña del Mar, Hospital y Chorrillos permite confirmar por IMU si falta señal. Selecciona estación inicial si no habrá GPS desde el comienzo.</div>
         <button id="imuArmBtn" class="primary">ARMAR SERVICIO</button>
       </div>
       <div id="imuLive" class="imuLive">
@@ -184,7 +184,7 @@ body.mode-imu #imuMode{display:block}
         <div class="imuQuickBar"><button id="imuQuickVoiceBtn">＋ AVISO</button><button id="imuBellotoCutBtn">CORTE DOBLE · BELLOTO</button><div id="imuQuickMsg" class="imuQuickMsg"></div></div>
         <div class="imuProgress"><div class="imuProgressTitle">EVENTOS</div><div id="imuEvents" class="imuStops"><div style="font-size:11px;opacity:.45">Sin eventos todavía.</div></div></div>
         <div class="imuActions"><button id="imuRecalBtn">RECALIBRAR REPOSO · OPCIONAL</button><button id="imuNextServiceBtn" class="primary" style="display:none">SIGUIENTE SERVICIO</button><button id="imuFinishBtn" class="danger">FINALIZAR</button></div>
-        <div class="imuHint">El IMU confirma las salidas y las candidatas de detención. La llegada se registra solo si coincide con la próxima estación esperada según GPS o aproximación reciente; un GPS fiable en movimiento impide retroceder la hora de llegada a la frenada. El sistema es experimental.</div>
+        <div class="imuHint">El IMU confirma el movimiento y la detención. GPS verifica las estaciones donde está disponible. En las estaciones del túnel, con ruta inicial conocida y GPS ausente/no fiable, se usa la siguiente estación por orden y el reposo IMU; puede haber falsos positivos. Sistema experimental, no apto para decisiones operacionales.</div>
       </div>
       <div id="imuSessionReport" class="imuSessionReport">
         <div class="reportTitle">INFORME DE SESIÓN</div><div id="imuReportSub" class="reportSub"></div>
@@ -494,6 +494,12 @@ const GPS_EXPECTED_APPROACH_MAX_M=900;
 const GPS_EXPECTED_CONFIRM_MIN_M=220;
 const GPS_EXPECTED_CONFIRM_MAX_M=420;
 const GPS_EXPECTED_RECENT_MS=45000;
+// V7.29: el GPS no es obligatorio en estaciones interiores del túnel.
+// Fuera de estas estaciones se conserva íntegra la verificación contextual V7.28.
+const GPS_TUNNEL_STATIONS=new Set(['Miramar','Viña del Mar','Hospital','Chorrillos']);
+const GPS_TUNNEL_FRESH_MS=3500; // una última posición de hace 10 s no acredita ubicación en un túnel.
+const GPS_TUNNEL_MAX_ACCURACY_M=60;
+const GPS_TUNNEL_MAX_OFF_ROUTE_M=180;
 const GPS_MISSED_STATION_RESYNC_MS=10000;
 const GPS_MISSED_STATION_MAX_ACCURACY_M=80;
 const FUSION_STOP_CONFIRM_MS=420;
@@ -511,7 +517,7 @@ const IMU_DEPART_RISE_RATIO=1.28;
 
 // V7.12: detector físico simplificado.
 // Volvemos a la estrategia que mejor se acercaba a la realidad: nivel IMU + histéresis,
-// pero usando promedios móviles. V7.28 conserva 10 s de detección física y recupera la verificación espacial GPS.
+// pero usando promedios móviles. V7.29 conserva el detector físico y la verificación GPS de V7.28, con respaldo IMU en estaciones del túnel.
 // GPS NO decide DETENCIÓN/CIRCULACIÓN; solo identifica recorrido/estación.
 const PHYS_FAST_WINDOW_MS=450;
 const PHYS_SLOW_WINDOW_MS=900;
@@ -2239,8 +2245,8 @@ function startValidationRun(){
   const now=Date.now();
   imuValidationCurrent={
     enabled:true,
-    schemaVersion:'1.10',
-    appVersion:'V7.28',
+    schemaVersion:'1.11',
+    appVersion:'V7.29',
     startedAt:now,
     startedPerf:performance.now(),
     endedAt:null,
@@ -2252,6 +2258,7 @@ function startValidationRun(){
     contextRejected:[],
     gpsAdvisories:[],
     gpsArrivalChecks:[],
+    tunnelFallbacks:[],
     samples:[],
     rawImu:[],
     rawColumns:['elapsed_ms','ax','ay','az','mag',
@@ -2421,7 +2428,7 @@ function exportValidationRun(){
       durationMs:v.endedAt?Math.max(0,v.endedAt-v.startedAt):Date.now()-v.startedAt,
       note:'Las marcas MANUAL representan la realidad indicada por el usuario. Las transiciones AUTOMATICAS son lo que decidió la app. GPS es contexto espacial, no una marca manual.',
       accelerationInfo:{units:'m/s2',gravityFilter:'pasa-altos independiente: accelerationIncludingGravity menos media exponencial (tau=2 segundos)',
-        note:'V7.28: conserva detector IMU y 10 s de confirmación física de V7.27; vuelve la verificación GPS contextual de V7.26. Si GPS fiable demuestra movimiento en la hora retrospectiva de llegada, espera y corrige el instante a reposo GPS estable. Puertas siguen descontando 12 s.',
+        note:'V7.29: detector IMU 10 s. El GPS verifica estación y movimiento si es utilizable; en Miramar, Viña del Mar, Hospital y Chorrillos, si el GPS falta o es poco fiable, la llegada puede validarse por IMU y secuencia. El Salto admite continuidad Chorrillos -> El Salto si se perdió GPS. Puertas descuentan 12 s.', 
         nativeRawRows:v.nativeSamples,gravityAvailableRows:v.gravitySamples,rawSamplingMinIntervalMs:VALIDATION_RAW_MIN_INTERVAL_MS},
       sensorProfile:{...nativeDeviceProfileNow()}
     },
@@ -2430,6 +2437,7 @@ function exportValidationRun(){
     gpsAdvisories:v.gpsAdvisories||[],
     contextRejected:v.contextRejected||[],
     gpsArrivalChecks:v.gpsArrivalChecks||[],
+    tunnelFallbacks:v.tunnelFallbacks||[],
     comparison:v.comparison||validationBuildComparison(v),
     sampledData:{columns:v.sampleColumns,rows:v.samples},
     rawImu:{columns:v.rawColumns,rows:v.rawImu,truncated:!!v.rawTruncated}
@@ -2884,8 +2892,23 @@ function gravityExpectedStationContext(gps,now=Date.now()){
     now-imuOnlyTrip.gpsLastValidAt<=GPS_EXPECTED_RECENT_MS;
 
   const gpsAgrees=near||recentWithoutGps;
-  const canConfirm=gpsAgrees;
+  // En el túnel no se debe exigir una fijación GPS que puede desaparecer durante
+  // varias estaciones. La autoridad sigue siendo el detector físico IMU y el
+  // nombre solo avanza una estación después de una nueva salida y llegada.
+  // Una ubicación GPS reciente, precisa y coherente conserva el veto espacial
+  // habitual; un fix antiguo o errático NO puede bloquear cuatro estaciones.
+  const tunnelExpected=GPS_TUNNEL_STATIONS.has(expected);
+  const gpsUsableForTunnel=valid&&Number.isFinite(gps.age)&&gps.age<=GPS_TUNNEL_FRESH_MS&&
+    Number.isFinite(gps.accuracy)&&gps.accuracy<=GPS_TUNNEL_MAX_ACCURACY_M&&
+    (!Number.isFinite(gps.offRouteM)||gps.offRouteM<=GPS_TUNNEL_MAX_OFF_ROUTE_M);
+  // El Salto solo permite continuidad sin GPS en la secuencia Chorrillos -> El Salto
+  // (hacia Limache), si ya se confirmó Chorrillos por IMU en el túnel.
+  const tunnelExitFallback=expected==='El Salto'&&route[pos]==='Chorrillos'&&
+    !!imuOnlyTrip.tunnelImuFallbackActive;
+  const tunnelImuOnly=(tunnelExpected||tunnelExitFallback)&&!gpsUsableForTunnel;
+  const canConfirm=gpsAgrees||tunnelImuOnly;
   const mode=near?'expected-confirm':
+             tunnelImuOnly?(tunnelExitFallback?'tunnel-exit-imu':'tunnel-imu'):
              approach?'expected-approach':
              recentWithoutGps?'expected-recent':
              valid?'expected-far':'no-gps-context';
@@ -2893,7 +2916,8 @@ function gravityExpectedStationContext(gps,now=Date.now()){
   return {
     expectedIndex,expected,gpsValid:valid,distance,accuracy:acc,
     approachRadius,confirmRadius,approach,near,recentApproach,
-    recentWithoutGps,gpsAgrees,canConfirm,segmentCompatible,segmentIndex:seg,mode
+    recentWithoutGps,gpsAgrees,canConfirm,segmentCompatible,segmentIndex:seg,mode,
+    tunnelExpected,tunnelExitFallback,tunnelImuOnly,gpsUsableForTunnel
   };
 }
 
@@ -3369,7 +3393,7 @@ function imuOnlyTick(){
     imuRouteOnly.textContent=imuOnlyTrip.locationPending?'Tramo sin origen identificado':
       `${imuOnlyTrip.route[si]} → ${imuOnlyTrip.route[Math.min(si+1,imuOnlyTrip.route.length-1)]}`;
     const expectedCtxUi=gravityExpectedStationContext(gps,now);
-    imuExtraLabel.textContent='PRÓXIMA ESTACIÓN';
+    imuExtraLabel.textContent=expectedCtxUi.tunnelImuOnly?'PRÓXIMA · TÚNEL / IMU':'PRÓXIMA ESTACIÓN';
     imuExtra.textContent=imuOnlyTrip.locationPending?'Origen pendiente':(expectedCtxUi.expected||'—');
   }
 
@@ -3562,9 +3586,9 @@ function imuOnlyTick(){
 
             const expectedNext=(Number.isInteger(imuOnlyTrip.pos)?imuOnlyTrip.pos:0)+1;
             const routeCtx=gravityExpectedStationContext(gps,now);
-            // Se recupera V7.26: la estación es estrictamente pos+1 y el GPS
-            // debe situarla cerca o haber confirmado previamente su aproximación.
-            // Nunca adjudicamos una falsa llegada a una estación lejana.
+            // V7.29: secuencia estricta pos+1; GPS verifica normalmente,
+            // pero no veta las detenciones IMU en las estaciones interiores del
+            // túnel cuando la señal está ausente o degradada.
             if(imuOnlyTrip.locationPending||expectedNext>=imuOnlyTrip.route.length||
                routeCtx.expectedIndex!==expectedNext||!routeCtx.canConfirm){
               validationContextReject('detencion_fuera_contexto',inferredArrival,routeCtx,finalPlateau);
@@ -3573,7 +3597,14 @@ function imuOnlyTick(){
               return;
             }
 
-            const guard=gpsArrivalConsistency(gps,inferredArrival,now);
+            // No dejar una candidata esperando indefinidamente por velocidades
+            // GPS antiguas registradas justo antes de perder satélites.
+            // Con GPS reciente y fiable se conserva la protección de V7.28.
+            const fallbackWithoutGps=routeCtx.tunnelImuOnly&&
+              !routeCtx.gpsUsableForTunnel;
+            const guard=fallbackWithoutGps
+              ? {ready:true,effectiveAt:inferredArrival,reason:'tunnel-imu-no-gps',gpsChecked:false}
+              : gpsArrivalConsistency(gps,inferredArrival,now);
             validationGpsArrivalDecision(guard,inferredArrival,now);
             if(!guard.ready){
               // No registrar la estación mientras un GPS fiable demuestra movimiento.
@@ -3586,13 +3617,29 @@ function imuOnlyTick(){
             const arrival=guard.effectiveAt;
             const origin=imuOnlyTrip.route[imuOnlyTrip.pos];
             const dest=imuOnlyTrip.route[expectedNext];
+            // Identificar la fuente que autorizó la estación para poder estudiar
+            // con datos reales la detección dentro del túnel.
+            const stationVerification=routeCtx.tunnelImuOnly?'IMU_TUNEL':
+              routeCtx.near?'GPS_ESTACION':'GPS_APROXIMACION_RECIENTE';
+            if(stationVerification==='IMU_TUNEL'){
+              imuOnlyTrip.tunnelImuFallbackActive=true;
+              const v=imuValidationCurrent;
+              if(v?.enabled&&!v.endedAt){
+                v.tunnelFallbacks=v.tunnelFallbacks||[];
+                v.tunnelFallbacks.push({station:dest,expectedIndex:expectedNext,detectedAt:now,
+                  effectiveAt:arrival,mode:routeCtx.mode,gpsValid:!!gps.valid,
+                  gpsAgeMs:Number.isFinite(gps.age)?Math.round(gps.age):null,
+                  gpsAccuracyM:Number.isFinite(gps.accuracy)?Math.round(gps.accuracy):null,
+                  note:'Llegada física IMU confirmada por secuencia sin GPS utilizable.'});
+              }
+            }
             // La corrección horaria ya se registra en gpsArrivalChecks (modo validación).
 
             if(imuOnlyTrip.segmentStartAt){
               const firstPartial=!!imuOnlyTrip.partialFirstSegment;
               addImuEvent(firstPartial?'TRAMO_PARCIAL':'TRAMO',`${origin} → ${dest}`,imuOnlyTrip.segmentStartAt,arrival,{
-                source:`IMU ${imuOnlyTrip.vehicleProfile} · reposo confirmado + estación ${dest} verificada por GPS/contexto`,
-                partial:firstPartial,locationPending:false
+                source:`IMU ${imuOnlyTrip.vehicleProfile} · reposo confirmado + ${stationVerification}`,
+                stationVerification,partial:firstPartial,locationPending:false
               });
               imuOnlyTrip.partialFirstSegment=false;
             }
@@ -3610,8 +3657,9 @@ function imuOnlyTick(){
             imuStationWindowSamples=nativeTail.slice(-160);
             gravityClearStopCandidate(false,now);gravityUnfreezeMoveLearning();physDepartSince=null;physDepartBreakSince=null;physMoveHistory=[];gravityMoveHistory=[];
 
-            // Aprender posición solo cuando el GPS es fresco, preciso y coincide con la estación.
+            // Nunca aprender coordenadas a partir de una estación inferida sin GPS.
             if(routeCtx.near&&gps.valid&&Number.isFinite(gps.accuracy)&&gps.accuracy<=GPS_STRONG_ACCURACY_M)gpsLearnStationAnchor(dest);
+            if(stationVerification==='IMU_TUNEL')showImuCalibrationStatus(`Túnel · ${dest}: detención confirmada por IMU, sin exigir GPS.`, 'info',7000);
             if(dest===imuOnlyTrip.finalStation){
               clearVoiceTimers(false);scheduleArrivalVoice(dest,arrival);finishImuTrip(true,arrival,true);return;
             }
@@ -3683,7 +3731,7 @@ async function armImuTrip(){
   const gpsStarted=startGpsSupport(); // GPS es opcional para el estado físico; si falla, IMU continúa.
   clearVoiceTimers(false);pkVoiceRuntime=new Map();pkLastGPSProcessed=null;pkLastGoodPosition=null;if('speechSynthesis'in window)window.speechSynthesis.resume();const now=Date.now();
   const vehicleProfile=vehicleProfileFromDestination(destination),inferredDirection=inferredDirectionFromDestination(destination),inferredVia=inferredViaFromDestination(destination),provisionalRoute=inferredRouteFromDestination(destination);
-  imuOnlyTrip={id:'IMU'+now,serviceNumber:service,direction:inferredDirection,via:inferredVia,vehicleProfile,armedAt:now,scheduledAt:imuScheduledTimestamp(),actualStartAt:null,endAt:null,route:provisionalRoute,pos:0,startStation:null,finalStation:destination,state:'LOCATING',eventLabel:'ESPERANDO MOVIMIENTO · IMU',eventStartAt:now,segmentStartAt:null,events:[],gpsSupport:gpsStarted,gpsOriginLocked:false,gpsLastValidAt:null,locationPending:true,currentStationLabel:null,trustedRestG:null,trustedRestN:null,initialRestCommitted:false,expectedApproachIndex:null,expectedApproachSeenAt:null,contextStopBlocked:false,gpsMissedStationSince:null,gpsMissedStationIndex:null,doubleCutBellotoArmed:false,doubleCutBellotoDone:false};
+  imuOnlyTrip={id:'IMU'+now,serviceNumber:service,direction:inferredDirection,via:inferredVia,vehicleProfile,armedAt:now,scheduledAt:imuScheduledTimestamp(),actualStartAt:null,endAt:null,route:provisionalRoute,pos:0,startStation:null,finalStation:destination,state:'LOCATING',eventLabel:'ESPERANDO MOVIMIENTO · IMU',eventStartAt:now,segmentStartAt:null,events:[],gpsSupport:gpsStarted,gpsOriginLocked:false,gpsLastValidAt:null,locationPending:true,currentStationLabel:null,trustedRestG:null,trustedRestN:null,initialRestCommitted:false,expectedApproachIndex:null,expectedApproachSeenAt:null,contextStopBlocked:false,gpsMissedStationSince:null,gpsMissedStationIndex:null,doubleCutBellotoArmed:false,doubleCutBellotoDone:false,tunnelImuFallbackActive:false};
   imuDirection.value=inferredDirection;
   resetNativeDeviceCalibration();
   // Cada viaje parte con buffers/sesgos propios del dispositivo actual; no arrastramos muestras del viaje anterior.
@@ -3692,7 +3740,7 @@ async function armImuTrip(){
   startValidationRun();
   physResetCandidates(); // no heredar candidatos del viaje/prueba anterior.
   gravityResetRest();gravityMoveHistory=[];gravityMotionTrace=[];gravityLongAxis=null;gravityDepartureAxisCandidate=null;gravityStopSamples=[];gravityStopFrozenRef=null;gravityLastStopContext=null;
-  imuOnlyLastCompleted=null;imuMoveCandidate=null;imuStopCandidate=null;imuDepartureHintAt=null;imuArrivalHintAt=null;imuClassifiedStation=false;imuScoreHistory=[];imuAutoCalStationKey=null;imuLongAxis=null;imuDepartureHintAt=null;imuArrivalHintAt=null;imuMotionPhase='REPOSO';imuLastBrakeAt=0;imuCruiseScore=null;imuStationWindowBaseline=null;imuStationWindowSamples=[];imuWindowMoveBreakAt=null;gpsSyncCandidate=null;gpsStationLock=null;gpsDepartureCandidate=null;gpsWaitingSegmentCandidate=null;imuSetupEl.style.display='none';imuLiveEl.classList.add('show');imuQuickMsg.textContent='';updateBellotoCutUi();imuNextServiceBtn.style.display='none';imuStateOnly.textContent=`SERVICIO ${service} · ${vehicleProfile} · ESPERANDO MOVIMIENTO`;imuRouteOnly.textContent=`Destino: ${destination} · ${inferredDirection==='puerto'?'hacia Puerto':'desde Puerto'} · perfil ${vehicleProfile}`;imuTimerOnly.textContent='00:00.0';imuTimerLabelOnly.textContent='IMU ACTIVO';renderImuEvents();imuRecalBtn.disabled=true;setImuCalibrationMessage(gpsStarted?`Perfil ${vehicleProfile}. Sensor del teléfono se auto-calibrará; GPS verificará el contexto de estaciones.`:`Perfil ${vehicleProfile}. Sensor auto-adaptativo activo; sin GPS puede faltar la verificación para registrar estaciones.`,'info');
+  imuOnlyLastCompleted=null;imuMoveCandidate=null;imuStopCandidate=null;imuDepartureHintAt=null;imuArrivalHintAt=null;imuClassifiedStation=false;imuScoreHistory=[];imuAutoCalStationKey=null;imuLongAxis=null;imuDepartureHintAt=null;imuArrivalHintAt=null;imuMotionPhase='REPOSO';imuLastBrakeAt=0;imuCruiseScore=null;imuStationWindowBaseline=null;imuStationWindowSamples=[];imuWindowMoveBreakAt=null;gpsSyncCandidate=null;gpsStationLock=null;gpsDepartureCandidate=null;gpsWaitingSegmentCandidate=null;imuSetupEl.style.display='none';imuLiveEl.classList.add('show');imuQuickMsg.textContent='';updateBellotoCutUi();imuNextServiceBtn.style.display='none';imuStateOnly.textContent=`SERVICIO ${service} · ${vehicleProfile} · ESPERANDO MOVIMIENTO`;imuRouteOnly.textContent=`Destino: ${destination} · ${inferredDirection==='puerto'?'hacia Puerto':'desde Puerto'} · perfil ${vehicleProfile}`;imuTimerOnly.textContent='00:00.0';imuTimerLabelOnly.textContent='IMU ACTIVO';renderImuEvents();imuRecalBtn.disabled=true;setImuCalibrationMessage(gpsStarted?`Perfil ${vehicleProfile}. Sensor del teléfono se auto-calibrará; GPS verificará estaciones cuando esté disponible; túnel con respaldo IMU.`:`Perfil ${vehicleProfile}. Sin GPS se permite registrar estaciones del túnel cuando el origen ya es conocido; fuera de él se exige contexto.`,'info');
   if(imuOrigin?.value){
     const ok=configureImuRouteFromStation(imuOrigin.value,now);
     if(!ok){showImuCalibrationStatus('No se pudo fijar la estación inicial seleccionada.','bad',8500);}
