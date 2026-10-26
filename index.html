@@ -4,7 +4,7 @@
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no" />
 <meta name="theme-color" content="#050708" />
-<title>Velocidad Sonora V7.29</title>
+<title>Velocidad Sonora V7.30</title>
 <style>
 :root{color-scheme:dark;font-family:system-ui,-apple-system,Segoe UI,Roboto,sans-serif}
 *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
@@ -124,7 +124,7 @@ body.mode-imu #imuMode{display:block}
   </div>
   <section id="imuMode">
     <div class="imuShell">
-      <div class="imuTop"><div class="imuBrand">REGISTRO IMU · V7.29</div><button id="imuBackBtn" class="ghostBtn">CAMBIAR MODO</button></div>
+      <div class="imuTop"><div class="imuBrand">REGISTRO IMU · V7.30</div><button id="imuBackBtn" class="ghostBtn">CAMBIAR MODO</button></div>
       <div id="imuSessionSetup" class="imuSessionCard">
         <div style="font-size:20px;font-weight:950;margin-bottom:10px">SESIÓN DE SERVICIOS</div>
         <div class="imuSessionGrid">
@@ -207,6 +207,11 @@ body.mode-imu #imuMode{display:block}
             <label class="voiceToggle"><span>Activar avisos por PK · experimental</span><input id="voicePkEnabled" type="checkbox"></label>
           </div>
           <div class="voiceSection">
+            <div class="voiceSectionTitle">PREVENCIONES EN VÍA · LISTA 26/10/2026, 16:31</div>
+            <div class="voiceRouteHint">Precargadas y activadas. Se dicen dos veces, con velocidad y PK de inicio/fin. Prioridad: salida de estación próxima; si no hay estación cercana, GPS aprox. 1 km antes. Los avisos son solo recordatorios: verificar siempre la documentación operacional vigente y el ATP.</div>
+            <div id="bulletinList" class="voiceList"></div>
+          </div>
+          <div class="voiceSection">
             <div class="voiceSectionTitle">NUEVO AVISO</div>
             <div id="voicePresetGrid" class="voicePresetGrid"></div>
           </div>
@@ -227,7 +232,7 @@ body.mode-imu #imuMode{display:block}
               <div class="voiceField wide"><label>REFERENCIA FERROVIARIA REGISTRADA (OPCIONAL)</label><select id="voicePkCatalogSelect"><option value="">Buscar en referencias registradas…</option></select></div>
               <div class="voiceGrid" style="margin-top:9px">
                 <div class="voiceField"><label>PK DE ACTIVACIÓN</label><input id="voiceTargetPk" type="text" maxlength="10" inputmode="text" placeholder="Ej. 25+10"></div>
-                <div class="voiceField"><label>ANTICIPACIÓN</label><select id="voicePkLeadMode"><option value="meters">Metros estimados antes</option><option value="seconds">Segundos estimados antes</option><option value="cross">Al pasar el PK estimado</option></select></div>
+                <div class="voiceField"><label>ANTICIPACIÓN</label><select id="voicePkLeadMode"><option value="meters">Metros estimados antes</option><option value="seconds">Segundos estimados antes</option><option value="hybrid">Salida de estación cercana o 1 km antes</option><option value="cross">Al pasar el PK estimado</option></select></div>
                 <div class="voiceField wide" id="voicePkLeadValueField"><label id="voicePkLeadValueLabel">ANTICIPACIÓN (m)</label><input id="voicePkLeadValue" type="number" inputmode="numeric" min="0" max="3000" step="1" value="200"></div>
               </div>
               <div class="voiceRouteHint" style="margin-top:9px">Usa el mismo eje PK para ambas vías. Ubicación y anticipación EXPERIMENTALES: estimadas con GPS entre estaciones, sin coordenadas medidas para cada poste. No usar como aviso de seguridad operacional.</div>
@@ -247,7 +252,7 @@ body.mode-imu #imuMode{display:block}
           <div id="voicePreview" class="voicePreview">Selecciona un mensaje.</div>
           <div id="voiceLock" class="voiceLock"></div>
           <div class="voiceActions"><button id="voiceTestBtn">PROBAR VOZ</button><button id="voiceSaveBtn" class="primary">GUARDAR MENSAJE</button><button id="voiceCancelEditBtn" style="display:none">CANCELAR EDICIÓN</button></div>
-          <div class="voiceNote">Los avisos son globales. “AMBAS” funciona en los dos sentidos. Los avisos por PK requieren GPS preciso y la opción experimental habilitada; pueden fallar en túneles y curvas.</div>
+          <div class="voiceNote">Las prevenciones precargadas se administran arriba y no reemplazan la documentación vigente. La distancia por PK es aproximada (postes sin coordenadas medidas), y el GPS puede fallar en túneles y curvas. Los avisos manuales se muestran abajo.</div>
           <div id="voiceList" class="voiceList"></div>
         </div>
       </div>
@@ -410,6 +415,7 @@ const voiceTestBtn=document.getElementById('voiceTestBtn');
 const voiceSaveBtn=document.getElementById('voiceSaveBtn');
 const voiceCancelEditBtn=document.getElementById('voiceCancelEditBtn');
 const voiceList=document.getElementById('voiceList');
+const bulletinList=document.getElementById('bulletinList');
 const voicePkEnabled=document.getElementById('voicePkEnabled');
 const voiceTriggerMode=document.getElementById('voiceTriggerMode');
 const voicePkTriggerOptions=document.getElementById('voicePkTriggerOptions');
@@ -577,6 +583,43 @@ const PK_VOICE_POSITION_JUMP_M=340;
 
 const STATION_GPS_KEY='velocidadATP.learnedStationGps.v1';
 const IMU_SESSION_KEY='velocidadATP.imuServiceSession.v1';
+
+// V7.30 · Prevenciones transcritas de la captura proporcionada por el usuario,
+// fechada 26/10/2026 16:31. No hay conexión a la publicación oficial para
+// actualizar vigencia automáticamente. La tabla se conserva separada del motor IMU.
+const PREVENTIONS_SOURCE='Efe / Prevenciones en vía · captura 26/10/2026 16:31';
+const PREVENTIONS_VERSION='2026-10-26.1';
+const PREVENTION_STATION_LEAD_M=1250; // Solo geometría aproximada, nunca distancias de postes topografiadas.
+const PREVENTION_GPS_LEAD_M=1000;
+const PREVENTIONS_PRESET=[
+  // [vía, PK inicio en sentido marcha, PK fin, km/h, descripción, solo carga]
+  ['via1','00+20','00+30',20,'Precaución acceso a estación BE por cruce a nivel peatonal',false],
+  ['via1','02+09','02+13',20,'Precaución paso peatonal muelle y estación',false],
+  ['via1','06+11','06+16',40,'Prevención por geometría',false],
+  ['via1','14+15','15+04',30,'Alabeo pronunciado a la entrada de Puente Las Cucharas, vigente desde el 24/5/11',false],
+  ['via1','16+01','17+02',40,'Prevención por geometría',false],
+  ['via1','18+12','19+17',40,'Prevención por obras sector Valencia',false],
+  ['via1','19+17','20+05',50,'Prevención por geometría',false],
+  ['via1','25+14','25+15',40,'Solo para trenes de carga',true],
+  ['via1','38+05','38+08',40,'Alabeo por tiradura en puente',false],
+  ['via2','20+05','19+19',50,'Prevención por geometría',false],
+  ['via2','19+18','18+12',40,'Prevención por obras sector Valencia',false],
+  ['via2','16+16','16+11',40,'Prevención por geometría',false],
+  ['via2','15+03','14+14',30,'Para todo tren',false],
+  ['via2','06+18','06+11',40,'Prevención por geometría',false],
+  ['via2','01+16','01+12',20,'Precaución cruce peatonal a nivel',false],
+  ['via2','00+26','00+21',20,'Precaución a la salida de estación BE por atravieso de peatones en el sector',false]
+];
+function createPreventionAlert(row,i){
+  const [via,start,end,speed,description,cargoOnly]=row;
+  return {id:`PREV20261026_${String(i+1).padStart(2,'0')}`,bulletin:true,bulletinSource:PREVENTIONS_SOURCE,
+    cargoOnly,preset:'Personalizado',customText:description,via,triggerMode:'pk',triggerPk:normalizePk(start),
+    leadMode:'hybrid',leadValue:PREVENTION_GPS_LEAD_M,
+    location:'',segmentKey:'',locationVia1:'',locationVia2:'',
+    useSpeed:true,speed:String(speed),usePk:true,pkStart:normalizePk(start),pkEnd:normalizePk(end),
+    delayMs:0,repeatCount:2,enabled:true};
+}
+
 const VOICE_GLOBAL_KEY='velocidadATP.voiceGlobal.v2';
 const VOICE_PRESETS=['Prevención','Nueva prevención','Personas en la vía','Hombres trabajando','Cruce desprotegido','Barreras en falla','Barrera peatonal en falla','Marcha restringida','Marcha de emergencia','Personalizado'];
 const COMMON_IMU_DESTINATIONS=['Puerto','El Belloto','Sargento Aldea','Limache'];
@@ -1820,6 +1863,14 @@ function defaultVoiceSettings(){return {alerts:[],announceStations:true,remindLi
 function loadVoiceSettings(){
   try{const x=JSON.parse(localStorage.getItem(VOICE_GLOBAL_KEY)||'null');voiceSettings=x&&Array.isArray(x.alerts)?{...defaultVoiceSettings(),...x}:defaultVoiceSettings();}
   catch(e){voiceSettings=defaultVoiceSettings();}
+  // Migración de una sola vez: NO sustituye, duplica ni borra los mensajes personales.
+  if(voiceSettings.bulletinVersion!==PREVENTIONS_VERSION){
+    const known=new Set(voiceSettings.alerts.map(a=>a.id));
+    PREVENTIONS_PRESET.forEach((row,i)=>{const a=createPreventionAlert(row,i);if(!known.has(a.id))voiceSettings.alerts.push(a);});
+    voiceSettings.bulletinVersion=PREVENTIONS_VERSION;
+    voiceSettings.pkAlertsEnabled=true; // El usuario pidió prevenciones activadas desde la instalación.
+    saveVoiceSettings();
+  }
   return voiceSettings;
 }
 function saveVoiceSettings(){try{localStorage.setItem(VOICE_GLOBAL_KEY,JSON.stringify(voiceSettings||defaultVoiceSettings()));}catch(e){}}
@@ -1952,11 +2003,11 @@ function voiceSyncTriggerUi(){
   voicePkTriggerOptions.style.display=isPk?'block':'none';
   voiceLocation.closest('.voiceField').style.display=isPk?'none':'flex';
   voiceDelay.closest('.voiceField').style.display=isPk?'none':'flex';
-  voicePkLeadValueField.style.display=isPk&&voicePkLeadMode.value!=='cross'?'flex':'none';
+  voicePkLeadValueField.style.display=isPk&&!['cross','hybrid'].includes(voicePkLeadMode.value)?'flex':'none';
   voicePkLeadValueLabel.textContent=voicePkLeadMode.value==='seconds'?'ANTICIPACIÓN (s)':'ANTICIPACIÓN (m)';
   voicePkLeadValue.max=voicePkLeadMode.value==='seconds'?'120':'3000';
   voicePkLeadValue.placeholder=voicePkLeadMode.value==='seconds'?'Ej. 15':'Ej. 200';
-  voiceRouteHint.textContent=isPk?'Este selector de vía funciona también para avisos por PK.':'En ambas vías se avisa al entrar al mismo tramo desde cualquiera de sus extremos.';
+  voiceRouteHint.textContent=isPk?(voicePkLeadMode.value==='hybrid'?'Salida de la estación previa si está a ~1,25 km o menos; si no, GPS estimado a 1 km.':'El selector de vía funciona también para avisos por PK.'):'En ambas vías se avisa al entrar al mismo tramo desde cualquiera de sus extremos.';
 }
 function pkVoiceTick(now=Date.now()){
   if(!imuOnlyTrip)return;
@@ -1977,16 +2028,29 @@ function pkVoiceTick(now=Date.now()){
     const remaining=(target-snap.chainageM)*sign;
     const prior=pkVoiceRuntime.get(a.id);
     const mode=a.leadMode||'meters';
-    const distLimit=mode==='cross'?0:mode==='seconds'?(speed===null?null:speed*(Number(a.leadValue)||0)):Number(a.leadValue)||0;
-    if(jump||prior===undefined||!Number.isFinite(distLimit)||remaining< -60){pkVoiceRuntime.set(a.id,remaining);continue;}
-    if(prior===null)continue; // ya anunciado en este servicio
-    if(prior>distLimit&&remaining<=distLimit&&remaining>=-Math.max(45,speed?speed*2:45)){
+    const distLimit=mode==='cross'?0:mode==='seconds'?(speed===null?null:speed*(Number(a.leadValue)||0)):
+      mode==='hybrid'?PREVENTION_GPS_LEAD_M:Number(a.leadValue)||0;
+    if(prior===null)continue; // ya anunciado por salida o por GPS en este servicio
+    // Si hay una estación adecuada entre la posición y la prevención, esperar a
+    // anunciar su SALIDA (el usuario prefiere evitar un aviso innecesario antes).
+    const dep=mode==='hybrid'?preventionPreferredDeparture(a,imuOnlyTrip):null;
+    if(dep&&imuOnlyTrip.route.indexOf(dep.station)>imuOnlyTrip.pos){pkVoiceRuntime.set(a.id,remaining);continue;}
+    if(jump||!Number.isFinite(distLimit)||remaining< -60){pkVoiceRuntime.set(a.id,remaining);continue;}
+    // Para prevenciones de oficio: si el servicio empezó ya dentro del radio
+    // estimado de aviso, se avisa al primer GPS fiable (sin esperar un cruce que no habrá).
+    const justStarted=mode==='hybrid'&&prior===undefined&&remaining<=distLimit&&remaining>=150;
+    if(justStarted||(prior!==undefined&&prior>distLimit&&remaining<=distLimit&&remaining>=-Math.max(45,speed?speed*2:45))){
       pkVoiceRuntime.set(a.id,null);
       speakVoiceRepeated(composeVoiceText(a),a.repeatCount||1,imuOnlyTrip.serviceNumber);
     }else pkVoiceRuntime.set(a.id,remaining);
   }
 }
 function composeVoiceText(a=null){
+  if(a?.bulletin){
+    const via=a.via==='via1'?'uno':'dos';
+    const text=(a.customText||'Prevención').trim();
+    return `Atención. Vía ${via}. ${text}. Velocidad ${a.speed} kilómetros por hora. Desde ${pkSpeech(a.pkStart)} hasta ${pkSpeech(a.pkEnd)}.`;
+  }
   const preset=a?.preset??voiceSelectedPreset;
   const custom=(a?.customText??voiceText.value??'').trim();
   let text=preset==='Personalizado'?custom:preset;
@@ -2011,14 +2075,32 @@ function renderVoiceBar(){
 }
 function voiceAlertWhereLabel(a){
   if(a.triggerMode==='pk'){
-    const when=a.leadMode==='cross'?'al paso':`${a.leadValue||0} ${a.leadMode==='seconds'?'s':'m'} antes`;
+    const when=a.leadMode==='cross'?'al paso':a.leadMode==='hybrid'?'estación cercana / 1 km aprox.':`${a.leadValue||0} ${a.leadMode==='seconds'?'s':'m'} antes`;
     return `PK ${normalizePk(a.triggerPk).replace('-', '+')} (${when}; estimado)`;
   }
   if(a.via==='both'&&a.segmentKey){const seg=voiceSegmentFromKey(a.segmentKey);if(seg)return `tramo ${seg.label}`;}
   return `al salir de ${a.location||'--'}`;
 }
+function renderBulletinList(){
+  const arr=voiceAlerts().filter(a=>a.bulletin);
+  if(!arr.length){bulletinList.textContent='Sin prevenciones predeterminadas.';return;}
+  bulletinList.innerHTML=arr.map(a=>`<div class="voiceItem">
+    <div style="display:flex;align-items:start;justify-content:space-between;gap:9px">
+      <div><div class="voiceItemText">${escHtml(a.customText)}</div>
+      <div class="voiceItemMeta">${voiceDirectionLabel(a.via)} · ${normalizePk(a.pkStart).replace('-', '+')} a ${normalizePk(a.pkEnd).replace('-', '+')} · ${escHtml(a.speed)} km/h · ${a.repeatCount||2} repeticiones · aviso anticipado${a.cargoOnly?' · SOLO CARGA (no se anuncia en pasajeros)':''}</div></div>
+      <label class="voiceEnabled"><input type="checkbox" data-bulletin-on="${escHtml(a.id)}" ${a.enabled===false?'':'checked'}> ON</label>
+    </div>
+    <div class="voiceItemBtns"><button data-bulletin-edit="${escHtml(a.id)}">EDITAR</button></div>
+  </div>`).join('');
+  bulletinList.querySelectorAll('[data-bulletin-on]').forEach(b=>b.addEventListener('change',()=>{
+    const a=voiceAlerts().find(x=>x.id===b.dataset.bulletinOn);if(!a)return;
+    a.enabled=b.checked;saveVoiceSettings();renderVoiceBar();
+  }));
+  bulletinList.querySelectorAll('[data-bulletin-edit]').forEach(b=>b.addEventListener('click',()=>voiceEdit(b.dataset.bulletinEdit)));
+}
 function renderVoiceList(){
-  const arr=voiceAlerts();if(!arr.length){voiceList.innerHTML='<div style="font-size:11px;opacity:.48;padding:10px 1px">Sin mensajes configurados.</div>';return;}
+  renderBulletinList();
+  const arr=voiceAlerts().filter(a=>!a.bulletin);if(!arr.length){voiceList.innerHTML='<div style="font-size:11px;opacity:.48;padding:10px 1px">Sin otros mensajes personalizados.</div>';return;}
   const locked=!voiceCanEdit();
   voiceList.innerHTML=arr.map(a=>`<div class="voiceItem"><div style="display:flex;justify-content:space-between;gap:8px;align-items:flex-start"><div class="voiceItemText">${escHtml(composeVoiceText(a))}</div><label class="voiceEnabled"><input type="checkbox" data-v-enable="${a.id}" ${a.enabled===false?'':'checked'} ${locked?'disabled':''}> ON</label></div><div class="voiceItemMeta">${voiceDirectionLabel(a.via)} · ${escHtml(voiceAlertWhereLabel(a))}${a.triggerMode==='pk'?'':' · +'+Math.round((a.delayMs||0)/1000)+' s'} · ${a.repeatCount||1} vez${(a.repeatCount||1)===1?'':'es'}</div><div class="voiceItemBtns"><button data-v-edit="${a.id}" ${locked?'disabled':''}>EDITAR</button><button data-v-del="${a.id}" ${locked?'disabled':''}>BORRAR</button></div></div>`).join('');
   voiceList.querySelectorAll('[data-v-edit]').forEach(b=>b.addEventListener('click',()=>voiceEdit(b.dataset.vEdit)));
@@ -2065,14 +2147,14 @@ function voiceSave(){
   const triggerMode=voiceTriggerMode.value==='pk'?'pk':'departure',triggerPk=normalizePk(voiceTargetPk.value),leadMode=voicePkLeadMode.value,leadValue=Number(voicePkLeadValue.value);
   if(triggerMode==='pk'){
     if(!validPk(triggerPk)||!Number.isFinite(pkScalar(triggerPk))){voiceLock.textContent='PK fuera de rango o sin poste de referencia para su kilómetro.';return;}
-    if(!['seconds','meters','cross'].includes(leadMode)||!Number.isFinite(leadValue)||leadValue<0||(leadMode==='seconds'&&leadValue>120)||(leadMode==='meters'&&leadValue>3000)){voiceLock.textContent='Anticipación inválida (máximo 120 s o 3.000 m).';return;}
+    if(!['seconds','meters','cross','hybrid'].includes(leadMode)||!Number.isFinite(leadValue)||leadValue<0||(leadMode==='seconds'&&leadValue>120)||(leadMode==='meters'&&leadValue>3000)){voiceLock.textContent='Anticipación inválida (máximo 120 s o 3.000 m).';return;}
   }
   let location=voiceLocation.value,segmentKey='',locationVia1='',locationVia2='';
   if(via==='both'&&triggerMode==='departure'){
     const seg=voiceSegmentFromKey(location);if(!seg){voiceLock.textContent='Selecciona un tramo válido.';return;}segmentKey=seg.key;locationVia1=seg.via1;locationVia2=seg.via2;location=seg.via1;
   }
   if(triggerMode==='pk')location='';
-  const old=voiceAlerts().find(x=>x.id===voiceEditingId);const a={id:old?.id||('V'+Date.now()+Math.random().toString(36).slice(2,6)),preset:voiceSelectedPreset,customText:voiceSelectedPreset==='Personalizado'?custom:'',via,triggerMode,triggerPk:triggerMode==='pk'?triggerPk:'',leadMode,leadValue,location,segmentKey,locationVia1,locationVia2,useSpeed:!!speed,speed,usePk:!!pkStart,pkStart,pkEnd,delayMs:Math.round(delaySec*1000),repeatCount,enabled:old?.enabled!==false};
+  const old=voiceAlerts().find(x=>x.id===voiceEditingId);const a={...(old||{}),id:old?.id||('V'+Date.now()+Math.random().toString(36).slice(2,6)),preset:voiceSelectedPreset,customText:voiceSelectedPreset==='Personalizado'?custom:'',via,triggerMode,triggerPk:triggerMode==='pk'?triggerPk:'',leadMode,leadValue,location,segmentKey,locationVia1,locationVia2,useSpeed:!!speed,speed,usePk:!!pkStart,pkStart,pkEnd,delayMs:Math.round(delaySec*1000),repeatCount,enabled:old?.enabled!==false};
   if(old)Object.assign(old,a);else voiceAlerts().push(a);saveVoiceSettings();voiceResetForm();voiceLock.textContent='Mensaje guardado.';renderVoiceBar();renderVoiceList();
 }
 function voicePickSpanishVoice(){const vs=window.speechSynthesis?.getVoices?.()||[];return vs.find(v=>/^es(-|_)/i.test(v.lang)&&v.localService)||vs.find(v=>/^es(-|_)/i.test(v.lang))||null;}
@@ -2083,7 +2165,7 @@ function speakVoiceRepeated(text,times=1,serviceNumber=null){
   let remaining=clamp(parseInt(times||1,10)||1,1,10);const say=()=>{if(serviceNumber&&(!imuOnlyTrip||imuOnlyTrip.serviceNumber!==serviceNumber))return;const ok=speakVoice(text,()=>{remaining--;if(remaining>0){const id=++voiceTimerSeq,h=setTimeout(()=>{voiceTimers.delete(id);say();},650);voiceTimers.set(id,h);}});if(!ok)remaining=0;};say();
 }
 function voiceTest(){const text=composeVoiceText()||'Prueba de aviso de voz.';if(!speakVoice(text))voiceLock.textContent='Este navegador no expone texto a voz.';else voiceLock.textContent='Reproduciendo prueba de voz.';}
-function voiceEligible(a,trip){return a.enabled!==false&&(a.via==='both'||a.via===directionToVia(trip.direction));}
+function voiceEligible(a,trip){return a.enabled!==false&&!a.cargoOnly&&(a.via==='both'||a.via===directionToVia(trip.direction));}
 function voiceMatchesDeparture(a,trip,location){
   if(a.via==='both'&&a.segmentKey){const target=directionToVia(trip.direction)==='via2'?a.locationVia2:a.locationVia1;return target===location;}
   return a.location===location;
@@ -2104,10 +2186,38 @@ function armBellotoDoubleCut(){
   if(imuOnlyTrip.pos>iSol||(imuOnlyTrip.pos===iSol&&imuOnlyTrip.state!=='STATION'&&imuOnlyTrip.state!=='WAITING')){updateBellotoCutUi('El tramo El Sol → El Belloto ya pasó o está cerrándose.');return;}
   imuOnlyTrip.doubleCutBellotoArmed=true;imuOnlyTrip.doubleCutBellotoDone=false;updateBellotoCutUi('Armado: se dirá al iniciar El Sol → El Belloto.');
 }
+
+// Encuentra la estación del recorrido inmediatamente ANTERIOR al inicio del tramo
+// de prevención y verifica que esté cerca. No se calcula metros a partir del número
+// de postes; se interpola un eje entre centros GPS de estaciones.
+function preventionPreferredDeparture(a,trip){
+  if(a.leadMode!=='hybrid'||!trip?.route?.length)return null;
+  const geo=pkStationGeometry(),s=pkScalar(a.triggerPk),target=pkChainageFromScalar(s,geo);
+  if(!Number.isFinite(target)||geo.length<2)return null;
+  const sign=trip.direction==='puerto'?-1:1;
+  let result=null;
+  for(let i=0;i<trip.route.length-1;i++){
+    const loc=geo.find(x=>x.name===trip.route[i]);if(!loc)continue;
+    const gap=(target-loc.chainageM)*sign;
+    if(gap>0&&gap<=PREVENTION_STATION_LEAD_M&&(!result||gap<result.distanceM))result={station:loc.name,index:i,distanceM:gap};
+  }
+  return result;
+}
+function preventionDepartureAlerts(station,trip){
+  if(!voiceSettings?.pkAlertsEnabled)return;
+  for(const a of voiceAlerts()){
+    if(!a.bulletin||a.triggerMode!=='pk'||a.leadMode!=='hybrid'||!voiceEligible(a,trip))continue;
+    const preferred=preventionPreferredDeparture(a,trip);
+    if(!preferred||preferred.station!==station||pkVoiceRuntime.get(a.id)===null)continue;
+    pkVoiceRuntime.set(a.id,null); // ÚNICO aviso, aunque más tarde llegue GPS.
+    speakVoiceRepeated(composeVoiceText(a),a.repeatCount||2,trip.serviceNumber);
+  }
+}
 function scheduleDepartureVoice(station,nextStation,at){
   if(!voiceSettings)loadVoiceSettings();if(voiceSettings.announceStations&&nextStation)speakVoice(`Próxima estación ${nextStation}.`);if(voiceSettings.remindLights)speakVoice('Recuerda mantener luces encendidas.');
   if(imuOnlyTrip?.doubleCutBellotoArmed&&station==='El Sol'&&nextStation==='El Belloto'){imuOnlyTrip.doubleCutBellotoArmed=false;imuOnlyTrip.doubleCutBellotoDone=true;speakVoice('Recuerda: corte doble en estación El Belloto.');updateBellotoCutUi('Aviso de corte doble reproducido.');}
   scheduleVoiceEvent(station,at);
+  if(imuOnlyTrip)preventionDepartureAlerts(station,imuOnlyTrip);
 }
 function scheduleArrivalVoice(station,at){
   if(!voiceSettings)loadVoiceSettings();if(voiceSettings.announceStations)speakVoice(`Estación ${station}.`);if(voiceSettings.remindDoors)speakVoice('Recuerda abrir puertas.');
@@ -2245,8 +2355,8 @@ function startValidationRun(){
   const now=Date.now();
   imuValidationCurrent={
     enabled:true,
-    schemaVersion:'1.11',
-    appVersion:'V7.29',
+    schemaVersion:'1.12',
+    appVersion:'V7.30',
     startedAt:now,
     startedPerf:performance.now(),
     endedAt:null,
@@ -2428,7 +2538,7 @@ function exportValidationRun(){
       durationMs:v.endedAt?Math.max(0,v.endedAt-v.startedAt):Date.now()-v.startedAt,
       note:'Las marcas MANUAL representan la realidad indicada por el usuario. Las transiciones AUTOMATICAS son lo que decidió la app. GPS es contexto espacial, no una marca manual.',
       accelerationInfo:{units:'m/s2',gravityFilter:'pasa-altos independiente: accelerationIncludingGravity menos media exponencial (tau=2 segundos)',
-        note:'V7.29: detector IMU 10 s. El GPS verifica estación y movimiento si es utilizable; en Miramar, Viña del Mar, Hospital y Chorrillos, si el GPS falta o es poco fiable, la llegada puede validarse por IMU y secuencia. El Salto admite continuidad Chorrillos -> El Salto si se perdió GPS. Puertas descuentan 12 s.', 
+        note:'V7.30: detector IMU 10 s. El GPS verifica estación y movimiento si es utilizable; en Miramar, Viña del Mar, Hospital y Chorrillos, si el GPS falta o es poco fiable, la llegada puede validarse por IMU y secuencia. El Salto admite continuidad Chorrillos -> El Salto si se perdió GPS. Puertas descuentan 12 s.', 
         nativeRawRows:v.nativeSamples,gravityAvailableRows:v.gravitySamples,rawSamplingMinIntervalMs:VALIDATION_RAW_MIN_INTERVAL_MS},
       sensorProfile:{...nativeDeviceProfileNow()}
     },
