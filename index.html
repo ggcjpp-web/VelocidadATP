@@ -4,7 +4,7 @@
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no" />
 <meta name="theme-color" content="#050708" />
-<title>Registro Ferroviario V7.35</title>
+<title>Registro Ferroviario V7.36</title>
 <style>
 :root{color-scheme:dark;font-family:system-ui,-apple-system,Segoe UI,Roboto,sans-serif}
 *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
@@ -170,7 +170,7 @@ body.show-pk .imuPkStatus{display:block}
 .imuHint{margin:12px 0 0;line-height:1.4;text-align:left}
 @media(max-width:370px){.imuBrand{font-size:13px}.topAction{font-size:10px;padding:10px 8px}.imuTimer{font-size:45px}}
 
-/* V7.35 · Vista operativa mínima. Motor IMU/GPS intacto. */
+/* V7.36 · Vista operativa mínima. Motor IMU/GPS intacto. */
 body.mode-imu #imuMode{padding:max(6px,env(safe-area-inset-top)) 12px max(12px,env(safe-area-inset-bottom))}
 .imuTop{padding:5px 0 8px;min-height:48px;margin-bottom:4px}
 .imuBrand{font-size:16px;font-weight:900}
@@ -197,7 +197,7 @@ body.mode-imu #imuMode{padding:max(6px,env(safe-area-inset-top)) 12px max(12px,e
 .imuStopHead{font-size:9px;opacity:.55}
 .imuStopRow{padding:11px 0;border-top:1px solid rgba(255,255,255,.07)}
 .imuStopRow strong{font-size:15px;line-height:1.1;letter-spacing:-.01em}
-.imuStopDetail{font-size:10px;line-height:1.3;opacity:.68;margin-top:3px;font-weight:500}
+.imuStopDetail{font-size:10px;line-height:1.3;opacity:.68;margin-top:3px;font-weight:500;overflow-wrap:normal}
 .imuStopRow .time{font-size:14px;min-width:64px}
 #imuStopRows{max-height:min(55vh,500px)}
 .imuConsentNote{display:none!important}
@@ -222,7 +222,7 @@ body.mode-imu #imuMode{padding:max(6px,env(safe-area-inset-top)) 12px max(12px,e
   </div>
   <section id="imuMode">
     <div class="imuShell">
-      <div class="imuTop"><div class="imuBrand">REGISTRO <span>V7.35</span></div><div class="topActions"><button id="voiceMainBtn" type="button" class="topAction">AVISOS</button><button id="pkToggleBtn" type="button" class="topAction" aria-pressed="false">PK</button></div><button id="imuBackBtn" style="display:none" aria-hidden="true" tabindex="-1">Cambiar modo</button></div>
+      <div class="imuTop"><div class="imuBrand">REGISTRO <span>V7.36</span></div><div class="topActions"><button id="voiceMainBtn" type="button" class="topAction">AVISOS</button><button id="pkToggleBtn" type="button" class="topAction" aria-pressed="false">PK</button></div><button id="imuBackBtn" style="display:none" aria-hidden="true" tabindex="-1">Cambiar modo</button></div>
       <div id="imuSessionSetup" class="imuSessionCard">
         <div style="font-size:20px;font-weight:950;margin-bottom:10px">SESIÓN DE SERVICIOS</div>
         <div class="imuSessionGrid">
@@ -2514,7 +2514,7 @@ function startValidationRun(){
   imuValidationCurrent={
     enabled:true,
     schemaVersion:'1.15',
-    appVersion:'V7.35',
+    appVersion:'V7.36',
     startedAt:now,
     startedPerf:performance.now(),
     endedAt:null,
@@ -2787,10 +2787,21 @@ function renderImuStopTable(now=Date.now()){
   }
   const completed=new Map((trip.events||[]).filter(e=>e.type==='ESTACION').map(e=>[e.label,e]));
   const omitted=new Set((trip.events||[]).filter(e=>e.type==='SYNC').flatMap(e=>e.omittedStations||[]));
+  // V7.36: el tiempo de viaje ya está almacenado en cada evento TRAMO.
+  // Se calcula desde la salida física anterior hasta la llegada física actual;
+  // no se utiliza el tiempo detenido ni se inventan tramos omitidos por GPS.
+  const arrivedSegments=new Map();
+  for(const e of trip.events||[]){
+    if(!['TRAMO','TRAMO_PARCIAL'].includes(e.type)||!Number.isFinite(e.durationMs))continue;
+    const destination=String(e.label||'').split('→').pop().trim();
+    if(destination)arrivedSegments.set(destination,e);
+  }
   const first=initialDepartureEvent(trip),origin=trip.startStation||trip.route?.[0];
   const firstMotion=(trip.events||[]).some(e=>e.type==='INICIO_PARCIAL')?trip.actualStartAt:null;
   const waiting=trip.state==='WAITING'&&!first&&!firstMotion;
-  const initialRow=origin?`<div class="imuStopRow${waiting?' origin-wait':''}"><span><strong>${escHtml(origin)}</strong><span class="imuStopDetail">Prog ${fmtClock(trip.scheduledAt)} · ${first?`Sal ${fmtClock(first.endAt)}`:firstMotion?`Mov ${fmtClock(firstMotion)}*`:'Salida pendiente'}</span></span><span class="time"${waiting?' data-live-initial-departure=""':''}>${first?escHtml(fmtSignedTenths(first.endAt-trip.scheduledAt)):firstMotion?`${escHtml(fmtSignedTenths(firstMotion-trip.scheduledAt))}*`:waiting?'00:00.0':'—'}</span><span class="time">—</span></div>`:'';
+  // La fila inicial no tiene viaje previo: mantiene el desfase en su columna.
+  const initialDetail=waiting?'Esperando salida':firstMotion&&!first?'Inicio parcial':'Salida inicial';
+  const initialRow=origin?`<div class="imuStopRow${waiting?' origin-wait':''}"><span><strong>${escHtml(origin)}</strong><span class="imuStopDetail">${initialDetail}</span></span><span class="time"${waiting?' data-live-initial-departure=""':''}>${first?escHtml(fmtSignedTenths(first.endAt-trip.scheduledAt)):firstMotion?`${escHtml(fmtSignedTenths(firstMotion-trip.scheduledAt))}*`:waiting?'00:00.0':'—'}</span><span class="time">—</span></div>`:'';
   // Se muestran solo estaciones alcanzadas, de más reciente a más antigua.
   // No anticipar visualmente estaciones futuras ni convertir estaciones perdidas en detenciones.
   const reached=(trip.route||[]).slice(1).filter(station=>
@@ -2803,9 +2814,10 @@ function renderImuStopTable(now=Date.now()){
     const live=trip.state==='STATION'&&trip.currentStationLabel===station;
     const skipped=omitted.has(station)&&!e&&!live;
     const isFinal=trip.state==='FINISHED'&&station===trip.finalStation&&!e;
-    const detail=e?`${fmtClock(e.startAt)} → ${fmtClock(e.endAt)}`:
-      live?`Llegada ${fmtClock(trip.eventStartAt)}`:
-      skipped?'Registro perdido':isFinal?`Llegada ${fmtClock(trip.endAt)}`:' ';
+    const segment=arrivedSegments.get(station);
+    const detail=skipped?'Tramo sin datos':segment
+      ?`Tiempo de viaje${segment.type==='TRAMO_PARCIAL'?' parcial':''} ${fmtTenths(segment.durationMs)}`
+      :'Tiempo de viaje —';
     const dwellText=e?fmtTenths(e.durationMs):live?'00:00.0':skipped?'SIN DATOS':isFinal?'FIN':'—';
     const consentText=e?fmtTenths(e.consentMs||0):live?'00:00.0*':'—';
     return `<div class="imuStopRow${live?' live':''}${skipped?' missed':''}${isFinal?' final-arrival':''}"><span><strong>${escHtml(station)}</strong><span class="imuStopDetail">${escHtml(detail)}</span></span><span class="time"${live?' data-live-dwell=""':''}>${dwellText}</span><span class="time"${live?' data-live-consent=""':''}>${consentText}</span></div>`;
