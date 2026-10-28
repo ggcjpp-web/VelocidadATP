@@ -1,12 +1,10 @@
-
- 
 <!doctype html>
 <html lang="es">
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no" />
 <meta name="theme-color" content="#050708" />
-<title>Registro Ferroviario V7.34</title>
+<title>Registro Ferroviario V7.35</title>
 <style>
 :root{color-scheme:dark;font-family:system-ui,-apple-system,Segoe UI,Roboto,sans-serif}
 *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
@@ -171,6 +169,43 @@ body.show-pk .imuPkStatus{display:block}
 .recoveryNotice.show{display:block}
 .imuHint{margin:12px 0 0;line-height:1.4;text-align:left}
 @media(max-width:370px){.imuBrand{font-size:13px}.topAction{font-size:10px;padding:10px 8px}.imuTimer{font-size:45px}}
+
+/* V7.35 · Vista operativa mínima. Motor IMU/GPS intacto. */
+body.mode-imu #imuMode{padding:max(6px,env(safe-area-inset-top)) 12px max(12px,env(safe-area-inset-bottom))}
+.imuTop{padding:5px 0 8px;min-height:48px;margin-bottom:4px}
+.imuBrand{font-size:16px;font-weight:900}
+.imuBrand span{font-size:10px;font-weight:700;opacity:.65}
+.topActions{gap:6px}
+.topAction{border-radius:10px;padding:9px 12px;min-height:42px;font-size:12px}
+#imuSessionStatus{background:transparent;padding:1px 1px 5px;margin:0;min-height:0;font-size:11px;letter-spacing:.04em;opacity:.5}
+#imuSessionEmailLabel{display:none!important}
+.imuLive{padding-top:0}
+.imuState{font-size:22px;margin:2px 0 2px;letter-spacing:.025em}
+.imuRoute{font-size:18px;margin:1px 0 0;font-weight:800}
+.imuTimer{font-size:clamp(48px,11vw,60px);margin:9px 0 1px;line-height:1.04}
+#imuTimerLabel{display:none!important}
+.imuSecondary{display:flex;align-items:center;margin:5px 0 9px;gap:0}
+.imuSecondary .imuStat:first-child{display:flex;align-items:center;gap:10px;background:none;border:0;padding:0 1px;min-height:26px}
+.imuSecondary .imuStat:first-child .imuStatLabel{font-size:11px;opacity:.6}
+.imuSecondary .imuStat:first-child .imuStatValue{font-size:16px;margin:0;font-weight:850}
+.imuSecondary .imuStat:nth-child(2){display:none!important}
+#imuDepartureCard{display:none!important} /* salida/desfase ya están en la fila inicial */
+.imuPkStatus,body.show-pk .imuPkStatus{margin:0 0 7px;padding:3px 1px;border:0;background:transparent;font-size:12px;line-height:1.3;color:#9cbfc0}
+.imuStopTable{padding:11px 12px 7px;margin:4px 0 0;background:#0e1315;border-radius:14px}
+.imuStopTitle{font-size:12px;font-weight:850;letter-spacing:.07em;margin:0 0 10px}
+.imuStopHead,.imuStopRow{grid-template-columns:minmax(100px,1fr) minmax(66px,auto) minmax(66px,auto);gap:8px}
+.imuStopHead{font-size:9px;opacity:.55}
+.imuStopRow{padding:11px 0;border-top:1px solid rgba(255,255,255,.07)}
+.imuStopRow strong{font-size:15px;line-height:1.1;letter-spacing:-.01em}
+.imuStopDetail{font-size:10px;line-height:1.3;opacity:.68;margin-top:3px;font-weight:500}
+.imuStopRow .time{font-size:14px;min-width:64px}
+#imuStopRows{max-height:min(55vh,500px)}
+.imuConsentNote{display:none!important}
+#advancedTools{margin-top:8px}
+#advancedTools>summary{padding:11px 13px;font-size:11px}
+.imuStopEmpty{font-size:12px}
+.imuCal:empty{display:none}
+@media(max-width:390px){.imuBrand{font-size:14px}.topAction{font-size:11px;padding:8px 9px}.imuStopRow strong{font-size:13px}.imuStopDetail{font-size:9px}.imuStopRow .time{font-size:12px;min-width:60px}.imuStopHead,.imuStopRow{gap:5px;grid-template-columns:minmax(90px,1fr) minmax(60px,auto) minmax(60px,auto)}}
 </style>
 </head>
 <body class="mode-imu">
@@ -187,7 +222,7 @@ body.show-pk .imuPkStatus{display:block}
   </div>
   <section id="imuMode">
     <div class="imuShell">
-      <div class="imuTop"><div class="imuBrand">REGISTRO <span>V7.34</span></div><div class="topActions"><button id="voiceMainBtn" type="button" class="topAction">AVISOS</button><button id="pkToggleBtn" type="button" class="topAction" aria-pressed="false">MOSTRAR PK</button></div><button id="imuBackBtn" style="display:none" aria-hidden="true" tabindex="-1">Cambiar modo</button></div>
+      <div class="imuTop"><div class="imuBrand">REGISTRO <span>V7.35</span></div><div class="topActions"><button id="voiceMainBtn" type="button" class="topAction">AVISOS</button><button id="pkToggleBtn" type="button" class="topAction" aria-pressed="false">PK</button></div><button id="imuBackBtn" style="display:none" aria-hidden="true" tabindex="-1">Cambiar modo</button></div>
       <div id="imuSessionSetup" class="imuSessionCard">
         <div style="font-size:20px;font-weight:950;margin-bottom:10px">SESIÓN DE SERVICIOS</div>
         <div class="imuSessionGrid">
@@ -196,19 +231,19 @@ body.show-pk .imuPkStatus{display:block}
           <div class="imuField"><label>ENVÍO</label><div style="padding:13px 2px;font-size:12px;font-weight:850;opacity:.65">Todos juntos al final</div></div>
         </div>
         <button id="imuSessionStartBtn" class="primary" style="width:100%;margin-top:11px;padding:15px">INICIAR SESIÓN</button>
-        <div id="imuSessionMsg" class="imuCal">Los servicios se guardan localmente hasta completar la sesión.</div>
+        <div id="imuSessionMsg" class="imuCal">Los servicios se guardan localmente.</div>
       </div>
       <div id="imuSessionStatus" class="imuSessionStatus"><span id="imuSessionProgress">SERVICIO 1 DE 1</span><span id="imuSessionEmailLabel"></span></div>
       <div id="voiceBar"><div class="voiceBarText"><div class="voiceBarTitle">AVISOS DE VOZ</div><div id="voiceBarSub" class="voiceBarSub">Sin avisos configurados.</div></div><button id="voiceOpenBtn" class="voiceBarBtn">EDITAR AVISOS</button></div>
       <div id="imuSetup" class="imuSetup" style="display:none">
         <div class="imuSetupGrid">
           <div class="imuField wide"><label>NÚMERO DE SERVICIO</label><input id="imuServiceNumber" type="text" inputmode="numeric" maxlength="3" pattern="[0-9]{3}" placeholder="Ej. 605"></div>
-          <div class="imuField wide"><label>DESTINO</label><select id="imuDestination"></select><div id="imuOtherDestinationWrap" style="display:none;margin-top:8px"><select id="imuDestinationOther"></select></div><div class="serviceRouteNote">El destino establece el sentido. Puedes fijar la estación inicial o usar GPS para ubicar el origen. El IMU detecta la detención y el GPS verifica su correspondencia con la estación esperada.</div></div>
-          <div class="imuField wide"><label>ESTACIÓN INICIAL (OPCIONAL)</label><select id="imuOrigin"><option value="">Automática · GPS solo para ubicar el origen</option></select><div class="serviceRouteNote">Si partes sin cobertura GPS, selecciona la estación inicial. Dentro del túnel, las llegadas se detectan por IMU y en orden aunque se pierda la señal; fuera del túnel sigue la verificación GPS.</div></div>
+          <div class="imuField wide"><label>DESTINO</label><select id="imuDestination"></select><div id="imuOtherDestinationWrap" style="display:none;margin-top:8px"><select id="imuDestinationOther"></select></div><div class="serviceRouteNote">El destino define el sentido.</div></div>
+          <div class="imuField wide"><label>ESTACIÓN INICIAL (OPCIONAL)</label><select id="imuOrigin"><option value="">Automática · GPS solo para ubicar el origen</option></select><div class="serviceRouteNote">Sin GPS inicial, elige estación.</div></div>
           <div class="imuField wide"><label>SALIDA PROGRAMADA</label><input id="imuSchedule" type="time" step="60"></div>
           <div class="validationSetup">
             <label class="validationToggle"><span>MODO PRUEBA DE DETECCIÓN</span><input id="imuValidationMode" type="checkbox"></label>
-            <div class="validationSetupNote">Añade dos marcas manuales —detención real e inicio real de movimiento— y registra IMU/GPS para comparar después. No modifica la detección automática.</div>
+            <div class="validationSetupNote">Para comparar marcas reales y automáticas.</div>
           </div>
           <div class="imuField wide" style="display:none"><label>UBICACIÓN</label><div class="gpsOption"><span>GPS automático</span></div></div>
           <input id="imuGpsSupport" type="checkbox" checked style="display:none">
@@ -216,7 +251,7 @@ body.show-pk .imuPkStatus{display:block}
           <select id="imuRoutePreset" style="display:none"><option value="auto">Automático</option></select>
           <div id="imuCustomRouteFields" style="display:none"><select id="imuStart"></select><select id="imuEnd"></select></div>
         </div>
-        <div id="imuCalText" class="imuCal">IMU detecta las detenciones. El GPS verifica las estaciones al aire libre; en Miramar, Viña del Mar, Hospital y Chorrillos permite confirmar por IMU si falta señal. Selecciona estación inicial si no habrá GPS desde el comienzo.</div>
+        <div id="imuCalText" class="imuCal"></div>
         <button id="imuArmBtn" class="primary">ARMAR SERVICIO</button>
       </div>
       <div id="imuLive" class="imuLive">
@@ -236,7 +271,7 @@ body.show-pk .imuPkStatus{display:block}
           <div id="imuLatestDeparture" class="imuLatestDeparture" style="display:none"></div>
         </div>
         <div id="imuPkStatus" class="imuPkStatus">PK: esperando ubicación GPS · estimación no calibrada</div>
-        <div class="imuStopTable"><div class="imuStopTitle">TIEMPOS POR ESTACIÓN · RECIENTES ARRIBA</div><div class="imuStopHead"><span>ESTACIÓN</span><span>DET. / DESFASE</span><span>CONSENT.</span></div><div id="imuStopRows"><div class="imuStopEmpty">Preparando recorrido…</div></div><div class="imuConsentNote">* Consentimiento en curso desde la llegada; al salir se descuentan 8 s de cierre. La fila inicial indica desfase respecto de la salida programada, no detención.</div></div>
+        <div class="imuStopTable"><div class="imuStopTitle">ESTACIONES</div><div class="imuStopHead"><span>ESTACIÓN</span><span>TIEMPO</span><span>CONS.</span></div><div id="imuStopRows"><div class="imuStopEmpty">Sin registros</div></div></div>
         <div class="liveNavigation"><button id="imuNextServiceBtn" class="primary" style="display:none">SIGUIENTE SERVICIO</button></div>
         <details id="advancedTools"><summary>Herramientas y pruebas <span>▾</span></summary>
           <div class="advancedContent">
@@ -2132,8 +2167,8 @@ function voiceSyncTriggerUi(){
 function pkVoiceTick(now=Date.now()){
   if(!imuOnlyTrip)return;
   const snap=pkGlobalSnapshot(now);
-  if(!snap){imuPkStatus.textContent='PK: sin posición GPS reciente · avisos PK suspendidos';return;}
-  imuPkStatus.textContent=`PK aprox. ${snap.label} · GPS ±${Math.round(snap.accuracy)} m · desv. ${Math.round(snap.offRouteM)} m · ${snap.reliable?'estimación entre estaciones':'sin precisión suficiente para avisar'}`;
+  if(!snap){imuPkStatus.textContent='PK —';return;}
+  imuPkStatus.textContent=`PK ≈${snap.label}${snap.reliable?'':' · baja precisión'}`;
   if(!voiceSettings?.pkAlertsEnabled||imuOnlyTrip.state!=='MOVING'||!snap.reliable)return;
   if(pkLastGPSProcessed===snap.timestamp)return;
   pkLastGPSProcessed=snap.timestamp;
@@ -2479,7 +2514,7 @@ function startValidationRun(){
   imuValidationCurrent={
     enabled:true,
     schemaVersion:'1.15',
-    appVersion:'V7.34',
+    appVersion:'V7.35',
     startedAt:now,
     startedPerf:performance.now(),
     endedAt:null,
@@ -2755,7 +2790,7 @@ function renderImuStopTable(now=Date.now()){
   const first=initialDepartureEvent(trip),origin=trip.startStation||trip.route?.[0];
   const firstMotion=(trip.events||[]).some(e=>e.type==='INICIO_PARCIAL')?trip.actualStartAt:null;
   const waiting=trip.state==='WAITING'&&!first&&!firstMotion;
-  const initialRow=origin?`<div class="imuStopRow${waiting?' origin-wait':''}"><span><strong>${escHtml(origin)} · inicio</strong><span class="imuStopDetail">Prog. ${fmtClock(trip.scheduledAt)} · ${first?`Salida ${fmtClock(first.endAt)} · ${escHtml(initialDepartureDelayText(first.endAt-trip.scheduledAt))}`:firstMotion?`Movimiento ${fmtClock(firstMotion)} · origen sin confirmar`:'Esperando salida'}</span></span><span class="time"${waiting?' data-live-initial-departure=""':''}>${first?escHtml(fmtSignedTenths(first.endAt-trip.scheduledAt)):firstMotion?`${escHtml(fmtSignedTenths(firstMotion-trip.scheduledAt))}*`:waiting?'00:00.0':'—'}</span><span class="time">—</span></div>`:'';
+  const initialRow=origin?`<div class="imuStopRow${waiting?' origin-wait':''}"><span><strong>${escHtml(origin)}</strong><span class="imuStopDetail">Prog ${fmtClock(trip.scheduledAt)} · ${first?`Sal ${fmtClock(first.endAt)}`:firstMotion?`Mov ${fmtClock(firstMotion)}*`:'Salida pendiente'}</span></span><span class="time"${waiting?' data-live-initial-departure=""':''}>${first?escHtml(fmtSignedTenths(first.endAt-trip.scheduledAt)):firstMotion?`${escHtml(fmtSignedTenths(firstMotion-trip.scheduledAt))}*`:waiting?'00:00.0':'—'}</span><span class="time">—</span></div>`:'';
   // Se muestran solo estaciones alcanzadas, de más reciente a más antigua.
   // No anticipar visualmente estaciones futuras ni convertir estaciones perdidas en detenciones.
   const reached=(trip.route||[]).slice(1).filter(station=>
@@ -2768,12 +2803,12 @@ function renderImuStopTable(now=Date.now()){
     const live=trip.state==='STATION'&&trip.currentStationLabel===station;
     const skipped=omitted.has(station)&&!e&&!live;
     const isFinal=trip.state==='FINISHED'&&station===trip.finalStation&&!e;
-    const detail=e?`Llegada ${fmtClock(e.startAt)} · Salida ${fmtClock(e.endAt)}`:
-      live?`Llegada ${fmtClock(trip.eventStartAt)} · detenido`:
-      skipped?'Sin lectura · estación omitida':isFinal?`Llegada ${fmtClock(trip.endAt)} · destino`:' ';
+    const detail=e?`${fmtClock(e.startAt)} → ${fmtClock(e.endAt)}`:
+      live?`Llegada ${fmtClock(trip.eventStartAt)}`:
+      skipped?'Registro perdido':isFinal?`Llegada ${fmtClock(trip.endAt)}`:' ';
     const dwellText=e?fmtTenths(e.durationMs):live?'00:00.0':skipped?'SIN DATOS':isFinal?'FIN':'—';
     const consentText=e?fmtTenths(e.consentMs||0):live?'00:00.0*':'—';
-    return `<div class="imuStopRow${live?' live':''}${skipped?' missed':''}${isFinal?' final-arrival':''}"><span><strong>${escHtml(station)}${live?' · ahora':''}</strong><span class="imuStopDetail">${escHtml(detail)}</span></span><span class="time"${live?' data-live-dwell=""':''}>${dwellText}</span><span class="time"${live?' data-live-consent=""':''}>${consentText}</span></div>`;
+    return `<div class="imuStopRow${live?' live':''}${skipped?' missed':''}${isFinal?' final-arrival':''}"><span><strong>${escHtml(station)}</strong><span class="imuStopDetail">${escHtml(detail)}</span></span><span class="time"${live?' data-live-dwell=""':''}>${dwellText}</span><span class="time"${live?' data-live-consent=""':''}>${consentText}</span></div>`;
   });
   const html=rows.join('')+initialRow||'<div class="imuStopEmpty">Esperando origen y recorrido.</div>';
   const count=rows.length+(origin?1:0);
@@ -4105,6 +4140,7 @@ async function armImuTrip(){
   clearVoiceTimers(false);pkVoiceRuntime=new Map();pkLastGPSProcessed=null;pkLastGoodPosition=null;if('speechSynthesis'in window)window.speechSynthesis.resume();const now=Date.now();
   const vehicleProfile=vehicleProfileFromDestination(destination),inferredDirection=inferredDirectionFromDestination(destination),inferredVia=inferredViaFromDestination(destination),provisionalRoute=inferredRouteFromDestination(destination);
   imuOnlyTrip={id:'IMU'+now,serviceNumber:service,direction:inferredDirection,via:inferredVia,vehicleProfile,armedAt:now,scheduledAt:imuScheduledTimestamp(),actualStartAt:null,endAt:null,route:provisionalRoute,pos:0,startStation:null,finalStation:destination,state:'LOCATING',eventLabel:'ESPERANDO MOVIMIENTO · IMU',eventStartAt:now,segmentStartAt:null,events:[],gpsSupport:gpsStarted,gpsOriginLocked:false,gpsLastValidAt:null,locationPending:true,currentStationLabel:null,trustedRestG:null,trustedRestN:null,initialRestCommitted:false,expectedApproachIndex:null,expectedApproachSeenAt:null,contextStopBlocked:false,gpsMissedStationSince:null,gpsMissedStationIndex:null,doubleCutBellotoArmed:false,doubleCutBellotoDone:false,tunnelImuFallbackActive:false};
+  imuSessionProgress.textContent=`SERVICIO ${service}`;
   imuDirection.value=inferredDirection;
   resetNativeDeviceCalibration();
   // Cada viaje parte con buffers/sesgos propios del dispositivo actual; no arrastramos muestras del viaje anterior.
@@ -4140,7 +4176,7 @@ function startImuSession(){
 function renderImuSessionStatus(){
   if(!imuSession){imuSessionStatus.classList.remove('show');return;}
   const next=Math.min(imuSession.services.length+1,imuSession.plannedCount);
-  imuSessionProgress.textContent=`SERVICIO ${next} DE ${imuSession.plannedCount}`;
+  imuSessionProgress.textContent=imuOnlyTrip?.serviceNumber?`SERVICIO ${imuOnlyTrip.serviceNumber}`:`SERVICIO ${next}/${imuSession.plannedCount}`;
   imuSessionEmailLabel.textContent=imuSession.email;renderVoiceBar();
 }
 function mean(a){return a.length?a.reduce((x,y)=>x+y,0)/a.length:0;}
@@ -4233,7 +4269,7 @@ function nextImuService(){
 }
 function resetImuSession(){
   validationPanel?.classList.remove('show');validationReportCard?.classList.remove('show');
-  stopGpsSupport();clearVoiceTimers(true);pkVoiceRuntime.clear();pkLastGPSProcessed=null;pkLastGoodPosition=null;voiceModal.classList.remove('show');stopLiveStationFrame();clearInterval(imuOnlyLoop);imuOnlyLoop=null;imuOnlyTrip=null;previousImuTickAt=null;recoveryNotice('');imuOnlyLastCompleted=null;imuBaseline=null;imuCalStart=null;imuDepartureHintAt=null;imuArrivalHintAt=null;imuCalValues=[];imuCalMode=null;imuScoreHistory=[];imuAutoCalStationKey=null;clearTimeout(imuCalUiTimer);imuCalLive.className='imuCalLive';imuRecalBtn.disabled=false;imuSession=null;saveImuSession();imuLiveEl.classList.remove('show');imuSessionReport.classList.remove('show');imuSetupEl.style.display='none';imuSessionStatus.classList.remove('show');imuSessionSetup.style.display='block';imuFinishBtn.style.display='inline-block';imuFinishBtn.textContent='FINALIZAR';imuRecalBtn.style.display='inline-block';imuEmail.value='';imuServiceCount.value='1';imuServiceNumber.value='';imuOrigin.value='';imuSessionMsg.textContent='Los servicios se guardan localmente hasta completar la sesión.';renderVoiceBar();
+  stopGpsSupport();clearVoiceTimers(true);pkVoiceRuntime.clear();pkLastGPSProcessed=null;pkLastGoodPosition=null;voiceModal.classList.remove('show');stopLiveStationFrame();clearInterval(imuOnlyLoop);imuOnlyLoop=null;imuOnlyTrip=null;previousImuTickAt=null;recoveryNotice('');imuOnlyLastCompleted=null;imuBaseline=null;imuCalStart=null;imuDepartureHintAt=null;imuArrivalHintAt=null;imuCalValues=[];imuCalMode=null;imuScoreHistory=[];imuAutoCalStationKey=null;clearTimeout(imuCalUiTimer);imuCalLive.className='imuCalLive';imuRecalBtn.disabled=false;imuSession=null;saveImuSession();imuLiveEl.classList.remove('show');imuSessionReport.classList.remove('show');imuSetupEl.style.display='none';imuSessionStatus.classList.remove('show');imuSessionSetup.style.display='block';imuFinishBtn.style.display='inline-block';imuFinishBtn.textContent='FINALIZAR';imuRecalBtn.style.display='inline-block';imuEmail.value='';imuServiceCount.value='1';imuServiceNumber.value='';imuOrigin.value='';imuSessionMsg.textContent='Los servicios se guardan localmente.';renderVoiceBar();
 }
 function restoreImuSession(){
   try{
@@ -4371,7 +4407,7 @@ function setPkVisible(visible){
   document.body.classList.toggle('show-pk',!!visible);
   pkToggleBtn.classList.toggle('selected',!!visible);
   pkToggleBtn.setAttribute('aria-pressed',String(!!visible));
-  pkToggleBtn.textContent=visible?'OCULTAR PK':'MOSTRAR PK';
+  pkToggleBtn.textContent='PK';
   try{localStorage.setItem('registro.pk.visible.v1',visible?'1':'0');}catch(e){}
 }
 voiceMainBtn.addEventListener('click',()=>openVoiceModal(false));
