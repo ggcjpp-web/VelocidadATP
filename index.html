@@ -4,7 +4,7 @@
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no" />
 <meta name="theme-color" content="#050708" />
-<title>Registro Ferroviario V7.35</title>
+<title>Registro Ferroviario V7.37 · motor V7.35</title>
 <style>
 :root{color-scheme:dark;font-family:system-ui,-apple-system,Segoe UI,Roboto,sans-serif}
 *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
@@ -222,7 +222,7 @@ body.mode-imu #imuMode{padding:max(6px,env(safe-area-inset-top)) 12px max(12px,e
   </div>
   <section id="imuMode">
     <div class="imuShell">
-      <div class="imuTop"><div class="imuBrand">REGISTRO <span>V7.35</span></div><div class="topActions"><button id="voiceMainBtn" type="button" class="topAction">AVISOS</button><button id="pkToggleBtn" type="button" class="topAction" aria-pressed="false">PK</button></div><button id="imuBackBtn" style="display:none" aria-hidden="true" tabindex="-1">Cambiar modo</button></div>
+      <div class="imuTop"><div class="imuBrand">REGISTRO <span>V7.37</span></div><div class="topActions"><button id="voiceMainBtn" type="button" class="topAction">AVISOS</button><button id="pkToggleBtn" type="button" class="topAction" aria-pressed="false">PK</button></div><button id="imuBackBtn" style="display:none" aria-hidden="true" tabindex="-1">Cambiar modo</button></div>
       <div id="imuSessionSetup" class="imuSessionCard">
         <div style="font-size:20px;font-weight:950;margin-bottom:10px">SESIÓN DE SERVICIOS</div>
         <div class="imuSessionGrid">
@@ -2514,7 +2514,7 @@ function startValidationRun(){
   imuValidationCurrent={
     enabled:true,
     schemaVersion:'1.15',
-    appVersion:'V7.35',
+    appVersion:'V7.37',
     startedAt:now,
     startedPerf:performance.now(),
     endedAt:null,
@@ -2787,6 +2787,15 @@ function renderImuStopTable(now=Date.now()){
   }
   const completed=new Map((trip.events||[]).filter(e=>e.type==='ESTACION').map(e=>[e.label,e]));
   const omitted=new Set((trip.events||[]).filter(e=>e.type==='SYNC').flatMap(e=>e.omittedStations||[]));
+  // V7.37: visualizacion exclusiva de trayectos ya registrados.
+  // El motor IMU/GPS es el original de V7.35, sin cambios.
+  const travelByArrival=new Map();
+  for(const event of trip.events||[]){
+    if((event.type!=='TRAMO'&&event.type!=='TRAMO_PARCIAL')||
+       !Number.isFinite(event.durationMs)||event.durationMs<0)continue;
+    const destination=String(event.label||'').split('→').pop().trim();
+    if(destination)travelByArrival.set(destination,event);
+  }
   const first=initialDepartureEvent(trip),origin=trip.startStation||trip.route?.[0];
   const firstMotion=(trip.events||[]).some(e=>e.type==='INICIO_PARCIAL')?trip.actualStartAt:null;
   const waiting=trip.state==='WAITING'&&!first&&!firstMotion;
@@ -2803,9 +2812,12 @@ function renderImuStopTable(now=Date.now()){
     const live=trip.state==='STATION'&&trip.currentStationLabel===station;
     const skipped=omitted.has(station)&&!e&&!live;
     const isFinal=trip.state==='FINISHED'&&station===trip.finalStation&&!e;
-    const detail=e?`${fmtClock(e.startAt)} → ${fmtClock(e.endAt)}`:
-      live?`Llegada ${fmtClock(trip.eventStartAt)}`:
-      skipped?'Registro perdido':isFinal?`Llegada ${fmtClock(trip.endAt)}`:' ';
+    // El tiempo de viaje termina en la llegada, y excluye la detencion posterior.
+    // Nunca generar duraciones si el tramo anterior se perdio por una interrupcion.
+    const travel=travelByArrival.get(station);
+    const detail=skipped?'Tiempo de viaje —':travel
+      ?`Tiempo de viaje ${fmtTenths(travel.durationMs)}${travel.type==='TRAMO_PARCIAL'?' (parcial)':''}`
+      :'Tiempo de viaje —';
     const dwellText=e?fmtTenths(e.durationMs):live?'00:00.0':skipped?'SIN DATOS':isFinal?'FIN':'—';
     const consentText=e?fmtTenths(e.consentMs||0):live?'00:00.0*':'—';
     return `<div class="imuStopRow${live?' live':''}${skipped?' missed':''}${isFinal?' final-arrival':''}"><span><strong>${escHtml(station)}</strong><span class="imuStopDetail">${escHtml(detail)}</span></span><span class="time"${live?' data-live-dwell=""':''}>${dwellText}</span><span class="time"${live?' data-live-consent=""':''}>${consentText}</span></div>`;
