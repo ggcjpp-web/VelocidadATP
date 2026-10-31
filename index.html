@@ -4,7 +4,7 @@
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no" />
 <meta name="theme-color" content="#050708" />
-<title>Registro Ferroviario V7.38 · motor V7.35</title>
+<title>Registro Ferroviario V7.39 · motor V7.35</title>
 <style>
 :root{color-scheme:dark;font-family:system-ui,-apple-system,Segoe UI,Roboto,sans-serif}
 *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
@@ -222,7 +222,7 @@ body.mode-imu #imuMode{padding:max(6px,env(safe-area-inset-top)) 12px max(12px,e
   </div>
   <section id="imuMode">
     <div class="imuShell">
-      <div class="imuTop"><div class="imuBrand">REGISTRO <span>V7.38</span></div><div class="topActions"><button id="voiceMainBtn" type="button" class="topAction">AVISOS</button><button id="pkToggleBtn" type="button" class="topAction" aria-pressed="false">PK</button></div><button id="imuBackBtn" style="display:none" aria-hidden="true" tabindex="-1">Cambiar modo</button></div>
+      <div class="imuTop"><div class="imuBrand">REGISTRO <span>V7.39</span></div><div class="topActions"><button id="voiceMainBtn" type="button" class="topAction">AVISOS</button><button id="pkToggleBtn" type="button" class="topAction" aria-pressed="false">PK</button></div><button id="imuBackBtn" style="display:none" aria-hidden="true" tabindex="-1">Cambiar modo</button></div>
       <div id="imuSessionSetup" class="imuSessionCard">
         <div style="font-size:20px;font-weight:950;margin-bottom:10px">SESIÓN DE SERVICIOS</div>
         <div class="imuSessionGrid">
@@ -584,7 +584,18 @@ function estimatedConsentMs(dwellMs){return Math.max(0,(Number(dwellMs)||0)-CONS
 const STATION_DEPARTURE_GPS_HOLD_MS=650;
 const STATION_DEPARTURE_IMU_WITH_GPS_MS=850;
 const STATION_DEPARTURE_IMU_ONLY_MS=1700;
-const IMU_MIN_SEGMENT_MS=65000;
+// V7.39: coherencia temporal. Un viaje de menos de un minuto no se puede
+// adjudicar a la siguiente estación, aunque el GPS desaparezca en el túnel.
+// Se valida contra la HORA FÍSICA RETROSPECTIVA de llegada, no la confirmación
+// 10 s posterior, para evitar que el retardo del detector falsifique el tiempo.
+const IMU_MIN_SEGMENT_MS=60000;
+function imuTravelTimeGuard(segmentDepartureAt,proposedStationArrivalAt){
+  if(!Number.isFinite(segmentDepartureAt)||!Number.isFinite(proposedStationArrivalAt))
+    return {ok:false,elapsedMs:null,minimumMs:IMU_MIN_SEGMENT_MS,reason:'tramo_sin_tiempos_validos'};
+  const elapsedMs=proposedStationArrivalAt-segmentDepartureAt;
+  return {ok:elapsedMs>=IMU_MIN_SEGMENT_MS,elapsedMs,minimumMs:IMU_MIN_SEGMENT_MS,
+    reason:elapsedMs<0?'llegada_antes_de_salida':elapsedMs<IMU_MIN_SEGMENT_MS?'tramo_menor_a_60s':'tramo_valido'};
+}
 const IMU_EARLY_STOP_MS=40000;
 const IMU_VECTOR_WINDOW_MS=620;
 const IMU_PHASE_WINDOW_MS=980;
@@ -2541,8 +2552,8 @@ function startValidationRun(){
   const now=Date.now();
   imuValidationCurrent={
     enabled:true,
-    schemaVersion:'1.15',
-    appVersion:'V7.38',
+    schemaVersion:'1.16',
+    appVersion:'V7.39',
     startedAt:now,
     startedPerf:performance.now(),
     endedAt:null,
@@ -2642,6 +2653,9 @@ function validationContextReject(reason,effectiveAt,ctx,plateau=null){
     segmentCompatible:!!ctx?.segmentCompatible,
     plateauG:validationRound(plateau?.g),
     plateauP75:validationRound(plateau?.gP75),
+    segmentElapsedMs:Number.isFinite(imuOnlyTrip?.segmentStartAt)&&Number.isFinite(effectiveAt)
+      ?Math.round(effectiveAt-imuOnlyTrip.segmentStartAt):null,
+    minSegmentMs:IMU_MIN_SEGMENT_MS,
     snapshot:validationSnapshot(now)
   });
 }
@@ -2726,7 +2740,7 @@ function exportValidationRun(){
       durationMs:v.endedAt?Math.max(0,v.endedAt-v.startedAt):Date.now()-v.startedAt,
       note:'Las marcas MANUAL representan la realidad indicada por el usuario. Las transiciones AUTOMATICAS son lo que decidió la app. GPS es contexto espacial, no una marca manual.',
       accelerationInfo:{units:'m/s2',gravityFilter:'pasa-altos independiente: accelerationIncludingGravity menos media exponencial (tau=2 segundos)',
-        note:'V7.38: primera salida con umbrales IMU iniciales exclusivos y confirmación sostenida; origen manual en espera o GPS automático seguido de salida física. Detectores de detención y salidas intermedias conservados de V7.37. GPS valida estaciones, túnel permite respaldo IMU. Consentimiento = detención − 8 s de cierre.', 
+        note:'V7.39: motor físico IMU V7.38 sin cambiar umbrales; protección temporal de 60 s entre salida física y llegada retrospectiva, incluida excepción de túnel. Se rechaza la meseta prematura y se exige nuevo movimiento antes de rearmar. Consentimiento = detención − 8 s de cierre.', 
         nativeRawRows:v.nativeSamples,gravityAvailableRows:v.gravitySamples,rawSamplingMinIntervalMs:VALIDATION_RAW_MIN_INTERVAL_MS},
       sensorProfile:{...nativeDeviceProfileNow()}
     },
@@ -3922,6 +3936,13 @@ function imuOnlyTick(){
 
     // Una detención física ya confirmada pero fuera del contexto de la estación esperada
     // no puede volver a generar otra estación sobre la misma meseta.
+    // Protección independiente de GPS: si se detectó reposo incompatible con el
+    // tiempo de recorrido, no renombrar esa MISMA meseta cuando pasen 60 s.
+    // Debe reaparecer movimiento físico sostenido antes de buscar otra llegada.
+    if(imuOnlyTrip.earlyTravelStopBlocked){
+      if(gravityMoveFreezeActive(now,gravityLevel,slowScore))return;
+      imuOnlyTrip.earlyTravelStopBlocked=false;
+    }
     if(imuOnlyTrip.contextStopBlocked){
       const stationCtxNow=gravityExpectedStationContext(gps,now);
       if(stationCtxNow.canConfirm){
@@ -4040,6 +4061,18 @@ function imuOnlyTick(){
 
             const expectedNext=(Number.isInteger(imuOnlyTrip.pos)?imuOnlyTrip.pos:0)+1;
             const routeCtx=gravityExpectedStationContext(gps,now);
+            // V7.39: el tiempo mínimo se aplica ANTES de permitir fallback
+            // sin GPS. El IMU ha encontrado reposo, pero no puede etiquetarlo
+            // como la siguiente estación si el recorrido duró menos de 60 s.
+            // Rechazar y congelar esta candidata: no aceptarla luego solo
+            // porque transcurrió el minuto mientras el tren siguió quieto.
+            const travelGuard=imuTravelTimeGuard(imuOnlyTrip.segmentStartAt,inferredArrival);
+            if(!travelGuard.ok){
+              validationContextReject(travelGuard.reason,inferredArrival,routeCtx,finalPlateau);
+              imuOnlyTrip.earlyTravelStopBlocked=true;
+              gravityClearStopCandidate(false,now,true);
+              return;
+            }
             // V7.29: secuencia estricta pos+1; GPS verifica normalmente,
             // pero no veta las detenciones IMU en las estaciones interiores del
             // túnel cuando la señal está ausente o degradada.
@@ -4164,6 +4197,7 @@ function imuOnlyTick(){
 
     physResetCandidates();physMoveHistory=[];gravityMoveHistory=[];gravityMotionTrace=[];imuScoreHistory=[];imuStationWindowSamples=[];gravityResetRest();
     imuOnlyTrip.contextStopBlocked=false;
+    imuOnlyTrip.earlyTravelStopBlocked=false;
     imuOnlyTrip.expectedApproachIndex=null;imuOnlyTrip.expectedApproachSeenAt=null;
     imuOnlyTrip.gpsMissedStationSince=null;imuOnlyTrip.gpsMissedStationIndex=null;
     imuOnlyTrip.segmentStartAt=at;
@@ -4199,7 +4233,7 @@ async function armImuTrip(){
   const vehicleProfile=inferredDirection==='puerto'?'MC':'TCP';
   const inferredVia=inferredDirection==='puerto'?'via2':'via1';
   const provisionalRoute=inferredRouteFromDestination(destination);
-  imuOnlyTrip={id:'IMU'+now,serviceNumber:service,direction:inferredDirection,via:inferredVia,vehicleProfile,armedAt:now,scheduledAt:imuScheduledTimestamp(),actualStartAt:null,endAt:null,route:provisionalRoute,pos:0,startStation:null,finalStation:destination,manualOrigin:!!originChoice,originMode:originChoice?'manual':'auto',state:'LOCATING',eventLabel:'ESPERANDO MOVIMIENTO · IMU',eventStartAt:now,segmentStartAt:null,events:[],gpsSupport:gpsStarted,gpsOriginLocked:false,gpsLastValidAt:null,locationPending:true,currentStationLabel:null,trustedRestG:null,trustedRestN:null,initialRestCommitted:false,expectedApproachIndex:null,expectedApproachSeenAt:null,contextStopBlocked:false,gpsMissedStationSince:null,gpsMissedStationIndex:null,doubleCutBellotoArmed:false,doubleCutBellotoDone:false,tunnelImuFallbackActive:false};
+  imuOnlyTrip={id:'IMU'+now,serviceNumber:service,direction:inferredDirection,via:inferredVia,vehicleProfile,armedAt:now,scheduledAt:imuScheduledTimestamp(),actualStartAt:null,endAt:null,route:provisionalRoute,pos:0,startStation:null,finalStation:destination,manualOrigin:!!originChoice,originMode:originChoice?'manual':'auto',state:'LOCATING',eventLabel:'ESPERANDO MOVIMIENTO · IMU',eventStartAt:now,segmentStartAt:null,events:[],gpsSupport:gpsStarted,gpsOriginLocked:false,gpsLastValidAt:null,locationPending:true,currentStationLabel:null,trustedRestG:null,trustedRestN:null,initialRestCommitted:false,expectedApproachIndex:null,expectedApproachSeenAt:null,contextStopBlocked:false,earlyTravelStopBlocked:false,gpsMissedStationSince:null,gpsMissedStationIndex:null,doubleCutBellotoArmed:false,doubleCutBellotoDone:false,tunnelImuFallbackActive:false};
   imuSessionProgress.textContent=`SERVICIO ${service}`;
   imuDirection.value=inferredDirection;
   resetNativeDeviceCalibration();
