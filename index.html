@@ -4,7 +4,7 @@
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no" />
 <meta name="theme-color" content="#050708" />
-<title>Registro Ferroviario V7.39 · motor V7.35</title>
+<title>Registro Ferroviario V7.40 · motor V7.35</title>
 <style>
 :root{color-scheme:dark;font-family:system-ui,-apple-system,Segoe UI,Roboto,sans-serif}
 *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
@@ -222,7 +222,7 @@ body.mode-imu #imuMode{padding:max(6px,env(safe-area-inset-top)) 12px max(12px,e
   </div>
   <section id="imuMode">
     <div class="imuShell">
-      <div class="imuTop"><div class="imuBrand">REGISTRO <span>V7.39</span></div><div class="topActions"><button id="voiceMainBtn" type="button" class="topAction">AVISOS</button><button id="pkToggleBtn" type="button" class="topAction" aria-pressed="false">PK</button></div><button id="imuBackBtn" style="display:none" aria-hidden="true" tabindex="-1">Cambiar modo</button></div>
+      <div class="imuTop"><div class="imuBrand">REGISTRO <span>V7.40</span></div><div class="topActions"><button id="voiceMainBtn" type="button" class="topAction">AVISOS</button><button id="pkToggleBtn" type="button" class="topAction" aria-pressed="false">PK</button></div><button id="imuBackBtn" style="display:none" aria-hidden="true" tabindex="-1">Cambiar modo</button></div>
       <div id="imuSessionSetup" class="imuSessionCard">
         <div style="font-size:20px;font-weight:950;margin-bottom:10px">SESIÓN DE SERVICIOS</div>
         <div class="imuSessionGrid">
@@ -270,7 +270,7 @@ body.mode-imu #imuMode{padding:max(6px,env(safe-area-inset-top)) 12px max(12px,e
           <div id="imuDepartureDelta" class="imuDepartureDelta"></div>
           <div id="imuLatestDeparture" class="imuLatestDeparture" style="display:none"></div>
         </div>
-        <div id="imuPkStatus" class="imuPkStatus">PK: esperando ubicación GPS · estimación no calibrada</div>
+        <div id="imuPkStatus" class="imuPkStatus">PK: esperando GPS · estimación aproximada</div>
         <div class="imuStopTable"><div class="imuStopTitle">ESTACIONES</div><div class="imuStopHead"><span>ESTACIÓN</span><span>TIEMPO</span><span>CONS.</span></div><div id="imuStopRows"><div class="imuStopEmpty">Sin registros</div></div></div>
         <div class="liveNavigation"><button id="imuNextServiceBtn" class="primary" style="display:none">SIGUIENTE SERVICIO</button></div>
         <details id="advancedTools"><summary>Herramientas y pruebas <span>▾</span></summary>
@@ -549,15 +549,56 @@ const TRIPS_KEY='velocidadATP.completedTrips.v1';
 const ACTIVE_TRIP_KEY='velocidadATP.activeTrip.v1';
 const STATIONS_PUERTO_LIMACHE=['Puerto','Bellavista','Francia','Barón','Portales','Recreo','Miramar','Viña del Mar','Hospital','Chorrillos','El Salto','Valencia','Quilpué','El Sol','El Belloto','Las Américas','La Concepción','Villa Alemana','Sargento Aldea','Peñablanca','Limache'];
 // Coordenadas de referencia de las estaciones. En modo SOLO IMU, el GPS es la autoridad espacial cuando es válido; el IMU afina los instantes y queda como respaldo sin GPS.
-const STATION_COORDS={
-  'Puerto':[-33.0394,-71.6260],'Bellavista':[-33.0431,-71.6204],'Francia':[-33.0438,-71.6131],
-  'Barón':[-33.0422,-71.6056],'Portales':[-33.0327,-71.5914],'Recreo':[-33.0272,-71.5753],
-  'Miramar':[-33.0249,-71.5615],'Viña del Mar':[-33.0264,-71.5519],'Hospital':[-33.0285,-71.5429],
-  'Chorrillos':[-33.0333,-71.5328],'El Salto':[-33.0412,-71.5212],'Valencia':[-33.0402,-71.4688],
-  'Quilpué':[-33.0453,-71.4446],'El Sol':[-33.0396,-71.4288],'El Belloto':[-33.0432,-71.4065],
-  'Las Américas':[-33.0439,-71.3947],'La Concepción':[-33.0417,-71.3820],'Villa Alemana':[-33.0425,-71.3735],
-  'Sargento Aldea':[-33.0421,-71.3660],'Peñablanca':[-33.0402,-71.3530],'Limache':[-32.9844,-71.2780]
+// V7.40: puntos de detención diferenciados por vía, aportados en terreno.
+// El tercer número de cada vía es kilometraje ACUMULADO entre detenciones,
+// NO un PK ferroviario oficial. V1 crece hacia Limache; V2 crece hacia Puerto.
+// Miramar, Viña del Mar, Hospital y Chorrillos: coordenadas SOLO referenciales
+// por pérdida de GPS en túnel. No usar para autoridades operacionales.
+const STATION_TRACK_POINTS={
+  "Puerto":{via1:[-33.039147894407655,-71.62630293899045,0.0],via2:[-33.03908269952511,-71.62620960475661,43.05]},
+  "Bellavista":{via1:[-33.04325294425453,-71.61986650310921,0.77],via2:[-33.04299501198697,-71.62090927394081,42.28]},
+  "Francia":{via1:[-33.04396660209946,-71.61272222025202,1.44],via2:[-33.04376096675104,-71.61349236234042,41.69]},
+  "Barón":{via1:[-33.04175234990331,-71.60538810457238,2.26],via2:[-33.04256672858704,-71.60579176326496,40.9]},
+  "Portales":{via1:[-33.03272668906444,-71.59141049853237,3.98],via2:[-33.03296283752845,-71.59240692378073,39.17]},
+  "Recreo":{via1:[-33.0265749510145,-71.5744802649351,6.03],via2:[-33.02719997415692,-71.57538575309802,37.13]},
+  "Miramar":{via1:[-33.025034220201555,-71.56112322671409,7.37],via2:[-33.02494308185947,-71.5614696085576,35.79]},
+  "Viña del Mar":{via1:[-33.02661036449212,-71.5512916780245,8.3],via2:[-33.026368105259685,-71.55256780922292,34.86]},
+  "Hospital":{via1:[-33.0286165057845,-71.54324938195953,9.08],via2:[-33.02858923718304,-71.54311996581662,33.94]},
+  "Chorrillos":{via1:[-33.03293087336643,-71.53349257963413,10.14],via2:[-33.032403797859416,-71.53379018753438,32.88]},
+  "El Salto":{via1:[-33.04180135723694,-71.52042842741042,11.73],via2:[-33.04122140952339,-71.52124623877454,31.29]},
+  "Valencia":{via1:[-33.04015588062949,-71.4688717306191,18.97],via2:[-33.03952594405551,-71.4693453361574,24.13]},
+  "Quilpué":{via1:[-33.04526431106554,-71.44427019336435,21.44],via2:[-33.04524759198116,-71.44533751426826,21.66]},
+  "El Sol":{via1:[-33.03976752961149,-71.42789226906943,23.21],via2:[-33.03952861106547,-71.42894624910637,19.89]},
+  "El Belloto":{via1:[-33.04328643743337,-71.40620787719348,25.28],via2:[-33.04292391932275,-71.40721725751783,17.82]},
+  "Las Américas":{via1:[-33.04386490808573,-71.39443127839732,26.4],via2:[-33.04401527879799,-71.3954850831062,16.7]},
+  "La Concepción":{via1:[-33.04166852534441,-71.3818138186468,27.61],via2:[-33.04165605466332,-71.38290458826147,15.49]},
+  "Villa Alemana":{via1:[-33.0425361535683,-71.37268906510323,28.46],via2:[-33.04248593106096,-71.37377737335703,14.64]},
+  "Sargento Aldea":{via1:[-33.042092330634816,-71.36584198237675,29.1],via2:[-33.04213716716626,-71.36694353999674,14.0]},
+  "Peñablanca":{via1:[-33.039868045715835,-71.35223039982122,30.41],via2:[-33.04039627696827,-71.3533158726445,12.69]},
+  "Limache":{via1:[-32.98452695466752,-71.27805744703564,43.1],via2:[-32.98445877818949,-71.27806024942106,0.0]}
 };
+const STATION_TUNNEL_REFERENCE_ONLY=new Set(['Miramar','Viña del Mar','Hospital','Chorrillos']);
+const STATION_TRACK_VERSION='stops_v1_v2_2026_11_02_revision3';
+const STATION_TRACK_DISTANCE_ANOMALIES=new Set(['via2:Bellavista|Francia']);
+function gpsCurrentVia(trip=null){
+  const t=trip||imuOnlyTrip;
+  if(t?.via==='via1'||t?.via==='via2')return t.via;
+  const direction=t?.direction||directionSelect?.value;
+  return direction==='puerto'?'via2':'via1';
+}
+function stationRailChainageM(name,via=gpsCurrentVia()){
+  const x=STATION_TRACK_POINTS[name]?.[via];
+  if(!x)return null;
+  return (via==='via2'?STATION_TRACK_POINTS.Puerto.via2[2]-x[2]:x[2])*1000;
+}
+function stationRailSegmentData(nameA,nameB,via=gpsCurrentVia()){
+  const a=stationRailChainageM(nameA,via),b=stationRailChainageM(nameB,via);
+  if(!Number.isFinite(a)||!Number.isFinite(b))return null;
+  const lengthM=Math.abs(b-a);
+  const key=via+':'+nameA+'|'+nameB;
+  const reverseKey=via+':'+nameB+'|'+nameA;
+  return {lengthM,consistent:!STATION_TRACK_DISTANCE_ANOMALIES.has(key)&&!STATION_TRACK_DISTANCE_ANOMALIES.has(reverseKey),via};
+}
 const STOP_SPEED=.8;
 const MOVE_SPEED=1.2;
 const ARRIVAL_CONFIRM_MS=1700;
@@ -584,7 +625,7 @@ function estimatedConsentMs(dwellMs){return Math.max(0,(Number(dwellMs)||0)-CONS
 const STATION_DEPARTURE_GPS_HOLD_MS=650;
 const STATION_DEPARTURE_IMU_WITH_GPS_MS=850;
 const STATION_DEPARTURE_IMU_ONLY_MS=1700;
-// V7.39: coherencia temporal. Un viaje de menos de un minuto no se puede
+// V7.40: coherencia temporal. Un viaje de menos de un minuto no se puede
 // adjudicar a la siguiente estación, aunque el GPS desaparezca en el túnel.
 // Se valida contra la HORA FÍSICA RETROSPECTIVA de llegada, no la confirmación
 // 10 s posterior, para evitar que el retardo del detector falsifique el tiempo.
@@ -703,7 +744,7 @@ const PK_VOICE_MAX_GPS_ACCURACY_M=55;
 const PK_VOICE_MAX_OFFROUTE_M=125;
 const PK_VOICE_POSITION_JUMP_M=340;
 
-const STATION_GPS_KEY='velocidadATP.learnedStationGps.v1';
+const STATION_GPS_KEY='velocidadATP.stationGpsObservations.v2';
 const IMU_SESSION_KEY='velocidadATP.imuServiceSession.v1';
 
 // V7.30 · Prevenciones transcritas de la captura proporcionada por el usuario,
@@ -1098,21 +1139,26 @@ function loadGpsStationOverrides(){
   try{gpsStationOverrides=JSON.parse(localStorage.getItem(STATION_GPS_KEY)||'{}')||{};}catch(e){gpsStationOverrides={};}
   return gpsStationOverrides;
 }
-function gpsStationPoint(name){
-  const learned=loadGpsStationOverrides()[name];
-  if(learned&&Number.isFinite(learned.lat)&&Number.isFinite(learned.lon))return {lat:learned.lat,lon:learned.lon,learned:true};
-  const p=STATION_COORDS[name];return p?{lat:p[0],lon:p[1],learned:false}:null;
+function gpsStationPoint(name,via=gpsCurrentVia()){
+  const p=STATION_TRACK_POINTS[name]?.[via];
+  return p?{lat:p[0],lon:p[1],via,railKm:p[2],referenceOnly:STATION_TUNNEL_REFERENCE_ONLY.has(name),learned:false}:null;
 }
 function gpsLearnStationAnchor(name,gps=gpsLast){
-  if(!name||!gps||!Number.isFinite(gps.lat)||!Number.isFinite(gps.lon)||!Number.isFinite(gps.accuracy)||gps.accuracy>GPS_STRONG_ACCURACY_M)return false;
-  const base=STATION_COORDS[name]?{lat:STATION_COORDS[name][0],lon:STATION_COORDS[name][1]}:null;
+  // Guardar observaciones para calibración posterior, pero NO reemplazar
+  // automáticamente los puntos de detención medidos por el usuario.
+  const via=gpsCurrentVia(),base=gpsStationPoint(name,via);
+  if(!base||base.referenceOnly||!gps||!Number.isFinite(gps.lat)||!Number.isFinite(gps.lon)||
+     !Number.isFinite(gps.accuracy)||gps.accuracy>GPS_STRONG_ACCURACY_M)return false;
   const cur={lat:gps.lat,lon:gps.lon};
-  if(base&&gpsHaversineMeters(base,cur)>500)return false;
-  const db=loadGpsStationOverrides(),old=db[name];
+  if(gpsHaversineMeters(base,cur)>220)return false;
+  const db=loadGpsStationOverrides(),key=via+':'+name,old=db[key];
   if(old&&gpsHaversineMeters(old,cur)>260)return false;
   const oldN=Math.max(0,old?.n||0),wNew=1/Math.max(8,gps.accuracy),wOld=oldN?Math.min(8,oldN)/Math.max(8,old.accuracy||30):0;
   const den=wOld+wNew||1;
-  db[name]={lat:old?(old.lat*wOld+cur.lat*wNew)/den:cur.lat,lon:old?(old.lon*wOld+cur.lon*wNew)/den:cur.lon,accuracy:old?Math.min(old.accuracy||999,gps.accuracy):gps.accuracy,n:oldN+1,updatedAt:Date.now()};
+  db[key]={lat:old?(old.lat*wOld+cur.lat*wNew)/den:cur.lat,
+    lon:old?(old.lon*wOld+cur.lon*wNew)/den:cur.lon,
+    accuracy:old?Math.min(old.accuracy||999,gps.accuracy):gps.accuracy,
+    n:oldN+1,updatedAt:Date.now(),referenceVersion:STATION_TRACK_VERSION};
   try{localStorage.setItem(STATION_GPS_KEY,JSON.stringify(db));}catch(e){}
   return true;
 }
@@ -1149,14 +1195,19 @@ function gpsGlobalMatch(now=Date.now()){
 
 function gpsGlobalProjectionPoint(point){
   if(!point||!Number.isFinite(point.lat)||!Number.isFinite(point.lon))return null;
-  let cumulative=0,best=null;
+  const via=gpsCurrentVia();let best=null;
   for(let i=0;i<STATIONS_PUERTO_LIMACHE.length-1;i++){
-    const a=gpsStationPoint(STATIONS_PUERTO_LIMACHE[i]),b=gpsStationPoint(STATIONS_PUERTO_LIMACHE[i+1]);
-    if(!a||!b)continue;
-    const pr=gpsProjectToSegment(point,a,b),len=pr.length||gpsHaversineMeters(a,b);
-    const cand={segmentIndex:i,t:pr.t,offRouteM:pr.dist,length:len,chainageM:cumulative+pr.t*len};
+    const startName=STATIONS_PUERTO_LIMACHE[i],endName=STATIONS_PUERTO_LIMACHE[i+1];
+    const a=gpsStationPoint(startName,via),b=gpsStationPoint(endName,via);
+    const rail=stationRailSegmentData(startName,endName,via);
+    if(!a||!b||!rail)continue;
+    const pr=gpsProjectToSegment(point,a,b),base=stationRailChainageM(startName,via);
+    // GPS proyectado en el cordón de estaciones, luego escala a distancia FERROVIARIA.
+    // No se supone que el trazado real sea recto: precisión menor en curvas/túneles.
+    const cand={segmentIndex:i,t:pr.t,offRouteM:pr.dist,length:pr.length,
+      chainageM:base+pr.t*rail.lengthM,railLengthM:rail.lengthM,
+      railDistanceConsistent:rail.consistent,via};
     if(!best||cand.offRouteM<best.offRouteM)best=cand;
-    cumulative+=len;
   }
   return best;
 }
@@ -2118,13 +2169,14 @@ function pkScalarLabel(s){
   return `${String(km).padStart(2,'0')}+${String(post).padStart(2,'0')}`;
 }
 function pkStationGeometry(){
-  // Los anclajes GPS son los CENTROS geográficos de estaciones, no postes topografiados.
-  const pts=[];let chain=0,previous=null;
+  // Posiciones acumuladas entre puntos de DETENCIÓN; las etiquetas PK siguen
+  // estimándose por estaciones/postes ordinales, NO son kilometraje oficial.
+  const via=gpsCurrentVia(),pts=[];
   for(const item of PK_STATION_RANGES){
-    const p=gpsStationPoint(item[0]);const a=pkScalar(item[1]),b=pkScalar(item[2]);
-    if(!p||!Number.isFinite(a)||!Number.isFinite(b))return [];
-    if(previous)chain+=gpsHaversineMeters(previous,p);
-    pts.push({name:item[0],pk:(a+b)/2,chainageM:chain});previous=p;
+    const p=gpsStationPoint(item[0],via),chain=stationRailChainageM(item[0],via);
+    const a=pkScalar(item[1]),b=pkScalar(item[2]);
+    if(!p||!Number.isFinite(chain)||!Number.isFinite(a)||!Number.isFinite(b))return [];
+    pts.push({name:item[0],pk:(a+b)/2,chainageM:chain,referenceOnly:p.referenceOnly});
   }
   return pts;
 }
@@ -2133,6 +2185,8 @@ function pkChainageFromScalar(s,geo){
   let i=0;
   while(i<geo.length-2&&s>geo[i+1].pk)i++;
   const a=geo[i],b=geo[i+1],frac=(s-a.pk)/(b.pk-a.pk);
+  const rail=stationRailSegmentData(a.name,b.name);
+  if(!rail?.consistent)return NaN; // No usar distancia no validada de Bellavista–Francia V2.
   return a.chainageM+(b.chainageM-a.chainageM)*frac;
 }
 function pkGlobalSnapshot(now=Date.now()){
@@ -2145,14 +2199,15 @@ function pkGlobalSnapshot(now=Date.now()){
   const pk=geo[i].pk+(geo[i+1].pk-geo[i].pk)*pr.t;
   return {timestamp:gpsLast.ts,pk,label:pkScalarLabel(pk),chainageM:pr.chainageM,
     accuracy:gpsLast.accuracy,offRouteM:pr.offRouteM,geo,
-    reliable:gpsLast.accuracy<=PK_VOICE_MAX_GPS_ACCURACY_M&&pr.offRouteM<=PK_VOICE_MAX_OFFROUTE_M};
+    reliable:gpsLast.accuracy<=PK_VOICE_MAX_GPS_ACCURACY_M&&pr.offRouteM<=PK_VOICE_MAX_OFFROUTE_M&&
+      pr.railDistanceConsistent&&!(geo[i].referenceOnly||geo[i+1].referenceOnly)};
 }
 function pkTravelSpeed(snap,trip){
   const sign=trip.direction==='puerto'?-1:1;
   const prior=gpsPositionHistory.filter(p=>p.ts<snap.timestamp-1300&&p.ts>=snap.timestamp-7500&&p.accuracy<=PK_VOICE_MAX_GPS_ACCURACY_M).at(-1);
   if(!prior)return null;
   const pr=gpsGlobalProjectionPoint({lat:prior.lat,lon:prior.lon});
-  if(!pr||pr.dist>PK_VOICE_MAX_OFFROUTE_M)return null;
+  if(!pr||pr.offRouteM>PK_VOICE_MAX_OFFROUTE_M||!pr.railDistanceConsistent)return null;
   const dt=(snap.timestamp-prior.ts)/1000;
   const speed=(snap.chainageM-pr.chainageM)*sign/dt;
   return speed>=.8&&speed<=38?speed:null;
@@ -2553,7 +2608,7 @@ function startValidationRun(){
   imuValidationCurrent={
     enabled:true,
     schemaVersion:'1.16',
-    appVersion:'V7.39',
+    appVersion:'V7.40',
     startedAt:now,
     startedPerf:performance.now(),
     endedAt:null,
@@ -2735,12 +2790,13 @@ function exportValidationRun(){
       schemaVersion:v.schemaVersion,appVersion:v.appVersion,
       serviceNumber:v.serviceNumber,destination:v.destination,initialMode:v.initialMode||'auto',selectedInitialStation:v.selectedInitialStation||null,vehicleProfile:v.vehicleProfile||vehicleProfileFromDestination(v.destination),
       detectorProfile:{...vehicleDetectorParams(v.vehicleProfile||vehicleProfileFromDestination(v.destination))},
+      stationReferenceVersion:STATION_TRACK_VERSION,stationReferenceVia:v.vehicleProfile==='MC'?'via2':'via1',
       startedAt:v.startedAt,startedAtIso:new Date(v.startedAt).toISOString(),
       endedAt:v.endedAt,endedAtIso:v.endedAt?new Date(v.endedAt).toISOString():null,
       durationMs:v.endedAt?Math.max(0,v.endedAt-v.startedAt):Date.now()-v.startedAt,
       note:'Las marcas MANUAL representan la realidad indicada por el usuario. Las transiciones AUTOMATICAS son lo que decidió la app. GPS es contexto espacial, no una marca manual.',
       accelerationInfo:{units:'m/s2',gravityFilter:'pasa-altos independiente: accelerationIncludingGravity menos media exponencial (tau=2 segundos)',
-        note:'V7.39: motor físico IMU V7.38 sin cambiar umbrales; protección temporal de 60 s entre salida física y llegada retrospectiva, incluida excepción de túnel. Se rechaza la meseta prematura y se exige nuevo movimiento antes de rearmar. Consentimiento = detención − 8 s de cierre.', 
+        note:'V7.40: motor físico IMU V7.38 sin cambiar umbrales; protección temporal de 60 s entre salida física y llegada retrospectiva, incluida excepción de túnel. Se rechaza la meseta prematura y se exige nuevo movimiento antes de rearmar. Consentimiento = detención − 8 s de cierre.', 
         nativeRawRows:v.nativeSamples,gravityAvailableRows:v.gravitySamples,rawSamplingMinIntervalMs:VALIDATION_RAW_MIN_INTERVAL_MS},
       sensorProfile:{...nativeDeviceProfileNow()}
     },
@@ -4061,7 +4117,7 @@ function imuOnlyTick(){
 
             const expectedNext=(Number.isInteger(imuOnlyTrip.pos)?imuOnlyTrip.pos:0)+1;
             const routeCtx=gravityExpectedStationContext(gps,now);
-            // V7.39: el tiempo mínimo se aplica ANTES de permitir fallback
+            // V7.40: el tiempo mínimo se aplica ANTES de permitir fallback
             // sin GPS. El IMU ha encontrado reposo, pero no puede etiquetarlo
             // como la siguiente estación si el recorrido duró menos de 60 s.
             // Rechazar y congelar esta candidata: no aceptarla luego solo
