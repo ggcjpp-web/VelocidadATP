@@ -4,7 +4,7 @@
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no" />
 <meta name="theme-color" content="#050708" />
-<title>Registro Ferroviario V7.40 · motor V7.35</title>
+<title>Registro Ferroviario V7.43 · motor V7.35</title>
 <style>
 :root{color-scheme:dark;font-family:system-ui,-apple-system,Segoe UI,Roboto,sans-serif}
 *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
@@ -206,6 +206,21 @@ body.mode-imu #imuMode{padding:max(6px,env(safe-area-inset-top)) 12px max(12px,e
 .imuStopEmpty{font-size:12px}
 .imuCal:empty{display:none}
 @media(max-width:390px){.imuBrand{font-size:14px}.topAction{font-size:11px;padding:8px 9px}.imuStopRow strong{font-size:13px}.imuStopDetail{font-size:9px}.imuStopRow .time{font-size:12px;min-width:60px}.imuStopHead,.imuStopRow{gap:5px;grid-template-columns:minmax(90px,1fr) minmax(60px,auto) minmax(60px,auto)}}
+
+/* V7.43 · Única lista, preferencias discretas y editor bajo demanda */
+.voiceCard{padding:14px 13px;max-width:530px}
+.voiceHead{margin-bottom:8px}.voiceTitle{font-size:18px}
+.voiceCompactControls{border-radius:13px;background:#11191a;padding:2px 12px 4px}
+.voiceModeRow{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:10px 2px 8px;font-size:12px;font-weight:850;border-top:1px solid #263033}
+.voiceModeButtons{display:flex;gap:5px}.voiceModeButtons button{padding:9px 12px;font-size:11px;min-width:75px;border-radius:9px;background:#202a2b}.voiceModeButtons button.selected{background:#b1efea;color:#072625}
+.voiceExtras{border-top:1px solid #263033;padding:7px 2px 4px}.voiceExtras summary{cursor:pointer;font-size:11px;opacity:.72;list-style:revert}.voiceExtras .voicePrefs{border:0;background:transparent;padding:5px 1px 0;margin:0}
+.voiceListHeader{display:flex;align-items:center;justify-content:space-between;margin-top:16px;margin-bottom:9px;gap:8px}.voiceListHeader strong{font-size:12px;letter-spacing:.04em}.voiceListHeader button{padding:9px 12px;font-size:11px}
+#voiceFilter,.voiceField select{width:100%;background:#171d20;color:white;border:1px solid rgba(255,255,255,.07);border-radius:10px;padding:9px;font-size:12px}
+#voiceFilter{min-height:36px}.voiceList{margin-top:7px;padding-top:0;border-top:0}.voiceItem{padding:10px 0;border-top:1px solid rgba(255,255,255,.065);display:flex;align-items:center;gap:9px}.voiceItemText{font-size:12px;font-weight:850;line-height:1.3}.voiceItemMeta{font-size:10px;margin-top:3px;opacity:.55}.voiceItemContent{flex:1;min-width:0}.voiceItemBtns{margin:0}.voiceItemBtns button{padding:8px 9px;font-size:10px}.voiceEnabled{flex:none}.voiceEnabled input{width:19px;height:19px}
+.voiceEditorHead{display:flex;align-items:center;justify-content:space-between;gap:8px;margin:10px 0}.voiceEditorHead strong{font-size:12px;letter-spacing:.06em}.voiceEditorHead button{padding:8px 10px;font-size:11px}.voiceEditor .voiceSection{margin-top:9px}.voiceEditor .voiceSectionTitle{display:none}.voicePreview{font-size:12px;font-weight:750;padding:9px;margin-top:9px}.voicePkPair{display:grid;grid-template-columns:1fr 1fr;gap:8px}.voiceItem.isOff .voiceItemContent{opacity:.55}
+#imuLive>.imuQuickBar{margin:9px 0 4px;display:flex;gap:7px}#imuLive>.imuQuickBar button{min-height:42px}#imuLive>.imuQuickBar #imuBellotoCutBtn{background:#193632;color:#c2fff6;border:1px solid #356660}
+#imuLive>.imuQuickBar #imuBellotoCutBtn.armed{background:#0b6f59;color:white}
+#voiceEditor[hidden],#voiceOverview[hidden]{display:none!important}
 </style>
 </head>
 <body class="mode-imu">
@@ -222,7 +237,7 @@ body.mode-imu #imuMode{padding:max(6px,env(safe-area-inset-top)) 12px max(12px,e
   </div>
   <section id="imuMode">
     <div class="imuShell">
-      <div class="imuTop"><div class="imuBrand">REGISTRO <span>V7.40</span></div><div class="topActions"><button id="voiceMainBtn" type="button" class="topAction">AVISOS</button><button id="pkToggleBtn" type="button" class="topAction" aria-pressed="false">PK</button></div><button id="imuBackBtn" style="display:none" aria-hidden="true" tabindex="-1">Cambiar modo</button></div>
+      <div class="imuTop"><div class="imuBrand">REGISTRO <span>V7.43</span></div><div class="topActions"><button id="voiceMainBtn" type="button" class="topAction">AVISOS</button><button id="pkToggleBtn" type="button" class="topAction" aria-pressed="false">PK</button></div><button id="imuBackBtn" style="display:none" aria-hidden="true" tabindex="-1">Cambiar modo</button></div>
       <div id="imuSessionSetup" class="imuSessionCard">
         <div style="font-size:20px;font-weight:950;margin-bottom:10px">SESIÓN DE SERVICIOS</div>
         <div class="imuSessionGrid">
@@ -272,6 +287,7 @@ body.mode-imu #imuMode{padding:max(6px,env(safe-area-inset-top)) 12px max(12px,e
         </div>
         <div id="imuPkStatus" class="imuPkStatus">PK: esperando GPS · estimación aproximada</div>
         <div class="imuStopTable"><div class="imuStopTitle">ESTACIONES</div><div class="imuStopHead"><span>ESTACIÓN</span><span>TIEMPO</span><span>CONS.</span></div><div id="imuStopRows"><div class="imuStopEmpty">Sin registros</div></div></div>
+        <div class="imuQuickBar"><button id="imuQuickVoiceBtn">＋ AVISO</button><button id="imuBellotoCutBtn">CORTE DOBLE · BELLOTO</button><div id="imuQuickMsg" class="imuQuickMsg"></div></div>
         <div class="liveNavigation"><button id="imuNextServiceBtn" class="primary" style="display:none">SIGUIENTE SERVICIO</button></div>
         <details id="advancedTools"><summary>Herramientas y pruebas <span>▾</span></summary>
           <div class="advancedContent">
@@ -284,7 +300,7 @@ body.mode-imu #imuMode{padding:max(6px,env(safe-area-inset-top)) 12px max(12px,e
               <div id="validationStatus" class="validationStatus">Sin marcas manuales.</div>
               <div class="validationActions"><button id="validationExportBtn">EXPORTAR PRUEBA</button></div>
             </div>
-            <div class="imuQuickBar"><button id="imuQuickVoiceBtn">＋ AVISO</button><button id="imuBellotoCutBtn">CORTE DOBLE · BELLOTO</button><div id="imuQuickMsg" class="imuQuickMsg"></div></div>
+            
             <div class="imuProgress"><div class="imuProgressTitle">EVENTOS</div><div id="imuEvents" class="imuStops">Sin eventos todavía.</div></div>
             <div class="imuActions"><button id="imuRecalBtn">RECALIBRAR REPOSO</button><button id="imuFinishBtn" class="danger">FINALIZAR SERVICIO</button></div>
             <p class="imuHint">Registro experimental. GPS y PK no sustituyen señales, documentación oficial ni sistemas ATP. Ajusta configuraciones solo con el tren detenido.</p>
@@ -304,61 +320,66 @@ body.mode-imu #imuMode{padding:max(6px,env(safe-area-inset-top)) 12px max(12px,e
       </div>
       <div id="voiceModal">
         <div class="voiceCard">
-          <div class="voiceHead"><div class="voiceTitle">AVISOS DE VOZ</div><button id="voiceCloseBtn" class="voiceClose">CERRAR</button></div>
-          <div class="voicePrefs">
-            <label class="voiceToggle"><span>Anunciar estación y próxima estación</span><input id="voiceAnnounceStations" type="checkbox"></label>
-            <label class="voiceToggle"><span>Recordar luces durante el trayecto</span><input id="voiceRemindLights" type="checkbox"></label>
-            <label class="voiceToggle"><span>Recordar apertura de puertas</span><input id="voiceRemindDoors" type="checkbox"></label>
-            <label class="voiceToggle"><span>Activar avisos por PK · experimental</span><input id="voicePkEnabled" type="checkbox"></label>
-          </div>
-          <div class="voiceSection">
-            <div class="voiceSectionTitle">PREVENCIONES EN VÍA · LISTA 26/10/2026, 16:31</div>
-            <div class="voiceRouteHint">Precargadas y activadas. Se dicen dos veces, con velocidad y PK de inicio/fin. Prioridad: salida de estación próxima; si no hay estación cercana, GPS aprox. 1 km antes. Los avisos son solo recordatorios: verificar siempre la documentación operacional vigente y el ATP.</div>
-            <div id="bulletinList" class="voiceList"></div>
-          </div>
-          <div class="voiceSection">
-            <div class="voiceSectionTitle">NUEVO AVISO</div>
-            <div id="voicePresetGrid" class="voicePresetGrid"></div>
-          </div>
-          <div class="voiceSection">
-            <div class="voiceSectionTitle">DÓNDE AVISAR</div>
-            <div class="voiceGrid">
-              <div id="voiceCustomField" class="voiceField wide" style="display:none"><label>MENSAJE PERSONALIZADO</label><textarea id="voiceText" maxlength="320" placeholder="Escribe el mensaje"></textarea></div>
-              <div class="voiceField"><label>VÍA</label><select id="voiceDirection"><option value="both" selected>AMBAS</option><option value="via1">VÍA 1 · TCP</option><option value="via2">VÍA 2 · MC</option></select></div>
-              <div class="voiceField"><label id="voiceLocationLabel">TRAMO</label><select id="voiceLocation"></select><div id="voiceRouteHint" class="voiceRouteHint">En ambas vías se avisa al entrar al mismo tramo desde cualquiera de sus extremos.</div></div>
+          <div class="voiceHead"><div class="voiceTitle">AVISOS</div><button id="voiceCloseBtn" class="voiceClose">CERRAR</button></div>
+          <div id="voiceOverview">
+            <div class="voiceCompactControls">
+              <label class="voiceToggle"><span>Indicaciones de voz</span><input id="voiceMasterEnabled" type="checkbox" checked></label>
+              <div class="voiceModeRow"><span>Duración</span><div class="voiceModeButtons"><button type="button" data-voice-style="short" class="selected">CORTO</button><button type="button" data-voice-style="long">LARGO</button></div></div>
+              <details class="voiceExtras"><summary>Más opciones</summary>
+                <div class="voicePrefs">
+                  <label class="voiceToggle"><span>Anunciar estaciones</span><input id="voiceAnnounceStations" type="checkbox"></label>
+                  <label class="voiceToggle"><span>Recordar luces</span><input id="voiceRemindLights" type="checkbox"></label>
+                  <label class="voiceToggle"><span>Recordar puertas</span><input id="voiceRemindDoors" type="checkbox"></label>
+                  <label class="voiceToggle"><span>Avisos por PK (GPS estimado)</span><input id="voicePkEnabled" type="checkbox"></label>
+                </div>
+              </details>
             </div>
+            <div class="voiceListHeader"><strong id="voiceListCount">MENSAJES</strong><button id="voiceNewBtn" class="primary">＋ NUEVO</button></div>
+            <select id="voiceFilter" aria-label="Filtrar avisos"><option value="all">Todas las vías</option><option value="via1">Vía 1</option><option value="via2">Vía 2</option></select>
+            <div id="voiceList" class="voiceList"></div>
+            <div class="voiceNote">Recordatorios complementarios. GPS y PK aproximados; confirmar las restricciones en las fuentes oficiales.</div>
           </div>
-          <div class="voiceSection">
-            <div class="voiceSectionTitle">DISPARADOR DEL AVISO</div>
-            <div class="voiceField wide"><label>ACTIVAR POR</label>
-              <select id="voiceTriggerMode"><option value="departure">Salida de estación / comienzo de tramo</option><option value="pk">Aproximación a un PK</option></select>
-            </div>
-            <div id="voicePkTriggerOptions" style="display:none;margin-top:10px">
-              <div class="voiceField wide"><label>REFERENCIA FERROVIARIA REGISTRADA (OPCIONAL)</label><select id="voicePkCatalogSelect"><option value="">Buscar en referencias registradas…</option></select></div>
-              <div class="voiceGrid" style="margin-top:9px">
-                <div class="voiceField"><label>PK DE ACTIVACIÓN</label><input id="voiceTargetPk" type="text" maxlength="10" inputmode="text" placeholder="Ej. 25+10"></div>
-                <div class="voiceField"><label>ANTICIPACIÓN</label><select id="voicePkLeadMode"><option value="meters">Metros estimados antes</option><option value="seconds">Segundos estimados antes</option><option value="hybrid">Salida de estación cercana o 1 km antes</option><option value="cross">Al pasar el PK estimado</option></select></div>
-                <div class="voiceField wide" id="voicePkLeadValueField"><label id="voicePkLeadValueLabel">ANTICIPACIÓN (m)</label><input id="voicePkLeadValue" type="number" inputmode="numeric" min="0" max="3000" step="1" value="200"></div>
+          <div id="voiceEditor" class="voiceEditor" hidden>
+            <div class="voiceEditorHead"><strong id="voiceEditorTitle">NUEVO MENSAJE</strong><button id="voiceEditorBackBtn">VOLVER</button></div>
+            <div class="voiceSection">
+              <div class="voiceGrid">
+                <div class="voiceField wide"><label>MENSAJE</label><select id="voicePresetSelect"></select><div id="voicePresetGrid" style="display:none"></div></div>
+                <div id="voiceCustomField" class="voiceField wide" style="display:none"><label>MOTIVO / TEXTO</label><textarea id="voiceText" maxlength="320" placeholder="Escribe el mensaje"></textarea></div>
+                <div class="voiceField"><label>VÍA</label><select id="voiceDirection"><option value="both" selected>AMBAS</option><option value="via1">VÍA 1 · TCP</option><option value="via2">VÍA 2 · MC</option></select></div>
+                <div class="voiceField"><label id="voiceLocationLabel">TRAMO</label><select id="voiceLocation"></select><div id="voiceRouteHint" class="voiceRouteHint"></div></div>
               </div>
-              <div class="voiceRouteHint" style="margin-top:9px">Usa el mismo eje PK para ambas vías. Ubicación y anticipación EXPERIMENTALES: estimadas con GPS entre estaciones, sin coordenadas medidas para cada poste. No usar como aviso de seguridad operacional.</div>
             </div>
-          </div>
-          <div class="voiceSection">
-            <div class="voiceSectionTitle">DATOS OPCIONALES</div>
-            <div class="voiceGrid">
-              <input id="voiceUseSpeed" type="checkbox" hidden>
-              <div class="voiceField"><label>VELOCIDAD</label><input id="voiceSpeed" type="number" inputmode="decimal" min="0" max="160" step="1" placeholder="Ej. 20"></div>
-              <input id="voiceUsePk" type="checkbox" hidden>
-              <div id="voicePkFields" class="voiceField wide"><label>PK INCLUIDO EN EL TEXTO HABLADO (OPCIONAL)</label><div style="display:grid;grid-template-columns:1fr 1fr;gap:8px"><input id="voicePkStart" type="text" inputmode="text" maxlength="10" placeholder="Inicio · 07-13"><input id="voicePkEnd" type="text" inputmode="text" maxlength="10" placeholder="Fin opcional · 07-19"></div></div>
-              <div class="voiceField"><label>RETRASO (s)</label><input id="voiceDelay" type="number" inputmode="numeric" min="0" max="1800" step="1" value="0"></div>
-              <div class="voiceField"><label>REPETIR (veces)</label><input id="voiceTimes" type="number" inputmode="numeric" min="1" max="10" step="1" value="1"></div>
+            <div class="voiceSection">
+              <div class="voiceGrid">
+                <div class="voiceField wide"><label>ACTIVAR POR</label><select id="voiceTriggerMode"><option value="departure">Salida de estación / tramo</option><option value="pk">Aproximación a un PK</option></select></div>
+              </div>
+              <div id="voicePkTriggerOptions" style="display:none;margin-top:10px">
+                <div class="voiceField wide"><label>REFERENCIA PK GUARDADA (OPCIONAL)</label><select id="voicePkCatalogSelect"><option value="">Seleccionar referencia…</option></select></div>
+                <div class="voiceGrid" style="margin-top:9px">
+                  <div class="voiceField"><label>PK DE ACTIVACIÓN</label><input id="voiceTargetPk" maxlength="10" placeholder="Ej. 05+13"></div>
+                  <div class="voiceField"><label>ANTICIPACIÓN</label><select id="voicePkLeadMode"><option value="meters">Metros antes</option><option value="seconds">Segundos antes</option><option value="hybrid">Estación cercana o 1 km antes</option><option value="cross">Al paso por PK</option></select></div>
+                  <div class="voiceField wide" id="voicePkLeadValueField"><label id="voicePkLeadValueLabel">ANTICIPACIÓN (m)</label><input id="voicePkLeadValue" type="number" min="0" max="3000" step="1" value="200"></div>
+                </div>
+              </div>
             </div>
+            <div class="voiceSection">
+              <div class="voiceGrid">
+                <input id="voiceUseSpeed" type="checkbox" hidden>
+                <div class="voiceField"><label>VELOCIDAD (km/h)</label><input id="voiceSpeed" type="number" min="0" max="160" step="1" placeholder="Ej. 30"></div>
+                <input id="voiceUsePk" type="checkbox" hidden>
+                <div id="voicePkFields" class="voiceField wide"><label>PK DESDE / HASTA</label><div class="voicePkPair"><input id="voicePkStart" maxlength="10" placeholder="05+13"><input id="voicePkEnd" maxlength="10" placeholder="05+10"></div></div>
+              </div>
+              <details class="voiceExtras" style="margin-top:10px"><summary>Repetición y retraso</summary>
+                <div class="voiceGrid" style="margin-top:8px">
+                  <div class="voiceField"><label>RETRASO (s)</label><input id="voiceDelay" type="number" min="0" max="1800" step="1" value="0"></div>
+                  <div class="voiceField"><label>REPETIR (veces)</label><input id="voiceTimes" type="number" min="1" max="10" step="1" value="1"></div>
+                </div>
+              </details>
+            </div>
+            <div id="voicePreview" class="voicePreview"></div>
+            <div id="voiceLock" class="voiceLock"></div>
+            <div class="voiceActions"><button id="voiceTestBtn">ESCUCHAR</button><button id="voiceSaveBtn" class="primary">GUARDAR</button><button id="voiceCancelEditBtn" style="display:none">CANCELAR</button></div>
           </div>
-          <div id="voicePreview" class="voicePreview">Selecciona un mensaje.</div>
-          <div id="voiceLock" class="voiceLock"></div>
-          <div class="voiceActions"><button id="voiceTestBtn">PROBAR VOZ</button><button id="voiceSaveBtn" class="primary">GUARDAR MENSAJE</button><button id="voiceCancelEditBtn" style="display:none">CANCELAR EDICIÓN</button></div>
-          <div class="voiceNote">Las prevenciones precargadas se administran arriba y no reemplazan la documentación vigente. La distancia por PK es aproximada (postes sin coordenadas medidas), y el GPS puede fallar en túneles y curvas. Los avisos manuales se muestran abajo.</div>
-          <div id="voiceList" class="voiceList"></div>
         </div>
       </div>
       <iframe id="reportFrame" name="reportFrame" style="display:none"></iframe>
@@ -497,6 +518,15 @@ const voiceOpenBtn=document.getElementById('voiceOpenBtn');
 const voiceModal=document.getElementById('voiceModal');
 const voiceCloseBtn=document.getElementById('voiceCloseBtn');
 const voicePresetGrid=document.getElementById('voicePresetGrid');
+const voicePresetSelect=document.getElementById('voicePresetSelect');
+const voiceMasterEnabled=document.getElementById('voiceMasterEnabled');
+const voiceFilter=document.getElementById('voiceFilter');
+const voiceOverview=document.getElementById('voiceOverview');
+const voiceEditor=document.getElementById('voiceEditor');
+const voiceEditorTitle=document.getElementById('voiceEditorTitle');
+const voiceNewBtn=document.getElementById('voiceNewBtn');
+const voiceEditorBackBtn=document.getElementById('voiceEditorBackBtn');
+const voiceListCount=document.getElementById('voiceListCount');
 const voiceCustomField=document.getElementById('voiceCustomField');
 const voiceText=document.getElementById('voiceText');
 const voiceDirection=document.getElementById('voiceDirection');
@@ -520,7 +550,7 @@ const voiceTestBtn=document.getElementById('voiceTestBtn');
 const voiceSaveBtn=document.getElementById('voiceSaveBtn');
 const voiceCancelEditBtn=document.getElementById('voiceCancelEditBtn');
 const voiceList=document.getElementById('voiceList');
-const bulletinList=document.getElementById('bulletinList');
+
 const voicePkEnabled=document.getElementById('voicePkEnabled');
 const voiceTriggerMode=document.getElementById('voiceTriggerMode');
 const voicePkTriggerOptions=document.getElementById('voicePkTriggerOptions');
@@ -534,6 +564,7 @@ const imuPkStatus=document.getElementById('imuPkStatus');
 let pkVoiceRuntime=new Map();
 let pkLastGPSProcessed=null;
 let pkLastGoodPosition=null;
+let pkVoiceDiagnosticStatus=new Map();
 
 const SCAN_W=424;
 const READ_W=848;
@@ -556,8 +587,8 @@ const STATIONS_PUERTO_LIMACHE=['Puerto','Bellavista','Francia','Barón','Portale
 // por pérdida de GPS en túnel. No usar para autoridades operacionales.
 const STATION_TRACK_POINTS={
   "Puerto":{via1:[-33.039147894407655,-71.62630293899045,0.0],via2:[-33.03908269952511,-71.62620960475661,43.05]},
-  "Bellavista":{via1:[-33.04325294425453,-71.61986650310921,0.77],via2:[-33.04299501198697,-71.62090927394081,42.28]},
-  "Francia":{via1:[-33.04396660209946,-71.61272222025202,1.44],via2:[-33.04376096675104,-71.61349236234042,41.69]},
+  "Bellavista":{via1:[-33.04325294425453,-71.61986650310921,0.77],via2:[-33.04300447478056,-71.62089918110287,42.39]},
+  "Francia":{via1:[-33.04396660209946,-71.61272222025202,1.44],via2:[-33.04375808699585,-71.61349032055139,41.69]},
   "Barón":{via1:[-33.04175234990331,-71.60538810457238,2.26],via2:[-33.04256672858704,-71.60579176326496,40.9]},
   "Portales":{via1:[-33.03272668906444,-71.59141049853237,3.98],via2:[-33.03296283752845,-71.59240692378073,39.17]},
   "Recreo":{via1:[-33.0265749510145,-71.5744802649351,6.03],via2:[-33.02719997415692,-71.57538575309802,37.13]},
@@ -578,8 +609,11 @@ const STATION_TRACK_POINTS={
   "Limache":{via1:[-32.98452695466752,-71.27805744703564,43.1],via2:[-32.98445877818949,-71.27806024942106,0.0]}
 };
 const STATION_TUNNEL_REFERENCE_ONLY=new Set(['Miramar','Viña del Mar','Hospital','Chorrillos']);
-const STATION_TRACK_VERSION='stops_v1_v2_2026_11_02_revision3';
-const STATION_TRACK_DISTANCE_ANOMALIES=new Set(['via2:Bellavista|Francia']);
+const STATION_TRACK_VERSION='stops_v1_v2_2026_11_02_revision4';
+// Conservamos el bloqueo de avisos GPS por PK en este tramo hasta validación en terreno.
+// Las últimas coordenadas/distancias ya son geométricamente coherentes;
+// esta restricción NO se debe a una anomalía geométrica persistente.
+const STATION_TRACK_PK_UNVERIFIED_SEGMENTS=new Set(['via2:Bellavista|Francia']);
 function gpsCurrentVia(trip=null){
   const t=trip||imuOnlyTrip;
   if(t?.via==='via1'||t?.via==='via2')return t.via;
@@ -597,7 +631,7 @@ function stationRailSegmentData(nameA,nameB,via=gpsCurrentVia()){
   const lengthM=Math.abs(b-a);
   const key=via+':'+nameA+'|'+nameB;
   const reverseKey=via+':'+nameB+'|'+nameA;
-  return {lengthM,consistent:!STATION_TRACK_DISTANCE_ANOMALIES.has(key)&&!STATION_TRACK_DISTANCE_ANOMALIES.has(reverseKey),via};
+  return {lengthM,consistent:!STATION_TRACK_PK_UNVERIFIED_SEGMENTS.has(key)&&!STATION_TRACK_PK_UNVERIFIED_SEGMENTS.has(reverseKey),via};
 }
 const STOP_SPEED=.8;
 const MOVE_SPEED=1.2;
@@ -740,6 +774,42 @@ const VEHICLE_DETECTOR_PROFILES={
 const PK_CORRIDOR_REFERENCES=[["00+00","Puerto","2","Estación","V2: Fin",""],["00+03","Puerto","2","Estación","V2: Inicio",""],["00+05","Aproximación a Puerto","2","Referencia","",""],["00+05","Señal maniobra Barón 1","1","Referencia","V1: Cambio de vía 2 a vía 1",""],["00+11","Cambios Puerto","2","Referencia","V2: Inicio",""],["00+19","Zona de cambio","1","Referencia","V1: Término confirmado; inicio no precisado","VERIFICAR"],["00+20","Señal de maniobra Barón 03","2","Referencia","",""],["00+26","Bellavista","A","Estación","V1: Inicio | V2: Fin",""],["00+29","Bellavista","2","Estación","V2: Inicio",""],["00+30","Bellavista","1","Estación","V1: Fin",""],["00+31","Poste de referencia del kilómetro","2","Poste registrado","Registro de postes levantado en Vía 2",""],["01+10","Señal de maniobra Barón 9","2","Referencia","",""],["01+12","Francia","2","Estación","V2: Fin",""],["01+13","Francia","1","Estación","V1: Inicio",""],["01+15","Francia","2","Estación","V2: Inicio",""],["01+16","Francia","1","Estación","V1: Fin",""],["01+17","Señal cruce nivel Simón Bolívar 02","1","Referencia","V1: Transcripción posterior contradictoria: verificar","VERIFICAR"],["01+21","Cruce peatonal Simón Bolívar","2","Referencia","V2: Fin",""],["01+22","Cruce peatonal Simón Bolívar","2","Referencia","V2: Inicio",""],["01+22","Cruce Simón Bolívar","1","Referencia","V1: Término",""],["01+24","Poste de referencia del kilómetro","2","Poste registrado","Registro de postes levantado en Vía 2",""],["02+03","Señal de cruce a nivel Barón 03","2","Referencia","",""],["02+08","Señal Barón 1","2","Referencia","",""],["02+09","Cruce peatonal Barón","1","Referencia","",""],["02+09","Paso peatonal Barón","2","Referencia","",""],["02+10","Barón","A","Estación","V1: Inicio | V2: Fin",""],["02+13","Barón","A","Estación","V1: Fin | V2: Inicio",""],["02+22","Señal Barón 6","1","Referencia","",""],["02+26","Inicio de pasarela","2","Referencia","V2: Pendiente de confirmar","VERIFICAR"],["02+32","Poste de referencia del kilómetro","2","Poste registrado","Registro de postes levantado en Vía 2",""],["03+09","Señal maniobra Barón 6","1","Referencia","V1: PK confirmado",""],["03+11","Pasarela peatonal superior","2","Referencia","V2: Universidad Santa María",""],["03+11","Señal de ingreso","2","Referencia","V2: Tornamesa y patio de maniobras Barón",""],["03+27","Portales","2","Estación","V2: Referencia aproximada de término","VERIFICAR"],["03+27","Poste de referencia del kilómetro","2","Poste registrado","Registro de postes levantado en Vía 2",""],["04+01","Portales","1","Estación","V1: Inicio",""],["04+05","Señal cruce nivel Portales","1","Referencia","",""],["04+07","Cruce Portales","A","Referencia","",""],["04+08","Portales","1","Estación","V1: Fin",""],["04+15","Botón de señal de cruce","2","Referencia","",""],["04+20","Pasarela del Colegio Industrial","2","Referencia","",""],["04+28","Cruce Los Mayos","1","Referencia","V1: No peatonal",""],["04+28","Poste de referencia del kilómetro","2","Poste registrado","Registro de postes levantado en Vía 2",""],["05+03","Paso superior o curva Los Mayos","1","Referencia","V1: Denominación por confirmar","VERIFICAR"],["05+04","Paso a nivel Los Mayos","2","Referencia","V2: Fin",""],["05+07","Paso a nivel Los Mayos","2","Referencia","V2: Inicio",""],["05+07","Paso Los Mayos","1","Referencia","V1: Término",""],["05+08","Subestación Portales","1","Referencia","",""],["05+14","Carteles","2","Referencia","V2: Referencia dictada: «carteles hasta»",""],["05+33","Poste de referencia del kilómetro","2","Poste registrado","Registro de postes levantado en Vía 2",""],["06+03","Recreo","A","Estación","V1: Inicio | V2: Fin; PK corregido",""],["06+03","Señal El Salto 02","1","Referencia","",""],["06+06","Recreo","1","Estación","V1: Fin",""],["06+07","Recreo","2","Estación","V2: Inicio",""],["06+14","Paso superior sin nombre","1","Referencia","V1: Hasta 06+16; ubicación próxima a Miramar",""],["06+14","Señal sin número","2","Referencia","",""],["06+20","Aproximación al túnel","1","Referencia","",""],["06+20","Aproximación de salida del túnel","2","Referencia","V2: Término",""],["06+25","Túnel","2","Referencia","V2: Término",""],["06+26","Túnel","1","Referencia","V1: Inicio",""],["06+34","Poste de referencia del kilómetro","2","Poste registrado","Registro de postes levantado en Vía 2",""],["07+23","Miramar","A","Estación","V1: Inicio | V2: Fin",""],["07+27","Miramar","A","Estación","V1: Fin | V2: Inicio",""],["07+46","Poste de referencia del kilómetro","2","Poste registrado","Registro de postes levantado en Vía 2",""],["08+18","Viña del Mar","A","Estación","V1: Inicio | V2: Fin",""],["08+21","Viña del Mar","A","Estación","V1: Fin | V2: Inicio",""],["08+29","Señal El Salto 04","1","Referencia","",""],["08+44","Poste de referencia del kilómetro","2","Poste registrado","Registro de postes levantado en Vía 2",""],["09+08","Señal El Salto 1","2","Referencia","",""],["09+10","Hospital","A","Estación","V1: Inicio | V2: Fin",""],["09+14","Hospital","A","Estación","V1: Fin | V2: Inicio",""],["09+44","Poste de referencia del kilómetro","2","Poste registrado","Registro de postes levantado en Vía 2",""],["10+11","Chorrillos","A","Estación","V1: Inicio | V2: Fin",""],["10+15","Chorrillos","A","Estación","V1: Fin | V2: Inicio",""],["10+43","Túnel","A","Referencia","V1: Final | V2: Inicio",""],["10+43","Poste de referencia del kilómetro","2","Poste registrado","Registro de postes levantado en Vía 2",""],["11+05","Señal cruce nivel Salto 02","1","Referencia","",""],["11+07","Aproximación al túnel de Viña","2","Referencia","",""],["11+08","Aproximación del túnel","1","Referencia","V1: Fin",""],["11+12","Cruce","2","Referencia","V2: Sin nombre",""],["11+17","Cruce","2","Referencia","V2: Sin nombre",""],["11+18","El Salto","1","Estación","V1: Inicio",""],["11+19","Inicio del Salto","2","Referencia","V2: Término del tramo indicado",""],["11+21","El Salto","1","Estación","V1: Fin",""],["11+21","Inicio del Salto","2","Referencia","V2: Inicio del tramo indicado",""],["11+21","Señal maniobra El Salto 02","1","Referencia","",""],["11+23","Poste de referencia del kilómetro","2","Poste registrado","Registro de postes levantado en Vía 2",""],["12+05","Señal de maniobra El Salto 03","2","Referencia","",""],["12+15","Señal maniobra El Salto 08","1","Referencia","",""],["12+20","Pasarela El Salto","1","Referencia","V1: En subestación",""],["12+20","Subestación eléctrica El Salto","1","Referencia","",""],["12+22","Señal de maniobra El Salto 7","2","Referencia","",""],["12+25","Poste de referencia del kilómetro","2","Poste registrado","Registro de postes levantado en Vía 2",""],["13+18","Poste de referencia del kilómetro","2","Poste registrado","Registro de postes levantado en Vía 2",""],["14+15","Señal El Salto 3","2","Referencia","V2: PK pendiente de confirmar","PK APROXIMADO"],["14+19","Poste de referencia del kilómetro","2","Poste registrado","Registro de postes levantado en Vía 2",""],["15+02","Puente Las Cucharas","2","Referencia","",""],["15+20","Cruce en el cerro","2","Referencia","",""],["15+25","Poste de referencia del kilómetro","2","Poste registrado","Registro de postes levantado en Vía 2",""],["16+07","Latona","2","Referencia","V2: Denominación por confirmar","VERIFICAR"],["16+22","Salida del puente","2","Referencia","",""],["16+33","Túnel","2","Referencia","",""],["16+34","Puente","2","Referencia","",""],["16+37","Tercera cámara ESVAL","2","Referencia","",""],["16+39","Poste de referencia del kilómetro","2","Poste registrado","Registro de postes levantado en Vía 2",""],["17+08","Segunda cámara ESVAL","2","Referencia","",""],["17+12","Primera cámara ESVAL","2","Referencia","",""],["17+26","Chun de la Muerte","2","Referencia","V2: Denominación por confirmar","VERIFICAR"],["17+29","Poste de referencia del kilómetro","2","Poste registrado","Registro de postes levantado en Vía 2",""],["18+05","Colegio Aconcagua","1","Referencia","V1: Referencia de término del tramo sin registro",""],["18+08","Señal El Salto 10","1","Referencia","",""],["18+09","Paso superior Los Carrera / Troncal","1","Referencia","",""],["18+10","Paso a nivel Los Carreras","2","Referencia","V2: Nombre alternativo por verificar: El Troncal","VERIFICAR"],["18+15","Zona de cambios Valencia","1","Referencia","",""],["18+16","Cambio de Valencia","2","Referencia","V2: Fin",""],["18+17","Cambio de Valencia","2","Referencia","V2: Inicio",""],["18+23","Señal El Salto 07","2","Referencia","",""],["18+30","Poste de referencia del kilómetro","2","Poste registrado","Registro de postes levantado en Vía 2",""],["19+01","Valencia","A","Estación","V1: Inicio | V2: Fin; inicio pendiente","VERIFICAR"],["19+04","Valencia","1","Estación","V1: Fin",""],["19+26","Poste de referencia del kilómetro","2","Poste registrado","Registro de postes levantado en Vía 2",""],["20+24","Pasarela peatonal Quilpué","1","Referencia","",""],["20+25","Pasarela metálica peatonal","2","Referencia","V2: Después de Quilpué",""],["20+27","Poste de referencia del kilómetro","2","Poste registrado","Registro de postes levantado en Vía 2",""],["21+06","Señal maniobra El Belloto 02","1","Referencia","",""],["21+12","Señal de maniobra Belloto 3","2","Referencia","",""],["21+14","Quilpué","A","Estación","V1: Inicio | V2: Fin",""],["21+17","Quilpué","A","Estación","V1: Fin | V2: Inicio",""],["21+17","Señal maniobra El Belloto 06","1","Referencia","",""],["21+26","Poste de referencia del kilómetro","2","Poste registrado","Registro de postes levantado en Vía 2",""],["22+02","Señal maniobra El Belloto 12","1","Referencia","",""],["22+24","Poste de referencia del kilómetro","2","Poste registrado","Registro de postes levantado en Vía 2",""],["23+07","El Sol","A","Estación","V1: Inicio | V2: Fin corregido",""],["23+09","El Sol","A","Estación","V1: Fin | V2: Inicio | V2: Inicio corregido",""],["23+19","Poste de referencia del kilómetro","2","Poste registrado","Registro de postes levantado en Vía 2",""],["24+04","Cruce bajo nivel Baden Powen","1","Referencia","V1: Nombre dictado, verificar","VERIFICAR"],["24+19","Poste de referencia del kilómetro","2","Poste registrado","Registro de postes levantado en Vía 2",""],["25+04","Señal maniobra El Belloto 18","1","Referencia","",""],["25+09","Señal maniobra El Belloto 11","2","Referencia","",""],["25+10","El Belloto","A","Estación","V1: Inicio | V2: Fin",""],["25+12","El Belloto","1","Estación","V1: Fin",""],["25+13","El Belloto","2","Estación","V2: Inicio",""],["25+13","Señal maniobra El Belloto 22","1","Referencia","",""],["25+14","Cruce a nivel Gómez Carreño","1","Referencia","",""],["25+21","Señal maniobra El Belloto 15","2","Referencia","",""],["25+25","Poste de referencia del kilómetro","2","Poste registrado","Registro de postes levantado en Vía 2",""],["26+05","Paso peatonal inferior Las Américas","1","Referencia","",""],["26+09","Las Américas","A","Estación","V1: Inicio | V2: Fin",""],["26+11","Las Américas","1","Estación","V1: Fin",""],["26+12","Las Américas","2","Estación","V2: Inicio",""],["26+18","Cruce Unimarc","1","Referencia","",""],["26+18","Poste de referencia del kilómetro","2","Poste registrado","Registro de postes levantado en Vía 2",""],["27+01","Señal El Belloto 01","2","Referencia","",""],["27+01","Señal El Belloto 02","1","Referencia","",""],["27+14","La Concepción","2","Estación","V2: Fin",""],["27+15","La Concepción","1","Estación","V1: Estación; inicio inferido de dictado","VERIFICAR"],["27+17","La Concepción","A","Estación","V1: Fin | V2: Inicio",""],["27+20","Poste de referencia del kilómetro","2","Poste registrado","Registro de postes levantado en Vía 2",""],["28+08","Municipalidad Villa Alemana","1","Referencia","",""],["28+12","Villa Alemana","A","Estación","V1: Inicio | V2: Fin",""],["28+14","Villa Alemana","A","Estación","V1: Fin | V2: Inicio",""],["28+15","Señal maniobra El Belloto 28","1","Referencia","",""],["28+20","Poste de referencia del kilómetro","2","Poste registrado","Registro de postes levantado en Vía 2",""],["29+06","Sargento Aldea","A","Estación","V1: Inicio | V2: Fin",""],["29+06","Señal maniobra El Belloto 19","2","Referencia","",""],["29+09","Sargento Aldea","A","Estación","V1: Fin | V2: Inicio",""],["29+11","Señal maniobra El Belloto 23","2","Referencia","",""],["29+19","Poste de referencia del kilómetro","2","Poste registrado","Registro de postes levantado en Vía 2",""],["30+01","Señal maniobra El Belloto 32","1","Referencia","",""],["30+03","Señal maniobra El Belloto 29","2","Referencia","",""],["30+12","Peñablanca","2","Estación","V2: Fin",""],["30+13","Peñablanca","1","Estación","V1: Inicio",""],["30+15","Peñablanca","A","Estación","V1: Fin | V2: Inicio",""],["30+21","Poste de referencia del kilómetro","2","Poste registrado","Registro de postes levantado en Vía 2",""],["31+20","Poste de referencia del kilómetro","2","Poste registrado","Registro de postes levantado en Vía 2",""],["32+17","Señal El Belloto 03","2","Referencia","",""],["32+18","Señal El Belloto 04","1","Referencia","",""],["32+21","Poste de referencia del kilómetro","2","Poste registrado","Registro de postes levantado en Vía 2",""],["33+20","Poste de referencia del kilómetro","2","Poste registrado","Registro de postes levantado en Vía 2",""],["34+20","Poste de referencia del kilómetro","2","Poste registrado","Registro de postes levantado en Vía 2",""],["35+15","Señal El Belloto 05","2","Referencia","",""],["35+15","Señal Limache 02","1","Referencia","",""],["35+18","Antena","2","Referencia","",""],["35+20","Poste de referencia del kilómetro","2","Poste registrado","Registro de postes levantado en Vía 2",""],["36+18","Ingreso curva Querónque","1","Referencia","",""],["36+24","Poste de referencia del kilómetro","2","Poste registrado","Registro de postes levantado en Vía 2",""],["37+06","Choque Querónque","A","Referencia","V2: Mencionado sin confirmación en nuevo recorrido",""],["37+18","Salida curva Querónque","1","Referencia","",""],["37+23","Poste de referencia del kilómetro","2","Poste registrado","Registro de postes levantado en Vía 2",""],["38+07","Puente Chico","1","Referencia","",""],["38+08","Puente Chico","2","Referencia","",""],["38+20","Poste de referencia del kilómetro","2","Poste registrado","Registro de postes levantado en Vía 2",""],["39+03","Señal Limache 04","1","Referencia","",""],["39+10","Paso superior autopista","1","Referencia","",""],["39+14","Puente Amarillo","A","Referencia","V1: Inicio | V2: Término",""],["39+16","Cruce autopista","2","Referencia","V2: Dictado ambiguo, revisar","VERIFICAR"],["39+16","Puente Amarillo","A","Referencia","V1: Fin | V2: Inicio",""],["39+18","Poste de referencia del kilómetro","2","Poste registrado","Registro de postes levantado en Vía 2",""],["40+18","Poste de referencia del kilómetro","2","Poste registrado","Registro de postes levantado en Vía 2",""],["41+11","Señal cruce Pito","1","Referencia","",""],["41+17","Poste de referencia del kilómetro","2","Poste registrado","Registro de postes levantado en Vía 2",""],["42+01","Cruce Los Aromos","2","Referencia","",""],["42+01","Cruce peatonal Los Aromos","1","Referencia","",""],["42+08","Cruce Pito","2","Referencia","",""],["42+21","Zona cambios Limache","1","Referencia","V1: Dictado fuera de secuencia","VERIFICAR"],["42+44","Señal maniobra Limache 03","2","Referencia","",""],["42+45","Aproximación estación Limache","1","Referencia","",""],["42+47","Limache","A","Estación","V1: Inicio | V2: Término",""],["42+50","Limache","A","Estación","V1: Fin | V2: Inicio de recorrido",""],["42+50","Poste de referencia del kilómetro","2","Poste registrado","Registro de postes levantado en Vía 2",""],["43+13","Señal maniobra Limache 02","1","Referencia","V1: PK fuera de secuencia; verificar","FUERA DEL RECORRIDO"]];
 const PK_STATION_RANGES=[["Puerto","00+00","00+03",null,null,"00+00","00+03","Solo una vía documentada"],["Bellavista","00+26","00+30","00+26","00+30","00+26","00+29","Diferencia entre vías"],["Francia","01+12","01+16","01+13","01+16","01+12","01+15","Diferencia entre vías"],["Barón","02+10","02+13","02+10","02+13","02+10","02+13","Coincidente"],["Portales","03+27","04+08","04+01","04+08","03+27","03+27","Límite parcial; Revisar anotación; Diferencia entre vías"],["Recreo","06+03","06+07","06+03","06+06","06+03","06+07","Diferencia entre vías"],["Miramar","07+23","07+27","07+23","07+27","07+23","07+27","Coincidente"],["Viña del Mar","08+18","08+21","08+18","08+21","08+18","08+21","Coincidente"],["Hospital","09+10","09+14","09+10","09+14","09+10","09+14","Coincidente"],["Chorrillos","10+11","10+15","10+11","10+15","10+11","10+15","Coincidente"],["El Salto","11+18","11+21","11+18","11+21",null,null,"Solo una vía documentada"],["Valencia","19+01","19+04","19+01","19+04","19+01","19+01","Límite parcial; Revisar anotación; Diferencia entre vías"],["Quilpué","21+14","21+17","21+14","21+17","21+14","21+17","Coincidente"],["El Sol","23+07","23+09","23+07","23+09","23+07","23+09","Coincidente"],["El Belloto","25+10","25+13","25+10","25+12","25+10","25+13","Diferencia entre vías"],["Las Américas","26+09","26+12","26+09","26+11","26+09","26+12","Diferencia entre vías"],["La Concepción","27+14","27+17","27+15","27+17","27+14","27+17","Revisar anotación; Diferencia entre vías"],["Villa Alemana","28+12","28+14","28+12","28+14","28+12","28+14","Coincidente"],["Sargento Aldea","29+06","29+09","29+06","29+09","29+06","29+09","Coincidente"],["Peñablanca","30+12","30+15","30+13","30+15","30+12","30+15","Diferencia entre vías"],["Limache","42+47","42+50","42+47","42+50","42+47","42+50","Coincidente"]];
 const PK_OBSERVED_POSTS={"0":31,"1":24,"2":32,"3":27,"4":28,"5":33,"6":34,"7":46,"8":44,"9":44,"10":43,"11":23,"12":25,"13":18,"14":19,"15":25,"16":39,"17":29,"18":30,"19":26,"20":27,"21":26,"22":24,"23":19,"24":19,"25":25,"26":18,"27":20,"28":20,"29":19,"30":21,"31":20,"32":21,"33":20,"34":20,"35":20,"36":24,"37":23,"38":20,"39":18,"40":18,"41":17,"42":50};
+// V7.43: mismos puntos PK usados en pantalla y en disparadores de avisos.
+// Los 25 puntos provienen de referencias tomadas viajando Limache→Puerto (V2),
+// pero las coordenadas se ubicaron después en Google Maps, a veces sobre el
+// corredor de vías paralelas. NO son levantamientos precisos de un poste de V2
+// ni referencias verificadas de V1. Solo mejoran la LECTURA APROXIMADA del PK.
+// El PK 00+30 sí fue identificado explícitamente por el usuario como V1.
+// No usar este catálogo para la detección IMU, asignación de estaciones,
+// velocidades, límites, prevenciones ni disparadores de voz.
+const PK_GEO_APPROX_REFERENCES=[
+  ['00+30',-33.043281067182825,-71.61961134426663,'via1'],
+  ['02+13',-33.041743760968295,-71.60540347905987,'corridor'],
+  ['04+20',-33.0289560323073,-71.58688731884405,'corridor'],
+  ['05+07',-33.025940240829236,-71.58426220716635,'corridor'],
+  ['06+06',-33.026516108708236,-71.57444883818103,'corridor'],
+  ['06+20',-33.02479239673618,-71.57071937116828,'corridor'],
+  ['06+26',-33.02397089339497,-71.56868037932868,'corridor'],
+  ['10+43',-33.036196094932244,-71.52726508162503,'corridor'],
+  ['11+08',-33.03850800070846,-71.52502369635698,'corridor'],
+  ['11+21',-33.04182868616215,-71.52035706276662,'corridor'],
+  ['12+20',-33.046114155457666,-71.51410613765361,'corridor'],
+  ['18+05',-33.040849665164856,-71.47638441450636,'corridor'],
+  ['19+04',-33.040349196431606,-71.46870966587296,'corridor'],
+  ['20+24',-33.04356276412224,-71.45233012233713,'corridor'],
+  ['21+14',-33.045251576068516,-71.44564145192608,'corridor'],
+  ['21+17',-33.045258023633764,-71.44419491476425,'corridor'],
+  ['26+05',-33.044419444392325,-71.39814134789825,'corridor'],
+  ['26+12',-33.04379675888742,-71.39403559017676,'corridor'],
+  ['26+18',-33.04316370341624,-71.39053667235547,'corridor'],
+  ['28+08',-33.04234332572804,-71.37608174320386,'corridor'],
+  ['28+14',-33.0425366821871,-71.37261770591728,'corridor'],
+  ['29+06',-33.042141662452735,-71.36703125229832,'corridor'],
+  ['37+06',-32.986520681470545,-71.34080356417654,'corridor'],
+  ['38+08',-32.98552369892483,-71.32956244769586,'corridor'],
+  ['39+16',-32.98242117939728,-71.31375664256,'corridor'],
+  ['42+50',-32.98450845422971,-71.27808392847862,'corridor']
+];
 const PK_VOICE_MAX_GPS_ACCURACY_M=55;
 const PK_VOICE_MAX_OFFROUTE_M=125;
 const PK_VOICE_POSITION_JUMP_M=340;
@@ -2077,7 +2147,7 @@ function exportTripCsv(){
   const blob=new Blob([rows.map(r=>r.map(csvEscape).join(';')).join('\n')],{type:'text/csv;charset=utf-8'}),url=URL.createObjectURL(blob),a=document.createElement('a');a.href=url;a.download=`viaje_ATP_${new Date(t.createdAt).toISOString().slice(0,19).replaceAll(':','-')}.csv`;a.click();setTimeout(()=>URL.revokeObjectURL(url),1000);
 }
 
-function defaultVoiceSettings(){return {alerts:[],announceStations:true,remindLights:false,remindDoors:false,pkAlertsEnabled:false};}
+function defaultVoiceSettings(){return {alerts:[],enabled:true,speechStyle:'short',announceStations:true,remindLights:false,remindDoors:false,pkAlertsEnabled:false};}
 function loadVoiceSettings(){
   try{const x=JSON.parse(localStorage.getItem(VOICE_GLOBAL_KEY)||'null');voiceSettings=x&&Array.isArray(x.alerts)?{...defaultVoiceSettings(),...x}:defaultVoiceSettings();}
   catch(e){voiceSettings=defaultVoiceSettings();}
@@ -2148,8 +2218,8 @@ function normalizePk(v){
 function validPk(v){return /^\d{1,3}(?:-\d{1,3})?$/.test(normalizePk(v));}
 function pkSpeech(v){
   const p=normalizePk(v).split('-'),km=String(parseInt(p[0]||'0',10));
-  if(p.length<2)return `kilómetro ${km}`;
-  return `kilómetro ${km}, poste ${String(parseInt(p[1]||'0',10))}`;
+  if(p.length<2)return `kilómetro ${spanishNumber(Number(km))}`;
+  return `kilómetro ${spanishNumber(Number(km))} poste ${spanishNumber(parseInt(p[1]||'0',10))}`;
 }
 // Coordenada ordinal *aproximada*: nunca se interpreta +XX como metros.
 // La cantidad de postes observada en un kilómetro solo sirve para ordenar/interpolar,
@@ -2168,46 +2238,134 @@ function pkScalarLabel(s){
   let post=clamp(Math.round((s-km)*(max+1)),0,max);
   return `${String(km).padStart(2,'0')}+${String(post).padStart(2,'0')}`;
 }
-function pkStationGeometry(){
-  // Posiciones acumuladas entre puntos de DETENCIÓN; las etiquetas PK siguen
-  // estimándose por estaciones/postes ordinales, NO son kilometraje oficial.
-  const via=gpsCurrentVia(),pts=[];
+function pkStationGeometry(via=gpsCurrentVia()){
+  const pts=[];
   for(const item of PK_STATION_RANGES){
     const p=gpsStationPoint(item[0],via),chain=stationRailChainageM(item[0],via);
     const a=pkScalar(item[1]),b=pkScalar(item[2]);
     if(!p||!Number.isFinite(chain)||!Number.isFinite(a)||!Number.isFinite(b))return [];
-    pts.push({name:item[0],pk:(a+b)/2,chainageM:chain,referenceOnly:p.referenceOnly});
+    pts.push({name:item[0],pk:(a+b)/2,chainageM:chain,referenceOnly:p.referenceOnly,lat:p.lat,lon:p.lon});
   }
   return pts;
 }
-function pkChainageFromScalar(s,geo){
-  if(!Number.isFinite(s)||geo.length<2)return NaN;
-  let i=0;
-  while(i<geo.length-2&&s>geo[i+1].pk)i++;
-  const a=geo[i],b=geo[i+1],frac=(s-a.pk)/(b.pk-a.pk);
-  const rail=stationRailSegmentData(a.name,b.name);
-  if(!rail?.consistent)return NaN; // No usar distancia no validada de Bellavista–Francia V2.
-  return a.chainageM+(b.chainageM-a.chainageM)*frac;
+
+
+// V7.43: estimador de PK compartido por pantalla y mensajes. No afecta al GPS
+// contextual de estaciones ni a la detección de movimiento/detención por IMU.
+// Los postes son referencias APROXIMADAS provenientes de Google Maps; se
+// insertan como vértices entre dos estaciones y la longitud se reescala a la
+// distancia ferroviaria acumulada aportada por el usuario (no al PK oficial).
+const PK_UNIFIED_GEOMETRY_VERSION='pk_unificado_v742';
+const PK_UNIFIED_MAX_ANCHOR_DEVIATION_M=900;
+const PK_UNIFIED_MAX_GEOMETRIC_EXCESS=1.12;
+const pkUnifiedGeometryCache=new Map();
+function pkUnifiedGeometry(via=gpsCurrentVia()){
+  if(pkUnifiedGeometryCache.has(via))return pkUnifiedGeometryCache.get(via);
+  const stationGeo=pkStationGeometry(via),result=[];
+  for(let i=0;i<stationGeo.length-1;i++){
+    const a=stationGeo[i],b=stationGeo[i+1],rail=stationRailSegmentData(a.name,b.name,via);
+    if(!rail||!(b.pk>a.pk)||rail.lengthM<=0)continue;
+    const anchors=PK_GEO_APPROX_REFERENCES
+      .filter(r=>(r[3]==='corridor'||r[3]===via))
+      .map(r=>({pk:pkScalar(r[0]),lat:r[1],lon:r[2],isAnchor:true,scope:r[3]}))
+      .filter(r=>Number.isFinite(r.pk)&&r.pk>a.pk&&r.pk<b.pk)
+      .filter(r=>gpsProjectToSegment(r,a,b).dist<=Math.max(PK_UNIFIED_MAX_ANCHOR_DEVIATION_M,Math.min(5000,rail.lengthM*.42)) &&
+        gpsHaversineMeters(r,a)<=rail.lengthM+350 && gpsHaversineMeters(r,b)<=rail.lengthM+350)
+      .sort((x,y)=>x.pk-y.pk);
+    const vertices=[{...a,isAnchor:false},...anchors,{...b,isAnchor:false}];
+    const lengths=[];let polyLength=0;
+    for(let j=1;j<vertices.length;j++){
+      const length=gpsHaversineMeters(vertices[j-1],vertices[j]);
+      lengths.push(length);polyLength+=length;
+    }
+    if(polyLength<1)continue;
+    // Polilínea con puntos aproximados: si supera fuertemente la longitud
+    // medida, evitarla para avisos y usar solo las estaciones de ese tramo.
+    const anchorsPlausible=polyLength<=rail.lengthM*PK_UNIFIED_MAX_GEOMETRIC_EXCESS+20;
+    const chosen=anchorsPlausible?vertices:[{...a,isAnchor:false},{...b,isAnchor:false}];
+    const total=anchorsPlausible?polyLength:gpsHaversineMeters(a,b);
+    let used=0;
+    for(let j=1;j<chosen.length;j++){
+      const start=chosen[j-1],end=chosen[j],length=gpsHaversineMeters(start,end);
+      const startM=a.chainageM+rail.lengthM*used/total;
+      const endM=a.chainageM+rail.lengthM*(used+length)/total;
+      result.push({a:start,b:end,segmentIndex:i,startChainageM:startM,endChainageM:endM,
+        railDistanceConsistent:rail.consistent&&anchorsPlausible,
+        referenceOnly:!!(a.referenceOnly||b.referenceOnly),
+        usesAnchors:anchorsPlausible&&anchors.length>0,
+        scope:start.scope==='corridor'||end.scope==='corridor'?'corridor':'station',
+        via});
+      used+=length;
+    }
+  }
+  pkUnifiedGeometryCache.set(via,result);
+  return result;
 }
+function pkUnifiedProject(point,via=gpsCurrentVia(),segments=pkUnifiedGeometry(via)){
+  if(!point||!Number.isFinite(point.lat)||!Number.isFinite(point.lon))return null;
+  let best=null;
+  for(const line of segments){
+    const pr=gpsProjectToSegment(point,line.a,line.b);
+    const item={...line,offRouteM:pr.dist,t:pr.t,
+      chainageM:line.startChainageM+(line.endChainageM-line.startChainageM)*pr.t,
+      pk:line.a.pk+(line.b.pk-line.a.pk)*pr.t};
+    if(!best||item.offRouteM<best.offRouteM)best=item;
+  }
+  return best;
+}
+function pkUnifiedTargetChainage(ordinal,via=gpsCurrentVia(),allowTunnel=false){
+  if(!Number.isFinite(ordinal))return NaN;
+  const segments=pkUnifiedGeometry(via);
+  for(const line of segments){
+    if(ordinal<line.a.pk-1e-8||ordinal>line.b.pk+1e-8)continue;
+    if(!line.railDistanceConsistent||(!allowTunnel&&line.referenceOnly))return NaN;
+    const f=(ordinal-line.a.pk)/(line.b.pk-line.a.pk);
+    return line.startChainageM+(line.endChainageM-line.startChainageM)*Math.max(0,Math.min(1,f));
+  }
+  return NaN;
+}
+function pkVoiceDiagnostic(alert,reason,snap=null,remaining=null,extra={}){
+  const run=imuValidationCurrent;
+  if(!run?.enabled)return;
+  const id=alert?.id||'gps',key=id+':'+reason;
+  if(pkVoiceDiagnosticStatus.get(id)===reason&&reason!=='emitido_gps'&&reason!=='emitido_salida')return;
+  pkVoiceDiagnosticStatus.set(id,reason);
+  if(!Array.isArray(run.voiceDiagnostics))run.voiceDiagnostics=[];
+  if(run.voiceDiagnostics.length>=500)return;
+  run.voiceDiagnostics.push({at:Date.now(),alertId:id,pk:alert?.triggerPk||null,
+    via:imuOnlyTrip?.via||null,reason,mode:alert?.leadMode||null,
+    positionSource:snap?.source||null,positionPk:snap?.label||null,
+    remainingM:Number.isFinite(remaining)?Math.round(remaining):null,
+    gpsAccuracyM:Number.isFinite(snap?.accuracy)?Math.round(snap.accuracy):null,
+    offRouteM:Number.isFinite(snap?.offRouteM)?Math.round(snap.offRouteM):null,...extra});
+}
+
+// Posicionamiento VISUAL aproximado con referencias PK y polígonos cortos.
+// No hay una polilínea ferroviaria oficial; no extrapolar sobre grandes curvas,
+// túneles ni sobre trazados intermedios sin puntos suficientes.
+
 function pkGlobalSnapshot(now=Date.now()){
   if(!gpsRequested||!gpsLast||!Number.isFinite(gpsLast.lat)||!Number.isFinite(gpsLast.lon))return null;
   if(now-gpsLast.ts>GPS_FRESH_MS||now<gpsLast.ts-1000||!Number.isFinite(gpsLast.accuracy))return null;
-  const pr=gpsGlobalProjectionPoint({lat:gpsLast.lat,lon:gpsLast.lon});
-  if(!pr||!Number.isFinite(pr.segmentIndex))return null;
-  const geo=pkStationGeometry(),i=pr.segmentIndex;
-  if(geo.length!==STATIONS_PUERTO_LIMACHE.length||!geo[i+1])return null;
-  const pk=geo[i].pk+(geo[i+1].pk-geo[i].pk)*pr.t;
-  return {timestamp:gpsLast.ts,pk,label:pkScalarLabel(pk),chainageM:pr.chainageM,
-    accuracy:gpsLast.accuracy,offRouteM:pr.offRouteM,geo,
-    reliable:gpsLast.accuracy<=PK_VOICE_MAX_GPS_ACCURACY_M&&pr.offRouteM<=PK_VOICE_MAX_OFFROUTE_M&&
-      pr.railDistanceConsistent&&!(geo[i].referenceOnly||geo[i+1].referenceOnly)};
+  const via=gpsCurrentVia(),pr=pkUnifiedProject({lat:gpsLast.lat,lon:gpsLast.lon},via);
+  if(!pr)return null;
+  const source=pr.usesAnchors?'postes aproximados':'estaciones';
+  // Para vértices no verificados de Google Maps, exigir GPS más estricto.
+  const accLimit=pr.usesAnchors?35:PK_VOICE_MAX_GPS_ACCURACY_M;
+  const offLimit=pr.usesAnchors?85:PK_VOICE_MAX_OFFROUTE_M;
+  const reliable=gpsLast.accuracy<=accLimit&&pr.offRouteM<=offLimit&&
+    pr.railDistanceConsistent&&!pr.referenceOnly;
+  return {timestamp:gpsLast.ts,pk:pr.pk,label:pkScalarLabel(pr.pk),chainageM:pr.chainageM,
+    accuracy:gpsLast.accuracy,offRouteM:pr.offRouteM,segmentIndex:pr.segmentIndex,
+    source,via,reliable,railDistanceConsistent:pr.railDistanceConsistent,
+    referenceOnly:pr.referenceOnly};
 }
 function pkTravelSpeed(snap,trip){
   const sign=trip.direction==='puerto'?-1:1;
   const prior=gpsPositionHistory.filter(p=>p.ts<snap.timestamp-1300&&p.ts>=snap.timestamp-7500&&p.accuracy<=PK_VOICE_MAX_GPS_ACCURACY_M).at(-1);
   if(!prior)return null;
-  const pr=gpsGlobalProjectionPoint({lat:prior.lat,lon:prior.lon});
-  if(!pr||pr.offRouteM>PK_VOICE_MAX_OFFROUTE_M||!pr.railDistanceConsistent)return null;
+  const pr=pkUnifiedProject({lat:prior.lat,lon:prior.lon},snap.via);
+  if(!pr||pr.offRouteM>PK_VOICE_MAX_OFFROUTE_M||!pr.railDistanceConsistent||pr.referenceOnly)return null;
   const dt=(snap.timestamp-prior.ts)/1000;
   const speed=(snap.chainageM-pr.chainageM)*sign/dt;
   return speed>=.8&&speed<=38?speed:null;
@@ -2234,66 +2392,102 @@ function voiceSyncTriggerUi(){
 function pkVoiceTick(now=Date.now()){
   if(!imuOnlyTrip)return;
   const snap=pkGlobalSnapshot(now);
-  if(!snap){imuPkStatus.textContent='PK —';return;}
-  imuPkStatus.textContent=`PK ≈${snap.label}${snap.reliable?'':' · baja precisión'}`;
-  if(!voiceSettings?.pkAlertsEnabled||imuOnlyTrip.state!=='MOVING'||!snap.reliable)return;
+  if(!snap){imuPkStatus.textContent='PK —';pkVoiceDiagnostic(null,'gps_sin_posicion');return;}
+  imuPkStatus.textContent=`PK ≈${snap.label}${snap.source==='postes aproximados'?' · mapa':snap.reliable?'':' · baja precisión'}`;
+  imuPkStatus.title=`PK estimado con ${snap.source}; no sustituye la señalización ferroviaria ni la documentación vigente.`;
+  if(!voiceSettings?.pkAlertsEnabled||voiceSettings.enabled===false||imuOnlyTrip.state!=='MOVING')return;
+  if(!snap.reliable){pkVoiceDiagnostic(null,'gps_no_confiable',snap);return;}
   if(pkLastGPSProcessed===snap.timestamp)return;
   pkLastGPSProcessed=snap.timestamp;
-  // Una discontinuidad de GPS/map-matching invalida el cruce anterior.
   const jump=pkLastGoodPosition!==null&&Math.abs(snap.chainageM-pkLastGoodPosition)>PK_VOICE_POSITION_JUMP_M;
   pkLastGoodPosition=snap.chainageM;
   const speed=pkTravelSpeed(snap,imuOnlyTrip),sign=imuOnlyTrip.direction==='puerto'?-1:1;
   for(const a of voiceAlerts()){
     if(a.triggerMode!=='pk'||!voiceEligible(a,imuOnlyTrip))continue;
-    const s=pkScalar(a.triggerPk),target=pkChainageFromScalar(s,snap.geo);
-    if(!Number.isFinite(target))continue;
+    const s=pkScalar(a.triggerPk),target=pkUnifiedTargetChainage(s,snap.via);
+    if(!Number.isFinite(target)){pkVoiceDiagnostic(a,'pk_sin_posicion_validada',snap);continue;}
     const remaining=(target-snap.chainageM)*sign;
-    const prior=pkVoiceRuntime.get(a.id);
-    const mode=a.leadMode||'meters';
+    const prior=pkVoiceRuntime.get(a.id),mode=a.leadMode||'meters';
     const distLimit=mode==='cross'?0:mode==='seconds'?(speed===null?null:speed*(Number(a.leadValue)||0)):
       mode==='hybrid'?PREVENTION_GPS_LEAD_M:Number(a.leadValue)||0;
-    if(prior===null)continue; // ya anunciado por salida o por GPS en este servicio
-    // Si hay una estación adecuada entre la posición y la prevención, esperar a
-    // anunciar su SALIDA (el usuario prefiere evitar un aviso innecesario antes).
+    if(prior===null)continue;
     const dep=mode==='hybrid'?preventionPreferredDeparture(a,imuOnlyTrip):null;
-    if(dep&&imuOnlyTrip.route.indexOf(dep.station)>imuOnlyTrip.pos){pkVoiceRuntime.set(a.id,remaining);continue;}
-    if(jump||!Number.isFinite(distLimit)||remaining< -60){pkVoiceRuntime.set(a.id,remaining);continue;}
-    // Para prevenciones de oficio: si el servicio empezó ya dentro del radio
-    // estimado de aviso, se avisa al primer GPS fiable (sin esperar un cruce que no habrá).
+    if(dep&&imuOnlyTrip.route.indexOf(dep.station)>imuOnlyTrip.pos){pkVoiceRuntime.set(a.id,remaining);pkVoiceDiagnostic(a,'esperando_salida_estacion',snap,remaining);continue;}
+    if(jump){pkVoiceRuntime.delete(a.id);pkVoiceDiagnostic(a,'salto_posicion_gps',snap,remaining);continue;}
+    if(!Number.isFinite(distLimit)||speed===null){
+      // Registrar una línea de base solo FUERA del radio; si ya está dentro,
+      // preservar el cruce anterior hasta tener velocidad GPS confirmada.
+      if(Number.isFinite(distLimit)&&remaining>distLimit)pkVoiceRuntime.set(a.id,remaining);
+      pkVoiceDiagnostic(a,'movimiento_gps_no_confirmado',snap,remaining);continue;
+    }
+    if(remaining< -60){pkVoiceRuntime.set(a.id,remaining);pkVoiceDiagnostic(a,'prevencion_ya_superada',snap,remaining);continue;}
     const justStarted=mode==='hybrid'&&prior===undefined&&remaining<=distLimit&&remaining>=150;
-    if(justStarted||(prior!==undefined&&prior>distLimit&&remaining<=distLimit&&remaining>=-Math.max(45,speed?speed*2:45))){
+    const crossed=prior!==undefined&&prior>distLimit&&remaining<=distLimit&&remaining>=-Math.max(45,speed*2);
+    if(justStarted||crossed){
       pkVoiceRuntime.set(a.id,null);
+      pkVoiceDiagnostic(a,'emitido_gps',snap,remaining,{leadM:distLimit});
       speakVoiceRepeated(composeVoiceText(a),a.repeatCount||1,imuOnlyTrip.serviceNumber);
-    }else pkVoiceRuntime.set(a.id,remaining);
+    }else{
+      pkVoiceRuntime.set(a.id,remaining);
+      if(remaining<distLimit+250&&remaining>=-60)pkVoiceDiagnostic(a,'aproximacion_sin_cruce',snap,remaining,{leadM:distLimit});
+    }
   }
 }
-function composeVoiceText(a=null){
-  if(a?.bulletin){
-    const via=a.via==='via1'?'uno':'dos';
-    const text=(a.customText||'Prevención').trim();
-    return `Atención. Vía ${via}. ${text}. Velocidad ${a.speed} kilómetros por hora. Desde ${pkSpeech(a.pkStart)} hasta ${pkSpeech(a.pkEnd)}.`;
+function spanishNumber(value){
+  const n=Number(value);
+  if(!Number.isInteger(n)||n<0||n>999)return String(value);
+  const units=['cero','uno','dos','tres','cuatro','cinco','seis','siete','ocho','nueve','diez','once','doce','trece','catorce','quince','dieciséis','diecisiete','dieciocho','diecinueve','veinte','veintiuno','veintidós','veintitrés','veinticuatro','veinticinco','veintiséis','veintisiete','veintiocho','veintinueve'];
+  if(n<30)return units[n];
+  const tens=['','','','treinta','cuarenta','cincuenta','sesenta','setenta','ochenta','noventa'];
+  if(n<100)return tens[Math.floor(n/10)]+(n%10?' y '+units[n%10]:'');
+  if(n===100)return 'cien';
+  const hundreds=['','','doscientos','trescientos','cuatrocientos','quinientos','seiscientos','setecientos','ochocientos','novecientos'];
+  const h=Math.floor(n/100),r=n%100;
+  return (h===1?'ciento':hundreds[h])+(r?' '+spanishNumber(r):'');
+}
+function pkSpeechShort(v){
+  const parts=normalizePk(v).split('-');
+  if(!parts[0])return '';
+  return parts.map(p=>spanishNumber(parseInt(p,10))).join(' ');
+}
+function voicePreventionText(a){
+  const speed=String(a.speed||'').trim(),p1=normalizePk(a.pkStart),p2=normalizePk(a.pkEnd);
+  const speedWords=spanishNumber(speed);
+  if((voiceSettings?.speechStyle||'short')==='short'){
+    return `Prevención${speed?' a '+speedWords:''}${p1?', del '+pkSpeechShort(p1)+(p2?' al '+pkSpeechShort(p2):''):''}.`;
   }
+  const reason=(a.customText||'Prevención').trim();
+  const intro=/^prevenci[oó]n|^precauci[oó]n/i.test(reason)?reason:`Prevención: ${reason}`;
+  return `${intro}${speed?', circular a '+speedWords+' kilómetros por hora':''}${p1?', desde el '+pkSpeech(p1)+(p2?', al '+pkSpeech(p2):''):''}.`;
+}
+function composeVoiceText(a=null){
+  if(a?.bulletin)return voicePreventionText(a);
   const preset=a?.preset??voiceSelectedPreset;
   const custom=(a?.customText??voiceText.value??'').trim();
   let text=preset==='Personalizado'?custom:preset;
   const speed=String(a?.speed??voiceSpeed.value??'').trim(),useSpeed=a?!!a.useSpeed&&!!speed:!!speed;
   const pk1=normalizePk(a?.pkStart??voicePkStart.value),pk2=normalizePk(a?.pkEnd??voicePkEnd.value),usePk=a?!!a.usePk&&!!pk1:!!pk1;
-  if(useSpeed)text+=` a ${speed}`;
+  if((preset==='Prevención'||preset==='Nueva prevención')&&(useSpeed||usePk))return voicePreventionText({speed:useSpeed?speed:'',pkStart:usePk?pk1:'',pkEnd:usePk?pk2:'',customText:preset});
+  if(useSpeed)text+=` a ${spanishNumber(speed)}`;
   if(usePk)text+=` en el ${pkSpeech(pk1)}${pk2?` hasta el ${pkSpeech(pk2)}`:''}`;
   return text.trim();
 }
 function renderVoicePresets(){
-  voicePresetGrid.innerHTML=VOICE_PRESETS.map(p=>`<button type="button" class="voicePresetBtn ${p===voiceSelectedPreset?'selected':''}" data-preset="${p}">${p}</button>`).join('');
-  voicePresetGrid.querySelectorAll('[data-preset]').forEach(b=>b.addEventListener('click',()=>{if(!voiceCanEdit())return;voiceSelectedPreset=b.dataset.preset;renderVoicePresets();voiceCustomField.style.display=voiceSelectedPreset==='Personalizado'?'flex':'none';updateVoicePreview();}));
+  voicePresetSelect.innerHTML=VOICE_PRESETS.map(p=>`<option value="${escHtml(p)}" ${p===voiceSelectedPreset?'selected':''}>${escHtml(p)}</option>`).join('');
 }
-function updateVoicePreview(){voicePreview.textContent=composeVoiceText()||'Completa el mensaje.';}
+function updateVoicePreview(){
+  const original=voiceAlerts().find(x=>x.id===voiceEditingId);
+  const preview=original?.bulletin?{...original,customText:voiceText.value||original.customText,
+    speed:voiceSpeed.value,pkStart:voicePkStart.value,pkEnd:voicePkEnd.value}:null;
+  voicePreview.textContent=composeVoiceText(preview)||'Completa el mensaje.';
+}
 function syncVoiceOptionalUi(){
   voiceUseSpeed.checked=!!String(voiceSpeed.value||'').trim();voiceUsePk.checked=!!(String(voicePkStart.value||'').trim()||String(voicePkEnd.value||'').trim());updateVoicePreview();
 }
 function renderVoiceBar(){
   if(!voiceSettings)loadVoiceSettings();voiceBar.classList.add('show');const n=voiceAlerts().filter(a=>a.enabled!==false).length;
   const opts=[voiceSettings.announceStations?'estaciones':'',voiceSettings.remindLights?'luces':'',voiceSettings.remindDoors?'puertas':''].filter(Boolean).join(' · ');
-  voiceBarSub.textContent=`${n} mensaje${n===1?'':'s'} activo${n===1?'':'s'}${opts?' · '+opts:''}`;
+  voiceBarSub.textContent=`${voiceSettings.enabled===false?'Silencio · ':''}${n} mensajes · ${voiceSettings.speechStyle==='long'?'largo':'corto'}`;
 }
 function voiceAlertWhereLabel(a){
   if(a.triggerMode==='pk'){
@@ -2303,46 +2497,56 @@ function voiceAlertWhereLabel(a){
   if(a.via==='both'&&a.segmentKey){const seg=voiceSegmentFromKey(a.segmentKey);if(seg)return `tramo ${seg.label}`;}
   return `al salir de ${a.location||'--'}`;
 }
-function renderBulletinList(){
-  const arr=voiceAlerts().filter(a=>a.bulletin);
-  if(!arr.length){bulletinList.textContent='Sin prevenciones predeterminadas.';return;}
-  bulletinList.innerHTML=arr.map(a=>`<div class="voiceItem">
-    <div style="display:flex;align-items:start;justify-content:space-between;gap:9px">
-      <div><div class="voiceItemText">${escHtml(a.customText)}</div>
-      <div class="voiceItemMeta">${voiceDirectionLabel(a.via)} · ${normalizePk(a.pkStart).replace('-', '+')} a ${normalizePk(a.pkEnd).replace('-', '+')} · ${escHtml(a.speed)} km/h · ${a.repeatCount||2} repeticiones · aviso anticipado${a.cargoOnly?' · SOLO CARGA (no se anuncia en pasajeros)':''}</div></div>
-      <label class="voiceEnabled"><input type="checkbox" data-bulletin-on="${escHtml(a.id)}" ${a.enabled===false?'':'checked'}> ON</label>
-    </div>
-    <div class="voiceItemBtns"><button data-bulletin-edit="${escHtml(a.id)}">EDITAR</button></div>
-  </div>`).join('');
-  bulletinList.querySelectorAll('[data-bulletin-on]').forEach(b=>b.addEventListener('change',()=>{
-    const a=voiceAlerts().find(x=>x.id===b.dataset.bulletinOn);if(!a)return;
-    a.enabled=b.checked;saveVoiceSettings();renderVoiceBar();
-  }));
-  bulletinList.querySelectorAll('[data-bulletin-edit]').forEach(b=>b.addEventListener('click',()=>voiceEdit(b.dataset.bulletinEdit)));
-}
 function renderVoiceList(){
-  renderBulletinList();
-  const arr=voiceAlerts().filter(a=>!a.bulletin);if(!arr.length){voiceList.innerHTML='<div style="font-size:11px;opacity:.48;padding:10px 1px">Sin otros mensajes personalizados.</div>';return;}
-  const locked=!voiceCanEdit();
-  voiceList.innerHTML=arr.map(a=>`<div class="voiceItem"><div style="display:flex;justify-content:space-between;gap:8px;align-items:flex-start"><div class="voiceItemText">${escHtml(composeVoiceText(a))}</div><label class="voiceEnabled"><input type="checkbox" data-v-enable="${a.id}" ${a.enabled===false?'':'checked'} ${locked?'disabled':''}> ON</label></div><div class="voiceItemMeta">${voiceDirectionLabel(a.via)} · ${escHtml(voiceAlertWhereLabel(a))}${a.triggerMode==='pk'?'':' · +'+Math.round((a.delayMs||0)/1000)+' s'} · ${a.repeatCount||1} vez${(a.repeatCount||1)===1?'':'es'}</div><div class="voiceItemBtns"><button data-v-edit="${a.id}" ${locked?'disabled':''}>EDITAR</button><button data-v-del="${a.id}" ${locked?'disabled':''}>BORRAR</button></div></div>`).join('');
+  const alerts=voiceAlerts();
+  const selected=voiceFilter.value||'all';
+  const visible=alerts.filter(a=>selected==='all'||a.via===selected||a.via==='both');
+  const active=alerts.filter(a=>a.enabled!==false).length;
+  voiceListCount.textContent=`MENSAJES · ${active}/${alerts.length}`;
+  voiceList.innerHTML=visible.length?visible.map(a=>{
+    const p1=a.usePk?normalizePk(a.pkStart).replace('-', '+'):'';
+    const p2=a.usePk?normalizePk(a.pkEnd).replace('-', '+'):'';
+    const title=a.bulletin?`Prevención a ${escHtml(a.speed)} · ${escHtml(p1)}${p2?' → '+escHtml(p2):''}`:
+      escHtml((a.preset==='Personalizado'?a.customText:a.preset)||'Mensaje');
+    const shortMeta=`${a.via==='via1'?'V1':a.via==='via2'?'V2':'Ambas'} · ${a.triggerMode==='pk'?'PK '+normalizePk(a.triggerPk).replace('-', '+'):'Salida '+(a.location||'tramo')}${a.cargoOnly?' · Solo carga':''}`;
+    return `<div class="voiceItem ${a.enabled===false?'isOff':''}">
+      <label class="voiceEnabled" aria-label="Activar aviso"><input type="checkbox" data-v-enable="${escHtml(a.id)}" ${a.enabled===false?'':'checked'}></label>
+      <div class="voiceItemContent"><div class="voiceItemText">${title}</div><div class="voiceItemMeta">${escHtml(shortMeta)}</div></div>
+      <div class="voiceItemBtns"><button type="button" data-v-edit="${escHtml(a.id)}">EDITAR</button>${a.bulletin?'':`<button type="button" data-v-del="${escHtml(a.id)}" aria-label="Borrar mensaje">✕</button>`}</div>
+    </div>`;
+  }).join(''):'<div class="voiceItemMeta" style="padding:13px 0">No hay mensajes en esta vía.</div>';
   voiceList.querySelectorAll('[data-v-edit]').forEach(b=>b.addEventListener('click',()=>voiceEdit(b.dataset.vEdit)));
   voiceList.querySelectorAll('[data-v-del]').forEach(b=>b.addEventListener('click',()=>voiceDelete(b.dataset.vDel)));
-  voiceList.querySelectorAll('[data-v-enable]').forEach(b=>b.addEventListener('change',()=>{const a=voiceAlerts().find(x=>x.id===b.dataset.vEnable);if(a){a.enabled=b.checked;saveVoiceSettings();renderVoiceBar();}}));
+  voiceList.querySelectorAll('[data-v-enable]').forEach(b=>b.addEventListener('change',()=>{
+    const a=voiceAlerts().find(x=>x.id===b.dataset.vEnable);
+    if(a){a.enabled=b.checked;saveVoiceSettings();renderVoiceBar();renderVoiceList();}
+  }));
+}
+function showVoiceOverview(){
+  voiceEditor.hidden=true;voiceOverview.hidden=false;voiceEditingId=null;
+  renderVoiceList();
+}
+function showVoiceEditor(editing=false){
+  voiceOverview.hidden=true;voiceEditor.hidden=false;
+  voiceEditorTitle.textContent=editing?'EDITAR MENSAJE':'NUEVO MENSAJE';
+  updateVoicePreview();
+  voiceModal.scrollTop=0;
 }
 function updateVoiceEditLock(){
   const can=voiceCanEdit();voiceLock.textContent='';
   [voiceText,voiceDirection,voiceLocation,voiceSpeed,voicePkStart,voicePkEnd,voiceDelay,voiceTimes,voiceSaveBtn,voiceTriggerMode,voicePkCatalogSelect,voiceTargetPk,voicePkLeadMode,voicePkLeadValue].forEach(el=>el.disabled=!can);
   voiceSyncTriggerUi();
-  voicePresetGrid.querySelectorAll('button').forEach(b=>b.disabled=!can);voiceTestBtn.disabled=false;renderVoiceList();
+  voicePresetSelect.disabled=!can;voiceTestBtn.disabled=false;renderVoiceList();
 }
 function openVoiceModal(quick=false){
   if(!voiceSettings)loadVoiceSettings();voiceQuickMode=!!quick;
   if(quick){
     voiceResetForm();voiceSelectedPreset='Nueva prevención';renderVoicePresets();voicePopulateLocations();const suggested=voiceQuickSuggestedLocation();if(suggested&&[...voiceLocation.options].some(o=>o.value===suggested))voiceLocation.value=suggested;syncVoiceOptionalUi();
   }
-  voiceModal.classList.add('show');voiceAnnounceStations.checked=!!voiceSettings.announceStations;voiceRemindLights.checked=!!voiceSettings.remindLights;voiceRemindDoors.checked=!!voiceSettings.remindDoors;voicePkEnabled.checked=!!voiceSettings.pkAlertsEnabled;renderVoicePresets();voicePopulateLocations();
+  voiceModal.classList.add('show');voiceMasterEnabled.checked=voiceSettings.enabled!==false;voiceAnnounceStations.checked=!!voiceSettings.announceStations;voiceRemindLights.checked=!!voiceSettings.remindLights;voiceRemindDoors.checked=!!voiceSettings.remindDoors;voicePkEnabled.checked=!!voiceSettings.pkAlertsEnabled;renderVoicePresets();voicePopulateLocations();
+  document.querySelectorAll('[data-voice-style]').forEach(b=>b.classList.toggle('selected',b.dataset.voiceStyle===(voiceSettings.speechStyle||'short')));
   if(quick){const suggested=voiceQuickSuggestedLocation();if(suggested&&[...voiceLocation.options].some(o=>o.value===suggested))voiceLocation.value=suggested;updateVoicePreview();voiceLock.textContent='Aviso nuevo · selecciona el tramo y guarda.';}
-  syncVoiceOptionalUi();updateVoiceEditLock();renderVoiceList();
+  syncVoiceOptionalUi();updateVoiceEditLock();if(quick)showVoiceEditor(false);else showVoiceOverview();
 }
 function closeVoiceModal(){voiceModal.classList.remove('show');voiceQuickMode=false;}
 function openQuickVoiceModal(){openVoiceModal(true);}
@@ -2353,7 +2557,7 @@ function voiceEdit(id){
   if(!voiceCanEdit())return;const a=voiceAlerts().find(x=>x.id===id);if(!a)return;voiceEditingId=id;voiceSelectedPreset=a.preset||'Personalizado';voiceText.value=a.customText||'';voiceDirection.value=a.via||'both';voicePopulateLocations();
   let loc=a.location||voiceLocation.value;if(voiceDirection.value==='both')loc=a.segmentKey||voiceLegacySegmentKey(a.location)||voiceLocation.value;if(loc&&[...voiceLocation.options].some(o=>o.value===loc))voiceLocation.value=loc;
   voiceTriggerMode.value=a.triggerMode==='pk'?'pk':'departure';voiceTargetPk.value=a.triggerPk?normalizePk(a.triggerPk).replace('-', '+'):'';voicePkCatalogSelect.value='';voicePkLeadMode.value=a.leadMode||'meters';voicePkLeadValue.value=String(a.leadValue??200);voiceSyncTriggerUi();
-  voiceSpeed.value=a.useSpeed?a.speed||'':'';voicePkStart.value=a.usePk?normalizePk(a.pkStart||''):'';voicePkEnd.value=a.usePk?normalizePk(a.pkEnd||''):'';voiceDelay.value=String(Math.round((a.delayMs||0)/1000));voiceTimes.value=String(a.repeatCount||1);voiceSaveBtn.textContent='ACTUALIZAR MENSAJE';voiceCancelEditBtn.style.display='inline-block';renderVoicePresets();voiceCustomField.style.display=voiceSelectedPreset==='Personalizado'?'flex':'none';syncVoiceOptionalUi();
+  voiceSpeed.value=a.useSpeed?a.speed||'':'';voicePkStart.value=a.usePk?normalizePk(a.pkStart||''):'';voicePkEnd.value=a.usePk?normalizePk(a.pkEnd||''):'';voiceDelay.value=String(Math.round((a.delayMs||0)/1000));voiceTimes.value=String(a.repeatCount||1);voiceSaveBtn.textContent='ACTUALIZAR MENSAJE';voiceCancelEditBtn.style.display='inline-block';renderVoicePresets();voiceCustomField.style.display=voiceSelectedPreset==='Personalizado'?'flex':'none';syncVoiceOptionalUi();showVoiceEditor(true);
 }
 function voiceDelete(id){if(!voiceCanEdit())return;const arr=voiceAlerts(),i=arr.findIndex(x=>x.id===id);if(i<0)return;arr.splice(i,1);saveVoiceSettings();if(voiceEditingId===id)voiceResetForm();renderVoiceBar();renderVoiceList();}
 function voiceSave(){
@@ -2377,23 +2581,24 @@ function voiceSave(){
   }
   if(triggerMode==='pk')location='';
   const old=voiceAlerts().find(x=>x.id===voiceEditingId);const a={...(old||{}),id:old?.id||('V'+Date.now()+Math.random().toString(36).slice(2,6)),preset:voiceSelectedPreset,customText:voiceSelectedPreset==='Personalizado'?custom:'',via,triggerMode,triggerPk:triggerMode==='pk'?triggerPk:'',leadMode,leadValue,location,segmentKey,locationVia1,locationVia2,useSpeed:!!speed,speed,usePk:!!pkStart,pkStart,pkEnd,delayMs:Math.round(delaySec*1000),repeatCount,enabled:old?.enabled!==false};
-  if(old)Object.assign(old,a);else voiceAlerts().push(a);saveVoiceSettings();voiceResetForm();voiceLock.textContent='Mensaje guardado.';renderVoiceBar();renderVoiceList();
+  if(old)Object.assign(old,a);else voiceAlerts().push(a);saveVoiceSettings();voiceResetForm();renderVoiceBar();showVoiceOverview();
 }
 function voicePickSpanishVoice(){const vs=window.speechSynthesis?.getVoices?.()||[];return vs.find(v=>/^es(-|_)/i.test(v.lang)&&v.localService)||vs.find(v=>/^es(-|_)/i.test(v.lang))||null;}
-function speakVoice(text,onEnd=null){
+function speakVoice(text,onEnd=null,force=false){
+  if(voiceSettings?.enabled===false&&!force)return false;
   if(!('speechSynthesis'in window)||!('SpeechSynthesisUtterance'in window))return false;const u=new SpeechSynthesisUtterance(text);u.lang='es-CL';u.volume=1;u.rate=.96;u.pitch=1;const v=voicePickSpanishVoice();if(v)u.voice=v;if(onEnd)u.onend=onEnd;window.speechSynthesis.resume();window.speechSynthesis.speak(u);return true;
 }
 function speakVoiceRepeated(text,times=1,serviceNumber=null){
   let remaining=clamp(parseInt(times||1,10)||1,1,10);const say=()=>{if(serviceNumber&&(!imuOnlyTrip||imuOnlyTrip.serviceNumber!==serviceNumber))return;const ok=speakVoice(text,()=>{remaining--;if(remaining>0){const id=++voiceTimerSeq,h=setTimeout(()=>{voiceTimers.delete(id);say();},650);voiceTimers.set(id,h);}});if(!ok)remaining=0;};say();
 }
-function voiceTest(){const text=composeVoiceText()||'Prueba de aviso de voz.';if(!speakVoice(text))voiceLock.textContent='Este navegador no expone texto a voz.';else voiceLock.textContent='Reproduciendo prueba de voz.';}
+function voiceTest(){const text=voicePreview.textContent||'Prueba de aviso de voz.';if(!speakVoice(text,null,true))voiceLock.textContent='Este navegador no expone texto a voz.';else voiceLock.textContent='Reproduciendo prueba de voz.';}
 function voiceEligible(a,trip){return a.enabled!==false&&!a.cargoOnly&&(a.via==='both'||a.via===directionToVia(trip.direction));}
 function voiceMatchesDeparture(a,trip,location){
   if(a.via==='both'&&a.segmentKey){const target=directionToVia(trip.direction)==='via2'?a.locationVia2:a.locationVia1;return target===location;}
   return a.location===location;
 }
 function scheduleVoiceEvent(location,eventAt=Date.now()){
-  if(!imuOnlyTrip)return;const trip=imuOnlyTrip,now=Date.now();for(const a of voiceAlerts()){if(a.triggerMode==='pk'||!voiceEligible(a,trip)||!voiceMatchesDeparture(a,trip,location))continue;const due=eventAt+(a.delayMs||0),wait=Math.max(0,due-now),id=++voiceTimerSeq;const timer=setTimeout(()=>{voiceTimers.delete(id);if(imuOnlyTrip&&imuOnlyTrip.serviceNumber===trip.serviceNumber)speakVoiceRepeated(composeVoiceText(a),a.repeatCount||1,trip.serviceNumber);},wait);voiceTimers.set(id,timer);}
+  if(!imuOnlyTrip||voiceSettings?.enabled===false)return;const trip=imuOnlyTrip,now=Date.now();for(const a of voiceAlerts()){if(a.triggerMode==='pk'||!voiceEligible(a,trip)||!voiceMatchesDeparture(a,trip,location))continue;const due=eventAt+(a.delayMs||0),wait=Math.max(0,due-now),id=++voiceTimerSeq;const timer=setTimeout(()=>{voiceTimers.delete(id);if(imuOnlyTrip&&imuOnlyTrip.serviceNumber===trip.serviceNumber)speakVoiceRepeated(composeVoiceText(a),a.repeatCount||1,trip.serviceNumber);},wait);voiceTimers.set(id,timer);}
 }
 function clearVoiceTimers(cancelSpeech=false){for(const t of voiceTimers.values())clearTimeout(t);voiceTimers.clear();if(cancelSpeech&&'speechSynthesis'in window)window.speechSynthesis.cancel();}
 function updateBellotoCutUi(msg=''){
@@ -2404,7 +2609,7 @@ function armBellotoDoubleCut(){
   const r=imuOnlyTrip.route,iSol=r.indexOf('El Sol'),iBell=r.indexOf('El Belloto');
   if(iSol<0||iBell!==iSol+1){updateBellotoCutUi('Este servicio no pasa por El Sol → El Belloto.');return;}
   const origin=r[imuOnlyTrip.pos],next=r[imuOnlyTrip.pos+1];
-  if(imuOnlyTrip.state==='MOVING'&&origin==='El Sol'&&next==='El Belloto'){imuOnlyTrip.doubleCutBellotoArmed=false;imuOnlyTrip.doubleCutBellotoDone=true;speakVoice('Recuerda: corte doble en estación El Belloto.');updateBellotoCutUi('Aviso reproducido ahora para este servicio.');return;}
+  if(imuOnlyTrip.state==='MOVING'&&origin==='El Sol'&&next==='El Belloto'){imuOnlyTrip.doubleCutBellotoArmed=false;imuOnlyTrip.doubleCutBellotoDone=true;const emitted=speakVoice('Recuerda: corte doble en estación El Belloto.');updateBellotoCutUi(emitted?'Aviso reproducido ahora para este servicio.':'Aviso silenciado. Activa voz en AVISOS.');return;}
   if(imuOnlyTrip.pos>iSol||(imuOnlyTrip.pos===iSol&&imuOnlyTrip.state!=='STATION'&&imuOnlyTrip.state!=='WAITING')){updateBellotoCutUi('El tramo El Sol → El Belloto ya pasó o está cerrándose.');return;}
   imuOnlyTrip.doubleCutBellotoArmed=true;imuOnlyTrip.doubleCutBellotoDone=false;updateBellotoCutUi('Armado: se dirá al iniciar El Sol → El Belloto.');
 }
@@ -2414,30 +2619,33 @@ function armBellotoDoubleCut(){
 // de postes; se interpola un eje entre centros GPS de estaciones.
 function preventionPreferredDeparture(a,trip){
   if(a.leadMode!=='hybrid'||!trip?.route?.length)return null;
-  const geo=pkStationGeometry(),s=pkScalar(a.triggerPk),target=pkChainageFromScalar(s,geo);
-  if(!Number.isFinite(target)||geo.length<2)return null;
+  const via=directionToVia(trip.direction),s=pkScalar(a.triggerPk);
+  const target=pkUnifiedTargetChainage(s,via,true);
+  if(!Number.isFinite(target))return null;
   const sign=trip.direction==='puerto'?-1:1;
   let result=null;
   for(let i=0;i<trip.route.length-1;i++){
-    const loc=geo.find(x=>x.name===trip.route[i]);if(!loc)continue;
-    const gap=(target-loc.chainageM)*sign;
-    if(gap>0&&gap<=PREVENTION_STATION_LEAD_M&&(!result||gap<result.distanceM))result={station:loc.name,index:i,distanceM:gap};
+    const chain=stationRailChainageM(trip.route[i],via);
+    if(!Number.isFinite(chain))continue;
+    const gap=(target-chain)*sign;
+    if(gap>0&&gap<=PREVENTION_STATION_LEAD_M&&(!result||gap<result.distanceM))result={station:trip.route[i],index:i,distanceM:gap};
   }
   return result;
 }
 function preventionDepartureAlerts(station,trip){
-  if(!voiceSettings?.pkAlertsEnabled)return;
+  if(!voiceSettings?.pkAlertsEnabled||voiceSettings.enabled===false)return;
   for(const a of voiceAlerts()){
     if(!a.bulletin||a.triggerMode!=='pk'||a.leadMode!=='hybrid'||!voiceEligible(a,trip))continue;
     const preferred=preventionPreferredDeparture(a,trip);
     if(!preferred||preferred.station!==station||pkVoiceRuntime.get(a.id)===null)continue;
     pkVoiceRuntime.set(a.id,null); // ÚNICO aviso, aunque más tarde llegue GPS.
+    pkVoiceDiagnostic(a,'emitido_salida',null,preferred.distanceM,{station});
     speakVoiceRepeated(composeVoiceText(a),a.repeatCount||2,trip.serviceNumber);
   }
 }
 function scheduleDepartureVoice(station,nextStation,at){
   if(!voiceSettings)loadVoiceSettings();if(voiceSettings.announceStations&&nextStation)speakVoice(`Próxima estación ${nextStation}.`);if(voiceSettings.remindLights)speakVoice('Recuerda mantener luces encendidas.');
-  if(imuOnlyTrip?.doubleCutBellotoArmed&&station==='El Sol'&&nextStation==='El Belloto'){imuOnlyTrip.doubleCutBellotoArmed=false;imuOnlyTrip.doubleCutBellotoDone=true;speakVoice('Recuerda: corte doble en estación El Belloto.');updateBellotoCutUi('Aviso de corte doble reproducido.');}
+  if(imuOnlyTrip?.doubleCutBellotoArmed&&station==='El Sol'&&nextStation==='El Belloto'){imuOnlyTrip.doubleCutBellotoArmed=false;imuOnlyTrip.doubleCutBellotoDone=true;const emitted=speakVoice('Recuerda: corte doble en estación El Belloto.');updateBellotoCutUi(emitted?'Aviso de corte doble reproducido.':'Aviso de corte doble silenciado.');}
   scheduleVoiceEvent(station,at);
   if(imuOnlyTrip)preventionDepartureAlerts(station,imuOnlyTrip);
 }
@@ -2607,8 +2815,8 @@ function startValidationRun(){
   const now=Date.now();
   imuValidationCurrent={
     enabled:true,
-    schemaVersion:'1.16',
-    appVersion:'V7.40',
+    schemaVersion:'1.17',
+    appVersion:'V7.43',
     startedAt:now,
     startedPerf:performance.now(),
     endedAt:null,
@@ -2623,6 +2831,7 @@ function startValidationRun(){
     gpsAdvisories:[],
     gpsArrivalChecks:[],
     tunnelFallbacks:[],
+    voiceDiagnostics:[],
     samples:[],
     rawImu:[],
     rawColumns:['elapsed_ms','ax','ay','az','mag',
@@ -2790,13 +2999,13 @@ function exportValidationRun(){
       schemaVersion:v.schemaVersion,appVersion:v.appVersion,
       serviceNumber:v.serviceNumber,destination:v.destination,initialMode:v.initialMode||'auto',selectedInitialStation:v.selectedInitialStation||null,vehicleProfile:v.vehicleProfile||vehicleProfileFromDestination(v.destination),
       detectorProfile:{...vehicleDetectorParams(v.vehicleProfile||vehicleProfileFromDestination(v.destination))},
-      stationReferenceVersion:STATION_TRACK_VERSION,stationReferenceVia:v.vehicleProfile==='MC'?'via2':'via1',
+      stationReferenceVersion:STATION_TRACK_VERSION,pkPositionVersion:PK_UNIFIED_GEOMETRY_VERSION,stationReferenceVia:v.vehicleProfile==='MC'?'via2':'via1',
       startedAt:v.startedAt,startedAtIso:new Date(v.startedAt).toISOString(),
       endedAt:v.endedAt,endedAtIso:v.endedAt?new Date(v.endedAt).toISOString():null,
       durationMs:v.endedAt?Math.max(0,v.endedAt-v.startedAt):Date.now()-v.startedAt,
       note:'Las marcas MANUAL representan la realidad indicada por el usuario. Las transiciones AUTOMATICAS son lo que decidió la app. GPS es contexto espacial, no una marca manual.',
       accelerationInfo:{units:'m/s2',gravityFilter:'pasa-altos independiente: accelerationIncludingGravity menos media exponencial (tau=2 segundos)',
-        note:'V7.40: motor físico IMU V7.38 sin cambiar umbrales; protección temporal de 60 s entre salida física y llegada retrospectiva, incluida excepción de túnel. Se rechaza la meseta prematura y se exige nuevo movimiento antes de rearmar. Consentimiento = detención − 8 s de cierre.', 
+        note:'V7.43: motor IMU y protecciones temporales sin cambios. Una misma proyección aproximada (puntos de estación y postes) alimenta el PK visual y los avisos; se restringe la voz por fiabilidad GPS, continuidad y movimiento. Consentimiento = detención − 8 s.', 
         nativeRawRows:v.nativeSamples,gravityAvailableRows:v.gravitySamples,rawSamplingMinIntervalMs:VALIDATION_RAW_MIN_INTERVAL_MS},
       sensorProfile:{...nativeDeviceProfileNow()}
     },
@@ -2806,6 +3015,7 @@ function exportValidationRun(){
     contextRejected:v.contextRejected||[],
     gpsArrivalChecks:v.gpsArrivalChecks||[],
     tunnelFallbacks:v.tunnelFallbacks||[],
+    voiceDiagnostics:v.voiceDiagnostics||[],
     comparison:v.comparison||validationBuildComparison(v),
     sampledData:{columns:v.sampleColumns,rows:v.samples},
     rawImu:{columns:v.rawColumns,rows:v.rawImu,truncated:!!v.rawTruncated}
@@ -4282,7 +4492,7 @@ async function armImuTrip(){
   }
   const ok=await enableIMU();if(!ok){imuCalText.textContent='No se pudo acceder al IMU del teléfono.';return;}
   const gpsStarted=startGpsSupport(); // GPS es opcional para el estado físico; si falla, IMU continúa.
-  clearVoiceTimers(false);pkVoiceRuntime=new Map();pkLastGPSProcessed=null;pkLastGoodPosition=null;if('speechSynthesis'in window)window.speechSynthesis.resume();const now=Date.now();
+  clearVoiceTimers(false);pkVoiceRuntime=new Map();pkLastGPSProcessed=null;pkLastGoodPosition=null;pkVoiceDiagnosticStatus.clear();if('speechSynthesis'in window)window.speechSynthesis.resume();const now=Date.now();
   const inferredOrigin=originChoice||suggestedLastCompleted()?.finalStation||null;
   const oi=STATIONS_PUERTO_LIMACHE.indexOf(inferredOrigin),di=STATIONS_PUERTO_LIMACHE.indexOf(destination);
   const inferredDirection=oi>=0&&oi!==di?(oi<di?'limache':'puerto'):inferredDirectionFromDestination(destination);
@@ -4415,11 +4625,11 @@ function finishImuTrip(auto=false,endAtOverride=null,preserveVoiceTimers=false){
 }
 function nextImuService(){
   validationPanel?.classList.remove('show');
-  stopGpsSupport();clearVoiceTimers(true);pkVoiceRuntime.clear();pkLastGPSProcessed=null;pkLastGoodPosition=null;stopLiveStationFrame();clearInterval(imuOnlyLoop);imuOnlyLoop=null;imuOnlyTrip=null;previousImuTickAt=null;recoveryNotice('');imuBaseline=null;imuBaselineAnchor=null;imuBaselineHistory=[];imuCalStart=null;imuDepartureHintAt=null;imuArrivalHintAt=null;imuCalValues=[];imuCalMode=null;imuScoreHistory=[];imuAutoCalStationKey=null;imuCruiseScore=null;gpsSyncCandidate=null;gpsStationLock=null;gpsDepartureCandidate=null;gpsWaitingSegmentCandidate=null;clearTimeout(imuCalUiTimer);imuCalLive.className='imuCalLive';imuRecalBtn.disabled=false;imuLiveEl.classList.remove('show');imuSetupEl.style.display='block';imuNextServiceBtn.style.display='none';imuFinishBtn.style.display='inline-block';imuFinishBtn.textContent='FINALIZAR';imuRecalBtn.style.display='inline-block';imuServiceNumber.value='';imuSchedule.value='';setDefaultSchedule();fillImuDestination();applyNextDestinationSuggestion();renderImuSessionStatus();window.scrollTo({top:0,behavior:'smooth'});
+  stopGpsSupport();clearVoiceTimers(true);pkVoiceRuntime.clear();pkLastGPSProcessed=null;pkLastGoodPosition=null;pkVoiceDiagnosticStatus.clear();stopLiveStationFrame();clearInterval(imuOnlyLoop);imuOnlyLoop=null;imuOnlyTrip=null;previousImuTickAt=null;recoveryNotice('');imuBaseline=null;imuBaselineAnchor=null;imuBaselineHistory=[];imuCalStart=null;imuDepartureHintAt=null;imuArrivalHintAt=null;imuCalValues=[];imuCalMode=null;imuScoreHistory=[];imuAutoCalStationKey=null;imuCruiseScore=null;gpsSyncCandidate=null;gpsStationLock=null;gpsDepartureCandidate=null;gpsWaitingSegmentCandidate=null;clearTimeout(imuCalUiTimer);imuCalLive.className='imuCalLive';imuRecalBtn.disabled=false;imuLiveEl.classList.remove('show');imuSetupEl.style.display='block';imuNextServiceBtn.style.display='none';imuFinishBtn.style.display='inline-block';imuFinishBtn.textContent='FINALIZAR';imuRecalBtn.style.display='inline-block';imuServiceNumber.value='';imuSchedule.value='';setDefaultSchedule();fillImuDestination();applyNextDestinationSuggestion();renderImuSessionStatus();window.scrollTo({top:0,behavior:'smooth'});
 }
 function resetImuSession(){
   validationPanel?.classList.remove('show');validationReportCard?.classList.remove('show');
-  stopGpsSupport();clearVoiceTimers(true);pkVoiceRuntime.clear();pkLastGPSProcessed=null;pkLastGoodPosition=null;voiceModal.classList.remove('show');stopLiveStationFrame();clearInterval(imuOnlyLoop);imuOnlyLoop=null;imuOnlyTrip=null;previousImuTickAt=null;recoveryNotice('');imuOnlyLastCompleted=null;imuBaseline=null;imuCalStart=null;imuDepartureHintAt=null;imuArrivalHintAt=null;imuCalValues=[];imuCalMode=null;imuScoreHistory=[];imuAutoCalStationKey=null;clearTimeout(imuCalUiTimer);imuCalLive.className='imuCalLive';imuRecalBtn.disabled=false;imuSession=null;saveImuSession();imuLiveEl.classList.remove('show');imuSessionReport.classList.remove('show');imuSetupEl.style.display='none';imuSessionStatus.classList.remove('show');imuSessionSetup.style.display='block';imuFinishBtn.style.display='inline-block';imuFinishBtn.textContent='FINALIZAR';imuRecalBtn.style.display='inline-block';imuEmail.value='';imuServiceCount.value='1';imuServiceNumber.value='';imuOrigin.value='';imuSessionMsg.textContent='Los servicios se guardan localmente.';renderVoiceBar();
+  stopGpsSupport();clearVoiceTimers(true);pkVoiceRuntime.clear();pkLastGPSProcessed=null;pkLastGoodPosition=null;pkVoiceDiagnosticStatus.clear();voiceModal.classList.remove('show');stopLiveStationFrame();clearInterval(imuOnlyLoop);imuOnlyLoop=null;imuOnlyTrip=null;previousImuTickAt=null;recoveryNotice('');imuOnlyLastCompleted=null;imuBaseline=null;imuCalStart=null;imuDepartureHintAt=null;imuArrivalHintAt=null;imuCalValues=[];imuCalMode=null;imuScoreHistory=[];imuAutoCalStationKey=null;clearTimeout(imuCalUiTimer);imuCalLive.className='imuCalLive';imuRecalBtn.disabled=false;imuSession=null;saveImuSession();imuLiveEl.classList.remove('show');imuSessionReport.classList.remove('show');imuSetupEl.style.display='none';imuSessionStatus.classList.remove('show');imuSessionSetup.style.display='block';imuFinishBtn.style.display='inline-block';imuFinishBtn.textContent='FINALIZAR';imuRecalBtn.style.display='inline-block';imuEmail.value='';imuServiceCount.value='1';imuServiceNumber.value='';imuOrigin.value='';imuSessionMsg.textContent='Los servicios se guardan localmente.';renderVoiceBar();
 }
 function restoreImuSession(){
   try{
@@ -4593,14 +4803,34 @@ voicePkCatalogSelect.addEventListener('change',()=>{
   if(!voicePkStart.value||normalizePk(voicePkStart.value)===previous)voicePkStart.value=item[0];
   syncVoiceOptionalUi();
 });
-voicePkEnabled.addEventListener('change',()=>{voiceSettings.pkAlertsEnabled=voicePkEnabled.checked;pkVoiceRuntime.clear();pkLastGPSProcessed=null;saveVoiceSettings();renderVoiceBar();});
+voicePkEnabled.addEventListener('change',()=>{voiceSettings.pkAlertsEnabled=voicePkEnabled.checked;pkVoiceRuntime.clear();pkLastGPSProcessed=null;pkVoiceDiagnosticStatus.clear();saveVoiceSettings();renderVoiceBar();});
 voiceSpeed.addEventListener('input',syncVoiceOptionalUi);voicePkStart.addEventListener('input',syncVoiceOptionalUi);voicePkEnd.addEventListener('input',syncVoiceOptionalUi);voiceText.addEventListener('input',updateVoicePreview);
 voiceAnnounceStations.addEventListener('change',()=>{voiceSettings.announceStations=voiceAnnounceStations.checked;saveVoiceSettings();renderVoiceBar();});
 voiceRemindLights.addEventListener('change',()=>{voiceSettings.remindLights=voiceRemindLights.checked;saveVoiceSettings();renderVoiceBar();});
 voiceRemindDoors.addEventListener('change',()=>{voiceSettings.remindDoors=voiceRemindDoors.checked;saveVoiceSettings();renderVoiceBar();});
+voiceMasterEnabled.addEventListener('change',()=>{
+  voiceSettings.enabled=voiceMasterEnabled.checked;
+  if(!voiceSettings.enabled)clearVoiceTimers(true);
+  pkVoiceRuntime.clear();pkLastGPSProcessed=null;
+  saveVoiceSettings();renderVoiceBar();
+});
+document.querySelectorAll('[data-voice-style]').forEach(b=>b.addEventListener('click',()=>{
+  voiceSettings.speechStyle=b.dataset.voiceStyle;
+  saveVoiceSettings();
+  document.querySelectorAll('[data-voice-style]').forEach(x=>x.classList.toggle('selected',x===b));
+  renderVoiceBar();updateVoicePreview();
+}));
+voiceFilter.addEventListener('change',renderVoiceList);
+voiceNewBtn.addEventListener('click',()=>{voiceResetForm();showVoiceEditor(false);});
+voiceEditorBackBtn.addEventListener('click',()=>{voiceResetForm();showVoiceOverview();});
+voicePresetSelect.addEventListener('change',()=>{
+  voiceSelectedPreset=voicePresetSelect.value;
+  voiceCustomField.style.display=voiceSelectedPreset==='Personalizado'?'flex':'none';
+  updateVoicePreview();
+});
 voiceSaveBtn.addEventListener('click',voiceSave);
 voiceTestBtn.addEventListener('click',voiceTest);
-voiceCancelEditBtn.addEventListener('click',()=>{voiceResetForm();voiceLock.textContent='';});
+voiceCancelEditBtn.addEventListener('click',()=>{voiceResetForm();showVoiceOverview();});
 cameraBtn.addEventListener('click',openCamera);
 lensBtn.addEventListener('click',switchLens);
 testBtn.addEventListener('click',testSounds);
