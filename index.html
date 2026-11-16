@@ -4,7 +4,7 @@
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no" />
 <meta name="theme-color" content="#050708" />
-<title>Registro Ferroviario V7.44 · motor V7.35</title>
+<title>Registro Ferroviario V7.47 · navegación · motor V7.35</title>
 <style>
 :root{color-scheme:dark;font-family:system-ui,-apple-system,Segoe UI,Roboto,sans-serif}
 *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
@@ -229,6 +229,49 @@ body.mode-imu #imuMode{padding:max(6px,env(safe-area-inset-top)) 12px max(12px,e
 #imuLive>.imuQuickBar{margin:9px 0 4px;display:flex;gap:7px}#imuLive>.imuQuickBar button{min-height:42px}#imuLive>.imuQuickBar #imuBellotoCutBtn{background:#193632;color:#c2fff6;border:1px solid #356660}
 #imuLive>.imuQuickBar #imuBellotoCutBtn.armed{background:#0b6f59;color:white}
 #voiceEditor[hidden],#voiceOverview[hidden]{display:none!important}
+
+/* V7.47 · Navegación con sensación de profundidad. Este panel NO cambia el motor V7.35. */
+#navCard{border:1px solid #285355;border-radius:22px;background:linear-gradient(160deg,#142527,#0b1214 63%);padding:17px 15px 14px;box-shadow:0 9px 32px #0005}
+.navHeadline{display:flex;align-items:center;justify-content:space-between;gap:9px}
+.navTitle{font-size:13px;font-weight:950;letter-spacing:.09em;color:#8ee5e1}
+#navSource{font-size:10px;font-weight:900;border-radius:999px;padding:7px 9px;background:#243235;color:#d0e2e3;text-align:right}
+#navSource.estimated{background:#493820;color:#ffde99}
+.navDepthScene{position:relative;height:198px;margin-top:14px;border-radius:20px;overflow:hidden;border:1px solid rgba(112,220,215,.16);background:radial-gradient(circle at 50% 12%,rgba(123,229,220,.18),rgba(123,229,220,0) 30%),linear-gradient(180deg,#183135 0%,#101d20 42%,#0a0d0f 72%,#090a0b 100%)}
+.navDepthScene::before{content:'';position:absolute;left:50%;top:44px;transform:translateX(-50%);width:90%;height:1px;background:linear-gradient(90deg,transparent,rgba(177,230,226,.4),transparent)}
+.navDepthGlow{position:absolute;inset:auto 10% 16px;height:88px;border-radius:999px;background:radial-gradient(ellipse at center,rgba(50,164,157,.18),rgba(50,164,157,0) 70%);filter:blur(10px);pointer-events:none}
+.navRail{position:absolute;bottom:26px;height:132px;width:3px;background:linear-gradient(180deg,rgba(190,247,244,.18),rgba(190,247,244,.72));box-shadow:0 0 7px rgba(154,239,231,.22)}
+.navRail.left{left:31%;transform-origin:bottom center;transform:skewX(28deg)}
+.navRail.right{right:31%;transform-origin:bottom center;transform:skewX(-28deg)}
+.navSleeperField{position:absolute;left:18%;right:18%;bottom:25px;height:122px;opacity:.48;background:repeating-linear-gradient(to top,rgba(220,247,244,.28) 0 2px,transparent 2px 14px);clip-path:polygon(7% 100%,93% 100%,62% 0,38% 0)}
+.navDepthOrigin{position:absolute;left:14px;bottom:14px;max-width:40%;padding:10px 12px 11px;border-radius:15px;background:rgba(8,17,18,.76);border:1px solid rgba(145,220,214,.18);box-shadow:0 10px 24px rgba(0,0,0,.24)}
+.navDepthOrigin small,.navDepthTarget small{display:block;color:#90b1b3;font-size:10px;letter-spacing:.07em;font-weight:850;margin:0 0 3px}
+.navDepthOrigin span{display:block;font-size:17px;font-weight:950;line-height:1.12;color:#ecffff;overflow-wrap:anywhere}
+.navDepthTarget{position:absolute;left:50%;top:18px;max-width:min(78%,280px);min-width:124px;padding:9px 13px 10px;border-radius:16px;background:linear-gradient(180deg,rgba(188,255,247,.96),rgba(143,241,232,.92));color:#082527;border:1px solid rgba(214,255,252,.95);box-shadow:0 10px 28px rgba(90,234,216,.20);transform:translateX(-50%) scale(.58);transform-origin:center center;opacity:.82;filter:blur(1.4px) drop-shadow(0 0 10px rgba(122,236,228,.34));will-change:transform,top,filter,opacity}
+.navDepthTarget span{display:block;font-size:20px;font-weight:950;line-height:1.06;letter-spacing:-.02em;text-align:center;overflow-wrap:anywhere}
+#navTrackTrain{position:absolute;left:50%;bottom:16px;transform:translateX(-50%);font-size:26px;line-height:1;padding:7px 8px;border-radius:14px;background:linear-gradient(180deg,#14363a,#102427);border:1px solid rgba(128,227,220,.42);box-shadow:0 8px 20px rgba(0,0,0,.30);z-index:2;will-change:transform,bottom}
+.navProgressShell{position:absolute;left:12px;right:12px;bottom:11px;height:8px;border-radius:999px;background:rgba(180,235,230,.12);overflow:hidden}
+#navProgressFill{height:100%;width:0%;border-radius:inherit;background:linear-gradient(90deg,#15b4a8,#9cfef0);transition:width .45s linear}
+.navNext{font-size:11px;color:#b1c7c9;margin:10px 3px 15px;min-height:14px}
+.navTimerBox{display:flex;align-items:end;justify-content:space-between;gap:12px;padding-top:14px;border-top:1px solid #315054}
+.navTimerTitle{font-size:11px;font-weight:900;letter-spacing:.10em;color:#93b7b9}
+#navMainTimer{font-size:clamp(49px,12vw,69px);font-weight:950;letter-spacing:-.06em;line-height:1.13;font-variant-numeric:tabular-nums;white-space:nowrap}
+.navTimersRight{text-align:right;padding-bottom:0;min-width:112px}
+.navTimersRight span{display:block;font-size:10px;color:#97b1b3;font-weight:850}
+.navTimersRight strong{display:block;font-size:18px;font-weight:950;font-variant-numeric:tabular-nums;margin-top:3px}
+#navEstimate{font-size:10px;color:#93acac;margin-top:7px;line-height:1.35;min-height:14px}
+#navNotice{display:none;margin-top:12px;padding:13px;border-radius:14px;background:#43321b;border:1px solid #89652c;color:#fff1cf}
+#navNotice.show{display:flex;gap:11px;align-items:flex-start}
+#navNoticeIcon{font-size:23px;line-height:1.15}
+#navNoticeText{font-size:14px;font-weight:900;line-height:1.36;overflow-wrap:anywhere}
+#navNoticeMeta{font-size:10px;font-weight:850;opacity:.8;margin-top:5px}
+.navControls{display:flex;gap:8px;margin-top:9px}
+.navControls button{flex:1;min-height:44px;padding:11px;font-size:12px;background:#162225;border:1px solid #284145}
+body.mode-imu .imuLive.show>#imuState,body.mode-imu .imuLive.show>#imuRoute,body.mode-imu .imuLive.show>#imuTimer,body.mode-imu .imuLive.show>#imuTimerLabel,body.mode-imu .imuLive.show>.imuSecondary{display:none!important}
+body.mode-imu .imuLive .imuStopTable{display:none}
+body.mode-imu .imuLive.table-open .imuStopTable{display:block}
+body.mode-imu .imuLive .imuQuickBar{margin:9px 0 0}
+body.mode-imu .imuLive .imuPkStatus{font-size:11px;margin:6px 0}
+@media(max-width:380px){#navCard{padding:13px 11px}.navDepthScene{height:186px}.navDepthTarget span{font-size:18px}.navDepthOrigin span{font-size:15px}.navTimersRight strong{font-size:17px}}
 </style>
 </head>
 <body class="mode-imu">
@@ -245,7 +288,7 @@ body.mode-imu #imuMode{padding:max(6px,env(safe-area-inset-top)) 12px max(12px,e
   </div>
   <section id="imuMode">
     <div class="imuShell">
-      <div class="imuTop"><div class="imuBrand">REGISTRO <span>V7.44</span></div><div class="topActions"><button id="voiceMainBtn" type="button" class="topAction">AVISOS</button><button id="pkToggleBtn" type="button" class="topAction" aria-pressed="false">PK</button></div><button id="imuBackBtn" style="display:none" aria-hidden="true" tabindex="-1">Cambiar modo</button></div>
+      <div class="imuTop"><div class="imuBrand">REGISTRO <span>V7.46</span></div><div class="topActions"><button id="voiceMainBtn" type="button" class="topAction">AVISOS</button><button id="pkToggleBtn" type="button" class="topAction" aria-pressed="false">PK</button></div><button id="imuBackBtn" style="display:none" aria-hidden="true" tabindex="-1">Cambiar modo</button></div>
       <div id="imuSessionSetup" class="imuSessionCard">
         <div style="font-size:20px;font-weight:950;margin-bottom:10px">SESIÓN DE SERVICIOS</div>
         <div class="imuSessionGrid">
@@ -278,6 +321,24 @@ body.mode-imu #imuMode{padding:max(6px,env(safe-area-inset-top)) 12px max(12px,e
         <button id="imuArmBtn" class="primary">ARMAR SERVICIO</button>
       </div>
       <div id="imuLive" class="imuLive">
+        <section id="navCard" aria-label="Navegación del servicio">
+          <div class="navHeadline"><span id="navTitle" class="navTitle">ESPERANDO SALIDA</span><span id="navSource">GPS · ESPERANDO</span></div>
+          <div class="navDepthScene" role="progressbar" aria-label="Avance aproximado del tramo" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0" id="navTrack">
+            <div class="navDepthGlow" aria-hidden="true"></div>
+            <div class="navRail left" aria-hidden="true"></div>
+            <div class="navRail right" aria-hidden="true"></div>
+            <div class="navSleeperField" aria-hidden="true"></div>
+            <div class="navDepthOrigin"><small>ACTUAL</small><span id="navFrom">—</span></div>
+            <div id="navDepthTarget" class="navDepthTarget"><small>PRÓXIMA</small><span id="navTo">—</span></div>
+            <span id="navTrackTrain" aria-hidden="true">🚆</span>
+            <div class="navProgressShell" aria-hidden="true"><div id="navProgressFill"></div></div>
+          </div>
+          <div id="navNext" class="navNext">Recorrido pendiente</div>
+          <div class="navTimerBox"><div><div id="navTimerTitle" class="navTimerTitle">TIEMPO DE VIAJE</div><div id="navMainTimer">00:00.0</div></div><div class="navTimersRight"><span id="navSecondaryLabel">TRAMO ACTUAL</span><strong id="navSecondaryTimer">00:00.0</strong><span id="navTertiaryLabel" style="margin-top:9px">ÚLTIMA DETENCIÓN</span><strong id="navTotalTimer">--:--</strong></div></div>
+          <div id="navEstimate">Los tiempos previstos son orientativos.</div>
+          <div id="navNotice" role="status" aria-live="polite"><span id="navNoticeIcon">⚠️</span><div><div id="navNoticeText"></div><div id="navNoticeMeta"></div></div></div>
+        </section>
+        <div class="navControls"><button id="navTableToggle" type="button" aria-expanded="false">VER TABLA DE ESTACIONES ▾</button></div>
         <div id="recoveryNotice" class="recoveryNotice" role="status" aria-live="polite"></div>
         <div id="imuState" class="imuState">ESPERANDO SALIDA</div>
         <div id="imuRoute" class="imuRoute">--</div>
@@ -2487,6 +2548,7 @@ function pkVoiceTick(now=Date.now()){
     if(justStarted||crossed){
       pkVoiceRuntime.set(a.id,null);
       pkVoiceDiagnostic(a,'emitido_gps',snap,remaining,{leadM:distLimit});
+      navPresentNotice(a,'GPS',now);
       speakVoiceRepeated(composeVoiceText(a),a.repeatCount||1,imuOnlyTrip.serviceNumber);
     }else{
       pkVoiceRuntime.set(a.id,remaining);
@@ -2659,7 +2721,7 @@ function voiceMatchesDeparture(a,trip,location){
   return a.location===location;
 }
 function scheduleVoiceEvent(location,eventAt=Date.now()){
-  if(!imuOnlyTrip||voiceSettings?.enabled===false)return;const trip=imuOnlyTrip,now=Date.now();for(const a of voiceAlerts()){if(a.triggerMode==='pk'||!voiceEligible(a,trip)||!voiceMatchesDeparture(a,trip,location))continue;const due=eventAt+(a.delayMs||0),wait=Math.max(0,due-now),id=++voiceTimerSeq;const timer=setTimeout(()=>{voiceTimers.delete(id);if(imuOnlyTrip&&imuOnlyTrip.serviceNumber===trip.serviceNumber)speakVoiceRepeated(composeVoiceText(a),a.repeatCount||1,trip.serviceNumber);},wait);voiceTimers.set(id,timer);}
+  if(!imuOnlyTrip||voiceSettings?.enabled===false)return;const trip=imuOnlyTrip,now=Date.now();for(const a of voiceAlerts()){if(a.triggerMode==='pk'||!voiceEligible(a,trip)||!voiceMatchesDeparture(a,trip,location))continue;const due=eventAt+(a.delayMs||0),wait=Math.max(0,due-now),id=++voiceTimerSeq;const timer=setTimeout(()=>{voiceTimers.delete(id);if(imuOnlyTrip&&imuOnlyTrip.serviceNumber===trip.serviceNumber){navPresentNotice(a,'SALIDA',Date.now());speakVoiceRepeated(composeVoiceText(a),a.repeatCount||1,trip.serviceNumber);}},wait);voiceTimers.set(id,timer);}
 }
 function clearVoiceTimers(cancelSpeech=false){for(const t of voiceTimers.values())clearTimeout(t);voiceTimers.clear();if(cancelSpeech&&'speechSynthesis'in window)window.speechSynthesis.cancel();}
 function updateBellotoCutUi(msg=''){
@@ -2702,18 +2764,251 @@ function preventionDepartureAlerts(station,trip){
     if(!preferred||preferred.station!==station||pkVoiceRuntime.get(a.id)===null)continue;
     pkVoiceRuntime.set(a.id,null); // ÚNICO aviso, aunque más tarde llegue GPS.
     pkVoiceDiagnostic(a,'emitido_salida',null,preferred.distanceM,{station});
+    navPresentNotice(a,'SALIDA',Date.now());
     speakVoiceRepeated(composeVoiceText(a),a.repeatCount||2,trip.serviceNumber);
   }
 }
 function scheduleDepartureVoice(station,nextStation,at){
-  if(!voiceSettings)loadVoiceSettings();if(voiceSettings.announceStations&&nextStation)speakVoice(`Próxima estación ${nextStation}.`);if(voiceSettings.remindLights)speakVoice('Recuerda mantener luces encendidas.');
+  if(!voiceSettings)loadVoiceSettings();if(voiceSettings.announceStations&&nextStation){speakVoice(`Próxima estación ${nextStation}.`);navInfoMessage(`Próxima estación: ${nextStation}.`,'🚉');}if(voiceSettings.remindLights){speakVoice('Recuerda mantener luces encendidas.');navInfoMessage('Recuerda mantener luces encendidas.','💡');}
   if(imuOnlyTrip?.doubleCutBellotoArmed&&station==='El Sol'&&nextStation==='El Belloto'){imuOnlyTrip.doubleCutBellotoArmed=false;imuOnlyTrip.doubleCutBellotoDone=true;const emitted=speakVoice('Recuerda: corte doble en estación El Belloto.');updateBellotoCutUi(emitted?'Aviso de corte doble reproducido.':'Aviso de corte doble silenciado.');}
   scheduleVoiceEvent(station,at);
   if(imuOnlyTrip)preventionDepartureAlerts(station,imuOnlyTrip);
 }
 function scheduleArrivalVoice(station,at){
-  if(!voiceSettings)loadVoiceSettings();if(voiceSettings.announceStations)speakVoice(`Estación ${station}.`);if(voiceSettings.remindDoors)speakVoice('Recuerda abrir puertas.');
+  if(!voiceSettings)loadVoiceSettings();if(voiceSettings.announceStations){speakVoice(`Estación ${station}.`);navInfoMessage(`Estación: ${station}.`,'🚉');}if(voiceSettings.remindDoors){speakVoice('Recuerda abrir puertas.');navInfoMessage('Recuerda abrir puertas.','🚪');}
 }
+
+// V7.46: presentacion y avisos auxiliares, fuera del motor fisico V7.35.
+// La duracion base usa tiempos por tramo aportados por el usuario (aproximados).
+// Se sustituyen por medianas de viajes confirmados en el mismo sentido/vía.
+// Tiempos APROXIMADOS aportados por el usuario para Puerto → Limache.
+// Vía 2 usa el orden inverso como referencia INICIAL hasta medir sus propios tiempos.
+// Nunca cambian la detección física IMU/GPS, ni se interpretan como velocidad autorizada.
+const NAV_REFERENCE_MINUTES_PUERTO_LIMACHE=[2,2,2,4,3,3,2,2,2,2,7,3,2,3,2,2,2,2,3,10];
+const NAV_BASE_TOTAL_MINUTES=NAV_REFERENCE_MINUTES_PUERTO_LIMACHE.reduce((a,b)=>a+b,0);
+const NAV_SEGMENT_HISTORY_KEY='registro.imu.segmentHistory.v1';
+const NAV_MAX_SAMPLES=24;
+const NAV_OUTAGE_HOLD_MS=4500;
+const navRuntime={seen:new Set(),lastNotice:null,noticeAt:0,source:'',gpsLostSince:null};
+let navSegmentHistory=null;
+const navUi={
+ card:document.getElementById('navCard'),title:document.getElementById('navTitle'),source:document.getElementById('navSource'),
+ from:document.getElementById('navFrom'),to:document.getElementById('navTo'),progress:document.getElementById('navProgressFill'),track:document.getElementById('navTrack'),depthTarget:document.getElementById('navDepthTarget'),
+ next:document.getElementById('navNext'),timerLabel:document.getElementById('navTimerTitle'),timer:document.getElementById('navMainTimer'),secondaryLabel:document.getElementById('navSecondaryLabel'),secondary:document.getElementById('navSecondaryTimer'),tertiaryLabel:document.getElementById('navTertiaryLabel'),total:document.getElementById('navTotalTimer'),mover:document.getElementById('navTrackTrain'),
+ estimate:document.getElementById('navEstimate'),notice:document.getElementById('navNotice'),noticeText:document.getElementById('navNoticeText'),
+ noticeMeta:document.getElementById('navNoticeMeta'),noticeIcon:document.getElementById('navNoticeIcon'),tableToggle:document.getElementById('navTableToggle')
+};
+function navHistoryRead(){
+ if(navSegmentHistory)return navSegmentHistory;
+ try{const x=JSON.parse(localStorage.getItem(NAV_SEGMENT_HISTORY_KEY)||'null');navSegmentHistory=x&&typeof x==='object'&&Array.isArray(x.seenTrips)&&x.segments?x:{seenTrips:[],segments:{}};}
+ catch(e){navSegmentHistory={seenTrips:[],segments:{}};}
+ return navSegmentHistory;
+}
+function navLearnFromTrip(trip){
+ if(!trip?.id||!Array.isArray(trip.events))return;
+ const data=navHistoryRead();if(data.seenTrips.includes(trip.id))return;
+ const via=trip.via||directionToVia(trip.direction);
+ for(const e of trip.events){
+   if(e.type!=='TRAMO'||e.partial||!e.stationVerification||!Number.isFinite(e.durationMs)||e.durationMs<60000||e.durationMs>1800000)continue;
+   const parts=String(e.label||'').split(/\s*→\s*/);if(parts.length!==2)continue;
+   const [from,to]=parts;if(!stationRailSegmentData(from,to,via)||Math.abs(STATIONS_PUERTO_LIMACHE.indexOf(from)-STATIONS_PUERTO_LIMACHE.indexOf(to))!==1)continue;
+   const key=via+':'+from+'|'+to;
+   (data.segments[key]||(data.segments[key]=[])).push(Math.round(e.durationMs));
+   data.segments[key]=data.segments[key].slice(-NAV_MAX_SAMPLES);
+ }
+ data.seenTrips.push(trip.id);data.seenTrips=data.seenTrips.slice(-300);
+ try{localStorage.setItem(NAV_SEGMENT_HISTORY_KEY,JSON.stringify(data));}catch(e){}
+}
+function navSegmentDuration(from,to,via){
+ const fromI=STATIONS_PUERTO_LIMACHE.indexOf(from),toI=STATIONS_PUERTO_LIMACHE.indexOf(to);
+ if(fromI<0||toI<0||Math.abs(fromI-toI)!==1)return null;
+ const referenceMs=NAV_REFERENCE_MINUTES_PUERTO_LIMACHE[Math.min(fromI,toI)]*60000;
+ const key=via+':'+from+'|'+to;
+ // Aprender exclusivamente del mismo sentido/vía, de llegadas confirmadas.
+ // La mediana resiste eventos atípicos; no se aprende de tramos interrumpidos.
+ const observed=navHistoryRead().segments[key]||[];
+ const verified=observed.filter(x=>Number.isFinite(x)&&x>=Math.max(60000,referenceMs*.55)&&x<=referenceMs*2.3).sort((a,b)=>a-b);
+ if(verified.length){
+   const m=verified.length>>1;
+   return {ms:Math.round(verified.length%2?verified[m]:(verified[m-1]+verified[m])/2),learned:true,n:verified.length,referenceMs};
+ }
+ return {ms:referenceMs,learned:false,n:0,referenceMs};
+}
+// Respaldo sin GPS: si no es fiable el segmento geométrico, interpolar el
+// ordinal PK ENTRE ESTACIONES en vez de descartar por completo el aviso.
+// Esta conversión solo se utiliza para recordatorios, nunca para localizar ni
+// para validar una detención, restricción ni señal ferroviaria.
+function navApproxPkFraction(pk,from,to,via){
+ if(!Number.isFinite(pk))return NaN;
+ const stations=pkStationGeometry(via);
+ const a=stations.find(p=>p.name===from),b=stations.find(p=>p.name===to);
+ if(!a||!b||!Number.isFinite(a.pk)||!Number.isFinite(b.pk)||Math.abs(a.pk-b.pk)<.00001)return NaN;
+ return (pk-a.pk)/(b.pk-a.pk);
+}
+function navPkSegmentMatch(alert,trip){
+ if(!trip||trip.locationPending||trip.state!=='MOVING'||trip.partialFirstSegment)return null;
+ const from=trip.route[trip.pos],to=trip.route[trip.pos+1],via=trip.via||directionToVia(trip.direction);
+ if(!from||!to)return null;
+ const s=pkScalar(alert.triggerPk),target=pkUnifiedTargetChainage(s,via,true);
+ const start=stationRailChainageM(from,via),end=stationRailChainageM(to,via);
+ let fraction=Number.isFinite(target)&&Number.isFinite(start)&&Number.isFinite(end)&&Math.abs(end-start)>=10?(target-start)/(end-start):NaN;
+ if(!Number.isFinite(fraction))fraction=navApproxPkFraction(s,from,to,via);
+ if(!Number.isFinite(fraction)||fraction<-.002||fraction>1.002)return null;
+ const duration=navSegmentDuration(from,to,via);
+ return duration?{from,to,via,fraction:Math.max(0,Math.min(1,fraction)),duration}:null;
+}
+function navPresentNotice(alert,source='GPS',at=Date.now()){
+ if(!alert||navRuntime.seen.has(alert.id)||!imuOnlyTrip)return false;
+ navRuntime.seen.add(alert.id);
+ navRuntime.lastNotice={id:alert.id,text:(source==='TIEMPO'?'Aviso estimado. Verifica señalización. ':'')+composeVoiceText(alert),source,at,bulletin:!!alert.bulletin,finalPk:alert.pkEnd||'',via:alert.via};
+ navRuntime.noticeAt=at;
+ navRuntime.source=source;
+ navRenderNotice(at);
+ return true;
+}
+// Mantener también visibles mensajes automáticos de estaciones, puertas y luces.
+// Una prevención vigente tiene prioridad para no desaparecer del panel.
+function navInfoMessage(text,icon='🔊',now=Date.now()){
+ if(!text||!imuOnlyTrip||imuOnlyTrip.state==='FINISHED')return;
+ if(navRuntime.lastNotice?.bulletin){navRenderNotice(now);if(navUi.notice.classList.contains('show'))return;}
+ const old=navRuntime.lastNotice;
+ if(old&&!old.bulletin&&old.source==='SISTEMA'&&now-old.at<3000){
+   if(!old.text.includes(text))old.text+=' · '+text;
+   old.at=now;
+ }else{
+   navRuntime.lastNotice={id:'AUTO_'+now,text,source:'SISTEMA',icon,at:now,bulletin:false};
+ }
+ navRenderNotice(now);
+}
+function navRenderNotice(now=Date.now()){
+ const item=navRuntime.lastNotice;
+ if(!item||imuOnlyTrip?.state==='FINISHED'){
+   navUi.notice.classList.remove('show');return;
+ }
+ if(item.bulletin&&item.finalPk){
+   // Mantener el símbolo de prevención hasta superar su fin con una posición
+   // GPS fiable o hasta confirmar una estación posterior. Sin esa evidencia,
+   // conservarlo: no declarar finalizada una prevención por un reloj aproximado.
+   const endPk=pkScalar(item.finalPk),t=imuOnlyTrip,via=t?.via||directionToVia(t?.direction);
+   const endChain=pkUnifiedTargetChainage(endPk,via,true);
+   const sign=t?.direction==='puerto'?-1:1;
+   const gps=pkGlobalSnapshot(now);
+   let knownBeyond=false;
+   if(Number.isFinite(endChain)){
+     if(gps?.reliable)knownBeyond=(gps.chainageM-endChain)*sign>=40;
+     if(!knownBeyond&&t?.state!=='MOVING'&&t?.route?.length){
+       const pos=stationRailChainageM(t.route[t.pos]||'',via);
+       knownBeyond=Number.isFinite(pos)&&(pos-endChain)*sign>=180;
+     }
+   }
+   if(knownBeyond){navUi.notice.classList.remove('show');return;}
+ }else if(now-item.at>40000){navUi.notice.classList.remove('show');return;}
+ navUi.notice.classList.add('show');
+ navUi.noticeIcon.textContent=item.icon||(/prevenci[oó]n|restringida|peligro|barrera|cruce/i.test(item.text)?'⚠️':'🔊');
+ navUi.noticeText.textContent=item.text;
+ navUi.noticeMeta.textContent=(item.source==='TIEMPO'?'Estimación temporal · sin GPS fiable':item.source==='GPS'?'Referencia GPS aproximada':item.source==='SISTEMA'?'Mensaje de voz':'Aviso configurado')+(item.bulletin?' · FIN A CONFIRMAR':'')+' · '+fmtClock(item.at);
+}
+function navResetTrip(){
+ navRuntime.seen.clear();navRuntime.lastNotice=null;navRuntime.noticeAt=0;navRuntime.source='';navRuntime.gpsLostSince=null;
+ navUi.notice.classList.remove('show');
+ imuLiveEl.classList.remove('table-open');navUi.tableToggle.textContent='VER TABLA DE ESTACIONES ▾';navUi.tableToggle.setAttribute('aria-expanded','false');
+}
+// Se activa EXCLUSIVAMENTE si no hay posicion PK utilizable durante varios segundos.
+// Sin internet pero con GPS bueno se mantiene la referencia espacial.
+// Un evento ya emitido por GPS o por salida no se repite usando tiempo.
+function navOfflinePkTick(now=Date.now()){
+ const trip=imuOnlyTrip;
+ if(!trip||!['MOVING'].includes(trip.state)||trip.locationPending||trip.partialFirstSegment||trip.sensorRecovery){navRuntime.gpsLostSince=null;return;}
+ const gpsSnap=pkGlobalSnapshot(now),gpsGood=!!gpsSnap?.reliable;
+ if(gpsGood){navRuntime.gpsLostSince=null;return;}
+ if(navRuntime.gpsLostSince===null)navRuntime.gpsLostSince=now;
+ if(now-navRuntime.gpsLostSince<NAV_OUTAGE_HOLD_MS)return;
+ if(!voiceSettings?.pkAlertsEnabled||voiceSettings.enabled===false||!Number.isFinite(trip.segmentStartAt))return;
+ for(const a of voiceAlerts()){
+   if(a.triggerMode!=='pk'||!voiceEligible(a,trip)||navRuntime.seen.has(a.id)||pkVoiceRuntime.get(a.id)===null)continue;
+   const seg=navPkSegmentMatch(a,trip);if(!seg)continue;
+   const {duration,fraction,from,to,via}=seg;
+   const length=stationRailSegmentData(from,to,via)?.lengthM;
+   const mode=a.leadMode||'meters',lead=Number(a.leadValue)||0;
+   let leadMs=mode==='seconds'?Math.max(15000,lead*1000)
+     :mode==='cross'?25000
+     :mode==='hybrid'?Math.max(25000,duration.ms*1000/Math.max(300,length||1000))
+     :Math.max(20000,duration.ms*Math.min(3000,lead)/Math.max(300,length||1000));
+   // Anticipar además 12 % de la referencia para absorber variaciones reales;
+   // es preferible un recordatorio temprano a perderlo por falta de GPS.
+   leadMs=Math.min(180000,leadMs+Math.min(40000,duration.ms*.12));
+   const triggerAt=trip.segmentStartAt+Math.max(0,duration.ms*fraction-leadMs);
+   if(now<triggerAt)continue;
+   // No extrapolar avisos de un tramo sin salida fisica confirmada,
+   // ni disparar si se ha excedido de forma extrema el tiempo estimado.
+   if(now>trip.segmentStartAt+Math.max(duration.ms*2.3,180000))continue;
+   if(navPresentNotice(a,'TIEMPO',now)){
+     pkVoiceRuntime.set(a.id,null);
+     pkVoiceDiagnostic(a,'emitido_tiempo_sin_gps',null,null,{segment:`${from} → ${to}`,estimateMs:duration.ms,learnedSamples:duration.n});
+     speakVoiceRepeated(navRuntime.lastNotice.text,a.repeatCount||2,trip.serviceNumber);
+   }
+ }
+}
+function navRender(now=Date.now()){
+ const t=imuOnlyTrip;if(!t)return;
+ const route=t.route||[],at=Math.max(0,Math.min(route.length-1,t.pos||0)),station=route[at]||t.startStation||'Origen pendiente',
+ next=route[at+1]||t.finalStation||'—',moving=t.state==='MOVING',stopped=t.state==='STATION',waiting=t.state==='WAITING'||t.state==='LOCATING',finished=t.state==='FINISHED';
+ const duration=(!t.locationPending&&moving&&route[at+1])?navSegmentDuration(station,next,t.via||directionToVia(t.direction)):null;
+ const elapsed=Math.max(0,now-(moving?(t.segmentStartAt||now):t.eventStartAt||now));
+ let progress=moving&&duration?Math.min(.97,elapsed/duration.ms):stopped||finished?1:0;
+ const pk=pkGlobalSnapshot(now),gpsGood=!!pk?.reliable;
+ if(moving&&gpsGood&&!t.locationPending){
+   const a=stationRailChainageM(station,t.via),b=stationRailChainageM(next,t.via);
+   if(Number.isFinite(a)&&Number.isFinite(b)&&Math.abs(b-a)>10){
+     const gpsProgress=(pk.chainageM-a)/(b-a);
+     if(gpsProgress>=0&&gpsProgress<=1)progress=Math.max(0,Math.min(.99,gpsProgress));
+   }
+ }
+ const visualProgress=Math.max(0,Math.min(1,progress));
+ const totalElapsed=t.actualStartAt?Math.max(0,(finished?t.endAt||now:now)-t.actualStartAt):0;
+ const lastSegment=(t.events||[]).filter(e=>e.type==='TRAMO'&&!e.partial).at(-1);
+ const lastStop=(t.events||[]).filter(e=>e.type==='ESTACION').at(-1);
+ const sideReference=stopped?lastSegment?.durationMs:lastStop?.durationMs;
+ navUi.title.textContent=finished?'SERVICIO TERMINADO':stopped?'EN ESTACIÓN':moving?'CIRCULANDO':waiting?'ESPERANDO SALIDA':'SERVICIO ACTIVO';
+ navUi.from.textContent=t.locationPending?'Por localizar':station;
+ navUi.to.textContent=finished?'FIN':stopped?route[at+1]||'Destino':next;
+ navUi.progress.style.width=Math.round(visualProgress*100)+'%';
+ navUi.track.setAttribute('aria-valuenow',String(Math.round(visualProgress*100)));
+ if(navUi.depthTarget){
+   const scale=0.58+visualProgress*.78;
+   const top=18+visualProgress*72;
+   const blur=Math.max(0,(1-visualProgress)*1.6);
+   const glow=(.32+visualProgress*.62).toFixed(2);
+   navUi.depthTarget.style.top=`${top}px`;
+   navUi.depthTarget.style.transform=`translateX(-50%) scale(${scale.toFixed(3)})`;
+   navUi.depthTarget.style.opacity=String(.78+visualProgress*.22);
+   navUi.depthTarget.style.filter=`blur(${blur.toFixed(2)}px) drop-shadow(0 0 ${Math.round(10+visualProgress*16)}px rgba(122,236,228,${glow}))`;
+ }
+ if(navUi.mover){
+   navUi.mover.style.left='50%';
+   navUi.mover.style.bottom=`${16+Math.round((1-visualProgress)*(moving?8:3))}px`;
+   navUi.mover.style.transform=`translateX(-50%) scale(${(moving?0.96+visualProgress*.12:1).toFixed(3)})`;
+ }
+ navUi.next.textContent=finished?'Recorrido terminado':stopped?`Detención en ${station}`:moving?`Próxima estación: ${next}`:'La salida será detectada por el IMU';
+ navUi.timerLabel.textContent='TIEMPO DE VIAJE';
+ navUi.timer.textContent=fmtTenths(totalElapsed);
+ navUi.secondaryLabel.textContent=stopped?'DETENCIÓN ACTUAL':moving?'TRAMO ACTUAL':'TIEMPO EN ESPERA';
+ navUi.secondary.textContent=fmtTenths(finished?0:elapsed);
+ if(navUi.tertiaryLabel)navUi.tertiaryLabel.textContent=stopped?'ÚLTIMO TRAMO':moving?'ÚLTIMA DETENCIÓN':'ÚLTIMO REGISTRO';
+ navUi.total.textContent=Number.isFinite(sideReference)?fmtTenths(sideReference):'--:--';
+ navUi.source.textContent=gpsGood?'GPS · ESTIMADO':(!navigator.onLine?'SIN RED · TIEMPO':'SIN GPS · TIEMPO');
+ navUi.source.classList.toggle('estimated',!gpsGood);
+ navUi.estimate.textContent=moving&&duration?`Previsto ≈ ${fmtTenths(duration.ms)} · ${duration.learned?`${duration.n} viaje(s) medido(s)`:'referencia aproximada aportada'}. Avance estimado.`:
+   stopped?'Detención real registrada por IMU. El consentimiento sigue en la tabla.':
+   waiting?'El IMU determina la salida; el GPS solo contextualiza.':'Estimación visual, no operativa.';
+ navRenderNotice(now);
+}
+navUi.tableToggle.addEventListener('click',()=>{
+ const open=imuLiveEl.classList.toggle('table-open');
+ navUi.tableToggle.textContent=open?'OCULTAR TABLA DE ESTACIONES ▴':'VER TABLA DE ESTACIONES ▾';
+ navUi.tableToggle.setAttribute('aria-expanded',String(open));
+});
+
 function selectedImuDestination(){
   if(!imuDestination)return null;return imuDestination.value==='__other__'?(imuDestinationOther?.value||null):imuDestination.value;
 }
@@ -4240,6 +4535,8 @@ function imuOnlyTick(){
   renderImuStopTable(now);
   renderImuDepartureCard(now);
   pkVoiceTick(now); // Separado del detector de inicio/detención, sin alterar su clasificación.
+  navOfflinePkTick(now); // Respaldo de avisos, SIN modificar posicion ni estados del detector.
+  navRender(now);
 
 
   // No clasificar silencio de sensores como reposo cuando se suspende la pantalla.
@@ -4734,7 +5031,7 @@ async function armImuTrip(){
     else {imuOnlyTrip.manualOrigin=true;imuOnlyTrip.locationPending=false;imuOnlyTrip.gpsOriginLocked=true;
       showImuCalibrationStatus(`Origen fijado: ${imuOnlyTrip.startStation}. El IMU detecta; el GPS verifica la estación esperada.`, 'ok',8000);}
   }
-  previousImuTickAt=null;recoveryNotice('');stopLiveStationFrame();imuStopRows.dataset.rendered='';imuStopRows.dataset.rowCount='0';clearInterval(imuOnlyLoop);imuOnlyLoop=setInterval(imuOnlyTick,100);try{if('wakeLock'in navigator)wakeLock=await navigator.wakeLock.request('screen');}catch(e){}
+  navResetTrip();previousImuTickAt=null;recoveryNotice('');stopLiveStationFrame();imuStopRows.dataset.rendered='';imuStopRows.dataset.rowCount='0';clearInterval(imuOnlyLoop);imuOnlyLoop=setInterval(imuOnlyTick,100);try{if('wakeLock'in navigator)wakeLock=await navigator.wakeLock.request('screen');}catch(e){}
 }
 function recalibrateImu(){
   if(!imuOnlyTrip){showImuCalibrationStatus('No hay un servicio activo para recalibrar.','bad',7000);return;}
@@ -4834,8 +5131,8 @@ function finishImuTrip(auto=false,endAtOverride=null,preserveVoiceTimers=false){
   finishValidationRun(endAt);
   imuOnlyTrip.endAt=endAt;imuOnlyTrip.state='FINISHED';imuOnlyLastCompleted=JSON.parse(JSON.stringify(imuOnlyTrip));clearInterval(imuOnlyLoop);imuOnlyLoop=null;stopGpsSupport();if(!preserveVoiceTimers)clearVoiceTimers(true);
   stopLiveStationFrame();renderImuStopTable(endAt);
-  imuSession.services.push(imuOnlyLastCompleted);saveImuSession();saveLastCompletedRoute(imuOnlyLastCompleted);renderImuSessionStatus();renderImuDepartureCard(endAt);
-  imuStateOnly.textContent=`SERVICIO ${imuOnlyTrip.serviceNumber} COMPLETADO`;imuRouteOnly.textContent=imuOnlyTrip.finalStation;imuTimerOnly.textContent=fmtTenths(0);imuTimerLabelOnly.textContent='VIAJE CERRADO EN LA LLEGADA';imuFinishBtn.style.display='none';imuRecalBtn.style.display='none';
+  navLearnFromTrip(imuOnlyLastCompleted);imuSession.services.push(imuOnlyLastCompleted);saveImuSession();saveLastCompletedRoute(imuOnlyLastCompleted);renderImuSessionStatus();renderImuDepartureCard(endAt);
+  navRender(endAt);imuStateOnly.textContent=`SERVICIO ${imuOnlyTrip.serviceNumber} COMPLETADO`;imuRouteOnly.textContent=imuOnlyTrip.finalStation;imuTimerOnly.textContent=fmtTenths(0);imuTimerLabelOnly.textContent='VIAJE CERRADO EN LA LLEGADA';imuFinishBtn.style.display='none';imuRecalBtn.style.display='none';
   if(imuValidationCurrent?.enabled)validationPanel.classList.add('show');
   updateValidationReportExport();
   if(Number.isFinite(endAtOverride))showImuCalibrationStatus(`LLEGADA FINAL CONFIRMADA ✓ · viaje cerrado a las ${fmtClock(endAt)} · sin detención ni consentimiento en la estación final.`,'ok',12000);
@@ -4853,7 +5150,7 @@ function restoreImuSession(){
   try{
     const saved=JSON.parse(localStorage.getItem(IMU_SESSION_KEY)||'null');
     if(!saved||!saved.email||!Array.isArray(saved.services)||!saved.plannedCount)return;
-    imuSession=saved;imuEmail.value=saved.email;imuServiceCount.value=saved.plannedCount;imuSessionSetup.style.display='none';imuSessionStatus.classList.add('show');renderImuSessionStatus();renderVoiceBar();voiceResetForm();
+    imuSession=saved;for(const previous of saved.services)navLearnFromTrip(previous);imuEmail.value=saved.email;imuServiceCount.value=saved.plannedCount;imuSessionSetup.style.display='none';imuSessionStatus.classList.add('show');renderImuSessionStatus();renderVoiceBar();voiceResetForm();
     if(saved.services.length>=saved.plannedCount){imuSetupEl.style.display='none';renderSessionReport();if(saved.sentAt){imuSendState.textContent=`Informe enviado automáticamente a ${saved.email}.`;imuSendState.className='sendState ok';}else setTimeout(sendSessionReport,700);}
     else{imuSetupEl.style.display='block';fillImuDestination();applyNextDestinationSuggestion();}
   }catch(e){}
@@ -5090,7 +5387,7 @@ document.addEventListener('visibilitychange',()=>{
   }
   screenHiddenAt=null;
 });
-chooseMode('imu');fillTripSelectors();loadVoiceSettings();pkPopulateReferenceOptions();fillImuDestination();applyNextDestinationSuggestion();setDefaultSchedule();restoreImuSession();renderVoiceBar();voiceResetForm();updateMiniReadout();
+navHistoryRead();chooseMode('imu');fillTripSelectors();loadVoiceSettings();pkPopulateReferenceOptions();fillImuDestination();applyNextDestinationSuggestion();setDefaultSchedule();restoreImuSession();renderVoiceBar();voiceResetForm();updateMiniReadout();
 </script>
 </body>
 </html>
